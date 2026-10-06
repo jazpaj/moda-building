@@ -15,7 +15,7 @@ function label(text) {
 
 function wrap(body, { before, text }) {
   const filter = before ? `<filter id="b"><feColorMatrix type="saturate" values=".25"/></filter>` : '';
-  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid slice"><defs>${filter}</defs><g${before ? ' filter="url(#b)"' : ''}>${body}</g>${label(text)}</svg>`;
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid slice"><defs>${filter}</defs><g${before ? ' filter="url(#b)"' : ''}>${body}</g>${text ? label(text) : ''}</svg>`;
 }
 
 function roof(seed, before) {

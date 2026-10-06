@@ -44,7 +44,7 @@ const svcSeed = { roofing: 3, 'basement-waterproofing': 5, 'finished-basements':
 for (const s of services) {
   write(`img/ph/${s.key}-hero.svg`, ph.make(s.key, svcSeed[s.key], false, `Placeholder — real ${s.short.toLowerCase()} project photo`));
 }
-write('img/ph/home-hero.svg', ph.make('roofing', 2, false, 'Placeholder — real Moda Building roof project photo'));
+write('img/ph/home-hero.svg', ph.make('roofing', 2, false, '')); // unlabeled: sits behind hero text
 write('img/ph/team.svg', ph.team());
 projects.forEach((p, i) => {
   const c = cityBy(p.city);
