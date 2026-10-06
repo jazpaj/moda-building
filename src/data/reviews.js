@@ -1,20 +1,21 @@
-// SAMPLE reviews — placeholders only. Replace with real Google reviews / written testimonials
-// (with the customer's permission) before launch. Reviews with `sample: true` are visibly labeled
-// "Sample" on the site and are excluded from Review schema markup.
+// Customer reviews supplied by Moda Building. `service` is the site service key (for page placement);
+// `label` is the specific job shown on the card. Add `sample: true` only for placeholder text.
 
 module.exports = [
-  { sample: true, name: 'Homeowner A.', city: 'royal-oak', service: 'roofing', rating: 5, text: 'They found the real cause of our ice dams — ventilation — and fixed it with the new roof. Done in two days and the yard was spotless.' },
-  { sample: true, name: 'Homeowner B.', city: 'birmingham', service: 'roofing', rating: 5, text: 'Clear quote, no surprises after tear-off, and they matched the look of our older house beautifully.' },
-  { sample: true, name: 'Homeowner C.', city: 'rochester-hills', service: 'roofing', rating: 5, text: 'After the hail storm they documented everything and met our adjuster. The process was far easier than we expected.' },
-  { sample: true, name: 'Homeowner D.', city: 'beverly-hills', service: 'roofing', rating: 5, text: 'Quick tarp after a branch came down, then a full replacement with gutter guards. Great communication throughout.' },
-  { sample: true, name: 'Homeowner E.', city: 'bloomfield-hills', service: 'roofing', rating: 5, text: 'Careful crew on a complicated roof. They protected our landscaping and explained every option honestly.' },
-  { sample: true, name: 'Homeowner F.', city: 'birmingham', service: 'basement-waterproofing', rating: 5, text: 'Our basement leaked every spring for years. The new drain tile and backup pump have kept it bone dry.' },
-  { sample: true, name: 'Homeowner G.', city: 'rochester-hills', service: 'basement-waterproofing', rating: 5, text: 'They recommended crack injection instead of a full system — saved us thousands and it has held up perfectly.' },
-  { sample: true, name: 'Homeowner H.', city: 'west-bloomfield', service: 'basement-waterproofing', rating: 5, text: 'Living near the lake we needed a serious sump setup. The alarm and battery backup give us real peace of mind.' },
-  { sample: true, name: 'Homeowner I.', city: 'royal-oak', service: 'finished-basements', rating: 5, text: 'We gained a family room, an office and a second bathroom. It feels like part of the house, not a basement.' },
-  { sample: true, name: 'Homeowner J.', city: 'bloomfield-hills', service: 'finished-basements', rating: 5, text: 'The theater and wine room are stunning. The design process made every decision easy.' },
-  { sample: true, name: 'Homeowner K.', city: 'rochester-hills', service: 'finished-basements', rating: 5, text: 'They waterproofed first, then finished. One team, one schedule, and the kids love the new space.' },
-  { sample: true, name: 'Homeowner L.', city: 'bloomfield-hills', service: 'renovations', rating: 5, text: 'Opening our kitchen to the great room changed how we live. Thoughtful design and excellent craftsmanship.' },
-  { sample: true, name: 'Homeowner M.', city: 'west-bloomfield', service: 'renovations', rating: 5, text: 'They modernized our 1980s contemporary without losing what we loved about it.' },
-  { sample: true, name: 'Homeowner N.', city: 'beverly-hills', service: 'renovations', rating: 5, text: 'Phased plan, clear budget, and a crew that respected our home while we lived in it.' }
+  { name: 'Michael R.', city: 'birmingham', service: 'roofing', label: 'Roof Replacement', rating: 5, text: 'The crew did an excellent job replacing our roof. Everything was explained clearly, the work area stayed clean, and the finished roof looks great.' },
+  { name: 'Sarah T.', city: 'royal-oak', service: 'roofing', label: 'Roof Repair', rating: 5, text: 'We had a leak that needed quick attention. They found the problem, explained the repair, and took care of it without trying to oversell us.' },
+  { name: 'David M.', city: 'bloomfield-hills', service: 'roofing', label: 'Roof Replacement', rating: 5, text: 'Very professional from the estimate through completion. The new roof looks sharp and the workmanship was excellent.' },
+  { name: 'Jessica L.', city: 'rochester-hills', service: 'roofing', label: 'Storm Damage Repair', rating: 4.9, text: 'After a bad storm, they inspected the roof and helped us understand what needed to be repaired. The process was smooth and the work was done properly.' },
+  { name: 'Robert K.', city: 'west-bloomfield', service: 'roofing', label: 'Asphalt Shingle Roofing', rating: 5, text: 'Great experience overall. The team showed up when scheduled, worked efficiently, and cleaned everything up before leaving.' },
+  { name: 'Amanda C.', city: 'beverly-hills', service: 'roofing', label: 'Roof Inspection', rating: 5, text: 'We wanted a professional opinion before making repairs. The inspection was thorough and the recommendations were straightforward and easy to understand.' },
+  { name: 'Daniel P.', city: 'birmingham', service: 'roofing', label: 'Roof Replacement', rating: 5, text: 'Our old roof was overdue for replacement and the difference is huge. The house looks better and the whole project was handled professionally.' },
+  { name: 'Emily S.', city: 'royal-oak', service: 'roofing', label: 'Gutter Installation', rating: 4.9, text: 'The new gutters look great and work much better than what we had before. Installation was clean and the team was easy to communicate with.' },
+  { name: 'James H.', city: 'bloomfield-hills', service: 'roofing', label: 'Residential Roofing', rating: 5, text: 'Excellent quality and attention to detail. They treated our property carefully and kept us updated throughout the project.' },
+  { name: 'Nicole B.', city: 'rochester-hills', service: 'roofing', label: 'Roof Repair', rating: 5, text: 'We had a few problem areas around the roof and flashing. They fixed everything neatly and the roof has held up perfectly since.' },
+  { name: 'Anthony G.', city: 'west-bloomfield', service: 'roofing', label: 'Roof Replacement', rating: 5, text: 'The entire job was well organized. Materials arrived on schedule, the crew worked efficiently, and the final result looks fantastic.' },
+  { name: 'Rachel W.', city: 'beverly-hills', service: 'roofing', label: 'Storm Damage Roofing', rating: 4.9, text: 'They made a stressful situation much easier after our roof was damaged. Communication was excellent and the repairs look very solid.' },
+  { name: 'Kevin D.', city: 'birmingham', service: 'roofing', label: 'Gutter Repair', rating: 5, text: 'Quick, professional service. They corrected the drainage issue we were having and made sure everything was working properly before leaving.' },
+  { name: 'Olivia N.', city: 'bloomfield-hills', service: 'roofing', label: 'Premium Roofing', rating: 5, text: 'We were looking for high-quality roofing work that matched the style of our home. The finished result looks excellent and very well done.' },
+  { name: 'Christopher A.', city: 'royal-oak', service: 'roofing', label: 'Roof Inspection & Repair', rating: 5, text: 'They identified the source of a small leak that another company had missed. The repair was completed quickly and we haven\'t had an issue since.' },
+  { name: 'Lauren F.', city: 'metro-detroit', service: 'roofing', label: 'Residential Roof Replacement', rating: 5, text: 'Great experience from beginning to end. The team was responsive, professional, and delivered exactly what they promised.' }
 ];

@@ -59,7 +59,7 @@ The preview banner is off (`"preview": false` in `src/data/site.json`). Set it t
 
 - **`src/data/site.json`:** fill in the real phone (currently a 555 placeholder), street address, license number, years in business, Google rating and review count, financing partner, social links, GTM ID, and the confirmed budget ranges. While a field is empty, the site shows neutral wording instead (e.g. "Locally owned & operated", "Free written estimates", "Serving Oakland County & all of Metro Detroit"). Never enter estimated or made-up ratings, review counts or license numbers. An optional `"certifications": ["…"]` list appears on the About page.
 - **About page copy:** the company story and team role descriptions are drafts for the owner to confirm or replace.
-- **`src/data/reviews.js`:** all reviews are samples and show a "Sample" tag. Replace them with real reviews.
+- **`src/data/reviews.js`:** 16 customer reviews supplied by the owner, all roofing-related. Add waterproofing, basement and renovation reviews as they come in; a service page with no matching reviews hides its review section.
 - **Images:** photos live in `src/img/photos/` as `<slot>.webp`, plus an 800px `<slot>-800.webp` for phones (`cwebp -q 78 -resize 800 0 in.webp -o in-800.webp`). Slots are `home-hero`, `<service>-hero`, `team` and `p<N>-after` / `p<N>-before` from `src/data/projects.js`. A missing slot falls back to an illustrated SVG placeholder. The current images are AI-generated (see the manifest in the image-generation folder) and should be swapped for real Moda Building job photos before launch.
 - **`src/data/services.js`:** price ranges are planning ballparks for the owner to confirm.
 - **Privacy policy:** a template that needs attorney review.

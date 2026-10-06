@@ -66,7 +66,7 @@ const callBtn = (loc, cls = 'btn btn--ghost', label) =>
   `<a class="${cls}" href="${telHref(site.phone)}" data-loc="${loc}">${ICON.phone}<span>${label || 'Call ' + esc(site.phone)}</span></a>`;
 const quoteBtn = (loc, label = 'Get a Free Estimate', href = '#quote') => `<a class="btn btn--cta" href="${href}" data-cta="${loc}">${label}</a>`;
 
-function stars(n) { return '★★★★★'.slice(0, n) + '☆☆☆☆☆'.slice(0, 5 - n); }
+function stars(n) { const r = Math.round(n); return '★★★★★'.slice(0, r) + '☆☆☆☆☆'.slice(0, 5 - r); }
 
 /* ---------- Lead form ---------- */
 let formCount = 0;
@@ -251,7 +251,7 @@ function reviewCard(r) {
   const c = cityBy(r.city), s = svcBy(r.service);
   return `<figure class="review"><div class="stars" aria-label="${r.rating} out of 5 stars">${stars(r.rating)}</div>
   <blockquote><p>${esc(r.text)}</p></blockquote>
-  <figcaption><strong>${esc(r.name)}</strong>${r.sample ? '<span class="sample-tag">Sample</span>' : ''}<br>${esc(s.short)} · ${esc(c.name)}, MI</figcaption></figure>`;
+  <figcaption><strong>${esc(r.name)}</strong>${r.sample ? '<span class="sample-tag">Sample</span>' : ''}<br>${esc(r.label || s.short)} · ${esc(c.name)}, MI</figcaption></figure>`;
 }
 
 function reviewsCarousel(list, { title = 'What homeowners say', eyebrow = 'Reviews', stone = false, intro = '' } = {}) {
