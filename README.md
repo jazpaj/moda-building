@@ -65,7 +65,7 @@ The preview banner is off (`"preview": false` in `src/data/site.json`). Set it t
 
   Values in `[brackets]` show highlighted on the site until they're replaced.
 - **`src/data/reviews.js`:** all reviews are samples and show a "Sample" tag. Replace them with real reviews.
-- **`src/data/projects.js` + images:** the illustrated SVG placeholders stand in for the 20+ real before/after job photos. Add WebP photos to `src/img/` and update `projectCard` in `src/lib/ui.js` to use them.
+- **Images:** photos live in `src/img/photos/` as `<slot>.webp`, plus an 800px `<slot>-800.webp` for phones (`cwebp -q 78 -resize 800 0 in.webp -o in-800.webp`). Slots are `home-hero`, `<service>-hero`, `team` and `p<N>-after` / `p<N>-before` from `src/data/projects.js`. A missing slot falls back to an illustrated SVG placeholder. The current images are AI-generated (see the manifest in the image-generation folder) and should be swapped for real Moda Building job photos before launch.
 - **`src/data/services.js`:** price ranges are planning ballparks for the owner to confirm.
 - **Owner story and team photos** (About page) and **manufacturer certifications**.
 - **Privacy policy:** a template that needs attorney review.

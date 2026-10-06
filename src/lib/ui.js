@@ -35,8 +35,28 @@ const ICON = {
 
 const LOGO = `<span class="logo__mark" aria-hidden="true"><svg viewBox="0 0 40 40" width="40" height="40"><rect width="40" height="40" rx="9" fill="currentColor"/><path d="M8 22 20 11l12 11" fill="none" stroke="#fff" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M13 21v9h14v-9" fill="none" stroke="#fff" stroke-width="3.2" stroke-linejoin="round"/></svg></span><span class="logo__word">MODA<small>BUILDING</small></span>`;
 
-const img = (src, alt, { eager = false, cls = '', w = 1200, h = 800 } = {}) =>
-  `<img src="${src}" alt="${esc(alt)}" width="${w}" height="${h}"${cls ? ` class="${cls}"` : ''} ${eager ? 'fetchpriority="high" decoding="async"' : 'loading="lazy" decoding="async"'}>`;
+// Photos live in src/img/photos/<name>.webp (+ <name>-800.webp for phones). Missing photos fall back to SVG placeholders.
+const fs = require('fs');
+const path = require('path');
+const PHOTO_DIR = path.join(__dirname, '../img/photos');
+const hasPhoto = (name) => fs.existsSync(path.join(PHOTO_DIR, name + '.webp'));
+const pic = (name) => (hasPhoto(name) ? `/img/photos/${name}.webp` : `/img/ph/${name}.svg`);
+function webpWidth(file) {
+  const b = fs.readFileSync(file);
+  const fmt = b.toString('ascii', 12, 16);
+  if (fmt === 'VP8X') return 1 + b.readUIntLE(24, 3);
+  if (fmt === 'VP8 ') return b.readUInt16LE(26) & 0x3fff;
+  if (fmt === 'VP8L') return 1 + (b.readUInt32LE(21) & 0x3fff);
+  return 1200;
+}
+const SIZES = '(min-width: 1000px) 33vw, (min-width: 700px) 50vw, 100vw';
+function srcAttrs(src, sizes = SIZES) {
+  const m = src.match(/^\/img\/photos\/(.+)\.webp$/);
+  if (!m || !fs.existsSync(path.join(PHOTO_DIR, m[1] + '-800.webp'))) return `src="${src}"`;
+  return `src="${src}" srcset="/img/photos/${m[1]}-800.webp 800w, ${src} ${webpWidth(path.join(PHOTO_DIR, m[1] + '.webp'))}w" sizes="${sizes}"`;
+}
+const img = (src, alt, { eager = false, cls = '', w = 1200, h = 800, sizes } = {}) =>
+  `<img ${srcAttrs(src, sizes)} alt="${esc(alt)}" width="${w}" height="${h}"${cls ? ` class="${cls}"` : ''} ${eager ? 'fetchpriority="high" decoding="async"' : 'loading="lazy" decoding="async"'}>`;
 
 const callBtn = (loc, cls = 'btn btn--ghost', label) =>
   `<a class="${cls}" href="${telHref(site.phone)}" data-loc="${loc}">${ICON.phone}<span>${label || 'Call ' + esc(site.phone)}</span></a>`;
@@ -242,10 +262,10 @@ function reviewsCarousel(list, { title = 'What homeowners say', eyebrow = 'Googl
 
 function projectCard(p, { slider = true } = {}) {
   const s = svcBy(p.service), c = cityBy(p.city);
-  const after = `/img/ph/${p.id}-after.svg`, before = `/img/ph/${p.id}-before.svg`;
+  const after = pic(`${p.id}-after`), before = pic(`${p.id}-before`);
   const altBase = `${p.title} — ${s.short.toLowerCase()} project in ${c.name}, MI`;
   const media = p.before && slider
-    ? `<div class="ba"><img src="${after}" alt="After: ${esc(altBase)}" width="1200" height="800" loading="lazy" decoding="async"><img class="ba__before" src="${before}" alt="Before: ${esc(altBase)}" width="1200" height="800" loading="lazy" decoding="async"><span class="ba__line"></span><span class="ba__tag ba__tag--b">Before</span><span class="ba__tag ba__tag--a">After</span><input type="range" min="0" max="100" value="50" aria-label="Drag to compare before and after: ${esc(p.title)}"></div>`
+    ? `<div class="ba">${img(after, `After: ${altBase}`)}${img(before, `Before: ${altBase}`, { cls: 'ba__before' })}<span class="ba__line"></span><span class="ba__tag ba__tag--b">Before</span><span class="ba__tag ba__tag--a">After</span><input type="range" min="0" max="100" value="50" aria-label="Drag to compare before and after: ${esc(p.title)}"></div>`
     : `<div class="card__img">${img(after, altBase)}</div>`;
   return `<article class="proj" data-service="${p.service}" data-city="${p.city}">${media}<div class="proj__body"><p class="proj__meta">${esc(s.short)} · ${esc(c.name)}</p><h3>${esc(p.title)}</h3><p>${esc(p.scope)}</p></div></article>`;
 }
@@ -282,4 +302,4 @@ function financingCallout() {
 </div></div></section>`;
 }
 
-module.exports = { site, services, cities, coreCities, esc, val, isPh, telHref, svcBy, cityBy, svcUrl, cityUrl, ICON, LOGO, img, callBtn, quoteBtn, quoteForm, header, footer, mobileBar, trustStrip, crumbs, processSection, reviewCard, reviewsCarousel, projectCard, faqSection, ctaBand, areasSection, financingCallout, PROCESS };
+module.exports = { pic, hasPhoto, site, services, cities, coreCities, esc, val, isPh, telHref, svcBy, cityBy, svcUrl, cityUrl, ICON, LOGO, img, callBtn, quoteBtn, quoteForm, header, footer, mobileBar, trustStrip, crumbs, processSection, reviewCard, reviewsCarousel, projectCard, faqSection, ctaBand, areasSection, financingCallout, PROCESS };

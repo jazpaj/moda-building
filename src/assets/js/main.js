@@ -113,7 +113,7 @@
     }
     function mode() {
       form.classList.toggle('is-steps', mqSteps.matches);
-      show(mqSteps.matches ? idx : steps.length - 1);
+      show(mqSteps.matches ? 0 : steps.length - 1);
       if (!mqSteps.matches) form.classList.remove('on-first');
     }
     mode();

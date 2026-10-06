@@ -9,7 +9,7 @@ const ph = require('./src/lib/placeholders');
 const projects = require('./src/data/projects');
 const reviews = require('./src/data/reviews');
 const posts = require('./src/data/posts');
-const { site, services, cities, coreCities, esc, val, isPh, telHref, svcBy, cityBy, svcUrl, cityUrl, ICON, img, callBtn, quoteBtn, quoteForm, header, footer, mobileBar, trustStrip, crumbs, processSection, reviewCard, reviewsCarousel, projectCard, faqSection, ctaBand, areasSection, financingCallout } = ui;
+const { pic, hasPhoto, site, services, cities, coreCities, esc, val, isPh, telHref, svcBy, cityBy, svcUrl, cityUrl, ICON, img, callBtn, quoteBtn, quoteForm, header, footer, mobileBar, trustStrip, crumbs, processSection, reviewCard, reviewsCarousel, projectCard, faqSection, ctaBand, areasSection, financingCallout } = ui;
 
 const OUT = path.join(__dirname, 'site');
 // BASE_PATH (e.g. /moda-building) builds a preview for a subfolder host like GitHub Pages; previews are noindex.
@@ -41,15 +41,14 @@ const selfFonts = fs.existsSync(path.join(OUT, 'assets/fonts/manrope-latin.woff2
 
 /* ---------- Placeholder images ---------- */
 const svcSeed = { roofing: 3, 'basement-waterproofing': 5, 'finished-basements': 7, renovations: 11 };
-for (const s of services) {
-  write(`img/ph/${s.key}-hero.svg`, ph.make(s.key, svcSeed[s.key], false, `Placeholder — real ${s.short.toLowerCase()} project photo`));
-}
-write('img/ph/home-hero.svg', ph.make('roofing', 2, false, '')); // unlabeled: sits behind hero text
-write('img/ph/team.svg', ph.team());
+const placeholder = (name, svg) => { if (!hasPhoto(name)) write(`img/ph/${name}.svg`, svg()); };
+for (const s of services) placeholder(`${s.key}-hero`, () => ph.make(s.key, svcSeed[s.key], false, `Placeholder — real ${s.short.toLowerCase()} project photo`));
+placeholder('home-hero', () => ph.make('roofing', 2, false, ''));
+placeholder('team', () => ph.team());
 projects.forEach((p, i) => {
   const c = cityBy(p.city);
-  write(`img/ph/${p.id}-after.svg`, ph.make(p.service, i + 13, false, `Placeholder — after · ${c.name}`));
-  if (p.before) write(`img/ph/${p.id}-before.svg`, ph.make(p.service, i + 13, true, `Placeholder — before · ${c.name}`));
+  placeholder(`${p.id}-after`, () => ph.make(p.service, i + 13, false, `Placeholder — after · ${c.name}`));
+  if (p.before) placeholder(`${p.id}-before`, () => ph.make(p.service, i + 13, true, `Placeholder — before · ${c.name}`));
 });
 
 /* ---------- Schema ---------- */
@@ -63,7 +62,7 @@ function businessSchema() {
     url: SITE_URL + '/',
     telephone: '+1-' + site.phone.replace(/\D/g, '').replace(/(\d{3})(\d{3})(\d{4})/, '$1-$2-$3'),
     email: site.email,
-    image: `${SITE_URL}/img/ph/home-hero.svg`,
+    image: `${SITE_URL}${pic('home-hero')}`,
     logo: `${SITE_URL}/assets/logo.svg`,
     priceRange: '$$',
     areaServed: [...coreCities.map((c) => ({ '@type': 'City', name: `${c.name}, MI` })), { '@type': 'AdministrativeArea', name: 'Metro Detroit, MI' }],
@@ -82,7 +81,7 @@ const crumbSchema = (list) => ({ '@type': 'BreadcrumbList', itemListElement: lis
 const serviceSchema = (s, areas, name) => ({ '@type': 'Service', name: name || s.name, serviceType: s.name, provider: { '@id': BIZ_ID }, areaServed: areas.map((c) => (c.isRegion ? { '@type': 'AdministrativeArea', name: 'Metro Detroit, MI' } : { '@type': 'City', name: `${c.name}, MI` })) });
 
 /* ---------- Layout ---------- */
-function layout({ url, title, description, body, schema = [], noindex = false, minimal = false, current = '', bodyAttr = '', ogImage = '/img/ph/home-hero.svg', sitemap = true, priority = '0.6' }) {
+function layout({ url, title, description, body, schema = [], noindex = false, minimal = false, current = '', bodyAttr = '', ogImage = pic('home-hero'), sitemap = true, priority = '0.6' }) {
   if (title.length > 70) console.warn(`! Title > 70 chars (${title.length}): ${url}`);
   if (!noindex && sitemap) pages.push({ url, priority });
   const graph = [businessSchema(), { '@type': 'WebPage', '@id': SITE_URL + url, url: SITE_URL + url, name: title, description, isPartOf: { '@type': 'WebSite', '@id': SITE_URL + '/#website', name: site.name, url: SITE_URL + '/' } }, ...schema];
@@ -135,7 +134,7 @@ ${mobileBar()}
 `;
   // Pages without a quote form send "Get a Free Estimate" buttons to the contact page instead of #quote.
   let out = body.includes('id="quote"') ? html : html.replace(/href="#quote"/g, 'href="/contact/"');
-  if (BASE) out = out.replace(/(href|src|action)="\/(?!\/)/g, `$1="${BASE}/`).replace(/url\(\/assets/g, `url(${BASE}/assets`);
+  if (BASE) out = out.replace(/(href|src|action)="\/(?!\/)/g, `$1="${BASE}/`).replace(/srcset="([^"]+)"/g, (m, v) => `srcset="${v.replace(/(^|,\s*)\//g, `$1${BASE}/`)}"`).replace(/url\(\/assets/g, `url(${BASE}/assets`);
   write(url === '/404.html' ? '404.html' : path.join(url, 'index.html'), out);
 }
 
@@ -156,7 +155,7 @@ function pageHero({ eyebrow, h1, lead, bulletsList = [], service = '', city = ''
 /* ================= HOMEPAGE ================= */
 (function home() {
   const roof = services[0];
-  const svcCards = services.map((s, i) => `<a class="svc${i === 0 ? ' svc--main' : ''}" href="${svcUrl(s)}">${img(`/img/ph/${s.key}-hero.svg`, `${s.name} project by Moda Building in Oakland County`)}<div class="svc__body">${i === 0 ? '<span class="tag">Our main service</span>' : ''}<h3>${esc(s.name)}</h3><p>${esc(s.cardText)}</p><span class="go">${i === 0 ? 'Explore roofing' : 'Learn more'} →</span></div></a>`).join('');
+  const svcCards = services.map((s, i) => `<a class="svc${i === 0 ? ' svc--main' : ''}" href="${svcUrl(s)}">${img(pic(`${s.key}-hero`), `${s.name} project by Moda Building in Oakland County`, { sizes: '(min-width: 1080px) 40vw, (min-width: 760px) 33vw, 100vw' })}<div class="svc__body">${i === 0 ? '<span class="tag">Our main service</span>' : ''}<h3>${esc(s.name)}</h3><p>${esc(s.cardText)}</p><span class="go">${i === 0 ? 'Explore roofing' : 'Learn more'} →</span></div></a>`).join('');
   const why = [
     [ICON.clipboard, 'Photo-documented inspections', 'You see what we see. Every recommendation comes with photos, so you can decide with confidence.'],
     [ICON.ruler, 'Clear, line-item quotes', 'Materials, labor and options spelled out in writing. No vague allowances, no pressure to sign today.'],
@@ -173,7 +172,7 @@ function pageHero({ eyebrow, h1, lead, bulletsList = [], service = '', city = ''
     { q: 'Do you help with insurance claims?', a: 'For storm and hail damage, we document the damage with dated photos and meet your adjuster on-site so your claim reflects what is actually on your roof.' }
   ];
   const body = `
-<section class="hero hero--photo"><div class="hero__bg">${img('/img/ph/home-hero.svg', 'Newly replaced architectural shingle roof on an Oakland County home by Moda Building', { eager: true })}</div>
+<section class="hero hero--photo"><div class="hero__bg">${img(pic('home-hero'), 'Newly replaced architectural shingle roof on an upscale Metro Detroit home', { eager: true, sizes: '100vw' })}</div>
 <div class="wrap hero__grid">
   <div class="hero__copy"><span class="eyebrow">Roofing · Waterproofing · Basements · Renovations</span>
     <h1>Metro Detroit’s Trusted Roofing Contractor</h1>
@@ -225,7 +224,7 @@ ${trustStrip()}
 <section class="section"><div class="wrap split">
   <div><span class="eyebrow">${esc(s.name)}</span><h2>${s.key === 'roofing' ? 'Built for Michigan weather' : s.key === 'basement-waterproofing' ? 'Find the cause. Fix it for good.' : s.key === 'finished-basements' ? 'Space that feels like the main floor' : 'Modern design, respectful of your home'}</h2>${s.intro.map((p) => `<p>${esc(p)}</p>`).join('')}
     <ul class="toc" aria-label="On this page">${s.subservices.map((x) => `<li><a href="#${x.id}">${esc(x.title)}</a></li>`).join('')}</ul></div>
-  <div class="rounded">${img(`/img/ph/${s.key}-hero.svg`, `${s.name} by Moda Building in Oakland County, MI`)}</div>
+  <div class="rounded">${img(pic(`${s.key}-hero`), `${s.name} by Moda Building in Oakland County, MI`, { sizes: '(min-width: 960px) 50vw, 100vw' })}</div>
 </div></section>
 
 <section class="section section--stone"><div class="wrap">
@@ -265,7 +264,7 @@ ${reviewsCarousel(sReviews, { title: `${s.short} reviews`, stone: true })}
 ${processSection()}
 ${faqSection(s.faqs, { title: `${s.name} FAQ` })}
 ${ctaBand({ service: s.formValue, title: `Get a free ${s.short.toLowerCase()} estimate` })}`;
-  layout({ url: svcUrl(s), title: s.title, description: s.description, body, current: s.key, ogImage: `/img/ph/${s.key}-hero.svg`, priority: '0.9',
+  layout({ url: svcUrl(s), title: s.title, description: s.description, body, current: s.key, ogImage: pic(`${s.key}-hero`), priority: '0.9',
     schema: [serviceSchema(s, sCities), faqSchema(s.faqs), crumbSchema([['Home', '/'], [s.name, svcUrl(s)]])] });
 }
 
@@ -355,7 +354,7 @@ ${trustStrip()}
   <div><span class="eyebrow">Our story</span><h2>Why we started Moda Building</h2>
     <p><mark class="ph">Owner story — to be supplied by the owner: background, how the company started, what drives the work.</mark></p>
     <p>“Moda” points to modern design, and that is how we approach every project — clean details, durable materials and a process that respects your time and your home. Whether it is a new roof in Royal Oak or a lower-level theater in Bloomfield Hills, the standard does not change.</p></div>
-  <div class="rounded">${img('/img/ph/team.svg', 'Moda Building owner and team in Oakland County, MI')}</div>
+  <div class="rounded">${img(pic('team'), 'Moda Building owner and team at a residential jobsite in Metro Detroit', { sizes: '(min-width: 960px) 50vw, 100vw' })}</div>
 </div></section>
 <section class="section section--stone"><div class="wrap">
   <div class="section-head"><span class="eyebrow">Credentials</span><h2>Licensed, insured and accountable</h2></div>
@@ -369,7 +368,7 @@ ${trustStrip()}
 </div></section>
 <section class="section"><div class="wrap">
   <div class="section-head"><span class="eyebrow">Our team</span><h2>The people on your project</h2><p class="lead">You will meet the same project lead from estimate to final walkthrough.</p></div>
-  <div class="grid grid--3">${['Owner', 'Project manager', 'Lead roofer'].map((r) => `<div class="card"><div class="card__img">${img('/img/ph/team.svg', `${r}, Moda Building`)}</div><div class="card__body"><h3><mark class="ph">Name</mark></h3><p>${r}</p></div></div>`).join('')}</div>
+  <div class="grid grid--3">${['Owner', 'Project manager', 'Lead roofer'].map((r) => `<div class="card"><div class="card__body"><h3><mark class="ph">Name</mark></h3><p>${r}</p></div></div>`).join('')}</div>
 </div></section>
 ${processSection({ dark: true })}
 ${ctaBand()}` });
@@ -455,13 +454,13 @@ layout({ url: '/blog/', title: 'Roofing & Basement Advice for Michigan Homeowner
 ${crumbs([['Home', '/'], ['Blog', '/blog/']])}
 ${pageHero({ eyebrow: 'Blog', h1: 'Advice for Michigan homeowners', lead: 'Straight answers about roofs, basements and renovations in Metro Detroit.', location: 'blog', formTitle: 'Get a free estimate', ctas: false })}
 <section class="section"><div class="wrap">
-  <div class="grid grid--2">${posts.map((p) => `<article class="card"><div class="card__img">${img(`/img/ph/${p.service}-hero.svg`, p.title)}</div><div class="card__body"><p class="proj__meta"><time datetime="${p.date}">${new Date(p.date + 'T12:00:00').toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</time></p><h2 style="font-size:1.35rem"><a href="/blog/${p.slug}/" style="text-decoration:none">${esc(p.title)}</a></h2><p>${esc(p.excerpt)}</p><a class="link-arrow" href="/blog/${p.slug}/">Read article</a></div></article>`).join('')}</div>
+  <div class="grid grid--2">${posts.map((p) => `<article class="card"><div class="card__img">${img(pic(`${p.service}-hero`), p.title, { sizes: '(min-width: 700px) 50vw, 100vw' })}</div><div class="card__body"><p class="proj__meta"><time datetime="${p.date}">${new Date(p.date + 'T12:00:00').toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</time></p><h2 style="font-size:1.35rem"><a href="/blog/${p.slug}/" style="text-decoration:none">${esc(p.title)}</a></h2><p>${esc(p.excerpt)}</p><a class="link-arrow" href="/blog/${p.slug}/">Read article</a></div></article>`).join('')}</div>
 </div></section>
 ${ctaBand()}` });
 for (const p of posts) {
   const s = svcBy(p.service);
   const url = `/blog/${p.slug}/`;
-  layout({ url, title: `${p.title} | Moda Building`.length > 70 ? p.title : `${p.title} | Moda Building`, description: p.description, priority: '0.5', ogImage: `/img/ph/${p.service}-hero.svg`,
+  layout({ url, title: `${p.title} | Moda Building`.length > 70 ? p.title : `${p.title} | Moda Building`, description: p.description, priority: '0.5', ogImage: pic(`${p.service}-hero`),
     schema: [{ '@type': 'BlogPosting', headline: p.title, description: p.description, datePublished: p.date, author: { '@id': BIZ_ID }, publisher: { '@id': BIZ_ID }, mainEntityOfPage: SITE_URL + url }, crumbSchema([['Home', '/'], ['Blog', '/blog/'], [p.title, url]])],
     body: `
 ${crumbs([['Home', '/'], ['Blog', '/blog/'], [p.title, url]])}
@@ -483,7 +482,7 @@ for (const s of services) {
   const o = LP[s.key];
   const url = `/lp/${s.slug}/`;
   layout({ url, title: `${o.offer} | Moda Building`, description: o.sub, noindex: true, minimal: true, sitemap: false, body: `
-<section class="hero hero--photo"><div class="hero__bg">${img(`/img/ph/${s.key}-hero.svg`, `${s.name} project by Moda Building`, { eager: true })}</div>
+<section class="hero hero--photo"><div class="hero__bg">${img(pic(`${s.key}-hero`), `${s.name} project by Moda Building`, { eager: true, sizes: '100vw' })}</div>
 <div class="wrap hero__grid">
   <div class="hero__copy"><span class="eyebrow">${esc(s.name)} · Oakland County &amp; Metro Detroit</span><h1>${esc(o.offer)}</h1><p class="lead">${esc(o.sub)}</p>${bullets(o.bullets)}<div class="hero__ctas">${callBtn('lp-hero')}</div></div>
   ${quoteForm({ service: s.formValue, location: `lp-${s.key}`, title: 'Claim your free visit' })}
