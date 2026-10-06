@@ -1,0 +1,45 @@
+{
+  "preview": true,
+  "name": "Moda Building",
+  "url": "https://modabuilding.com",
+  "phone": "(248) 555-0142",
+  "trackingPhone": "",
+  "email": "estimates@modabuilding.com",
+  "address": {
+    "street": "[Street address]",
+    "city": "[City]",
+    "region": "MI",
+    "zip": "[ZIP]"
+  },
+  "hours": [
+    { "days": "Mon–Fri", "open": "7:30 AM", "close": "6:00 PM", "schema": "Mo-Fr 07:30-18:00" },
+    { "days": "Saturday", "open": "9:00 AM", "close": "2:00 PM", "schema": "Sa 09:00-14:00" },
+    { "days": "Sunday", "open": "Closed", "close": "", "schema": "" }
+  ],
+  "license": "[MI Residential Builder License #]",
+  "yearsInBusiness": "[XX]",
+  "googleRating": "[4.X]",
+  "googleReviewCount": "[XX]",
+  "googleBusinessProfileUrl": "",
+  "googleReviewsEmbed": "",
+  "warranty": "Workmanship + manufacturer warranties",
+  "financing": {
+    "offered": true,
+    "partner": "[Financing partner]",
+    "applyUrl": "",
+    "headline": "Low monthly payments on roofs, basements and renovations",
+    "terms": "[Financing terms, e.g. 0% APR for 12 months, subject to credit approval — owner to confirm]"
+  },
+  "social": {
+    "facebook": "",
+    "instagram": "",
+    "houzz": "",
+    "youtube": ""
+  },
+  "budgets": ["Under $10k", "$10k–$25k", "$25k–$50k", "$50k–$100k", "$100k+", "Not sure yet"],
+  "tracking": {
+    "gtmId": "",
+    "callRailScript": "",
+    "turnstileSiteKey": ""
+  }
+}
