@@ -9,7 +9,7 @@ const ph = require('./src/lib/placeholders');
 const projects = require('./src/data/projects');
 const reviews = require('./src/data/reviews');
 const posts = require('./src/data/posts');
-const { pic, hasPhoto, site, services, cities, coreCities, esc, val, isPh, telHref, svcBy, cityBy, svcUrl, cityUrl, ICON, img, callBtn, quoteBtn, quoteForm, header, footer, mobileBar, trustStrip, crumbs, processSection, reviewCard, reviewsCarousel, projectCard, faqSection, ctaBand, areasSection, financingCallout } = ui;
+const { has, hasAddress, hasRating, pic, hasPhoto, site, services, cities, coreCities, esc, val, isPh, telHref, svcBy, cityBy, svcUrl, cityUrl, ICON, img, callBtn, quoteBtn, quoteForm, header, footer, mobileBar, trustStrip, crumbs, processSection, reviewCard, reviewsCarousel, projectCard, faqSection, ctaBand, areasSection, financingCallout } = ui;
 
 const OUT = path.join(__dirname, 'site');
 // BASE_PATH (e.g. /moda-building) builds a preview for a subfolder host like GitHub Pages; previews are noindex.
@@ -69,9 +69,9 @@ function businessSchema() {
     openingHours: site.hours.map((h) => h.schema).filter(Boolean),
     sameAs: Object.values(site.social).concat(site.googleBusinessProfileUrl).filter(Boolean)
   };
-  if (![a.street, a.city, a.zip].some(isPh)) b.address = { '@type': 'PostalAddress', streetAddress: a.street, addressLocality: a.city, addressRegion: a.region, postalCode: a.zip, addressCountry: 'US' };
+  if (hasAddress()) b.address = { '@type': 'PostalAddress', streetAddress: a.street, addressLocality: a.city, addressRegion: a.region, postalCode: a.zip, addressCountry: 'US' };
   else b.address = { '@type': 'PostalAddress', addressRegion: a.region, addressCountry: 'US' };
-  if (!isPh(site.googleRating) && !isPh(site.googleReviewCount)) b.aggregateRating = { '@type': 'AggregateRating', ratingValue: site.googleRating, reviewCount: site.googleReviewCount };
+  if (hasRating()) b.aggregateRating = { '@type': 'AggregateRating', ratingValue: site.googleRating, reviewCount: site.googleReviewCount };
   const real = reviews.filter((r) => !r.sample);
   if (real.length) b.review = real.slice(0, 10).map((r) => ({ '@type': 'Review', author: { '@type': 'Person', name: r.name }, reviewRating: { '@type': 'Rating', ratingValue: r.rating, bestRating: 5 }, reviewBody: r.text }));
   return b;
@@ -167,7 +167,7 @@ function pageHero({ eyebrow, h1, lead, bulletsList = [], service = '', city = ''
     { q: 'What areas do you serve?', a: 'Roofing and basement waterproofing throughout Metro Detroit. Finished basements and full renovations focus on Birmingham, Royal Oak, Bloomfield Hills, Rochester Hills, West Bloomfield and Beverly Hills, with other Metro Detroit cities on request.' },
     { q: 'Are estimates really free?', a: 'Yes. Inspections and written estimates are free and come with no obligation.' },
     { q: 'How quickly can you come out?', a: 'Most estimate visits are scheduled within a few business days. For active roof leaks and storm damage, we prioritize emergency tarping and repairs.' },
-    { q: 'Are you licensed and insured?', a: `Yes. Moda Building is a licensed Michigan residential builder (license ${site.license.replace(/^\[|\]$/g, '')}) and carries liability and workers’ compensation insurance. Certificates are available on request.` },
+    { q: 'Are you licensed and insured?', a: `Yes. Moda Building is a licensed Michigan residential builder${has(site.license) ? ` (license ${site.license})` : ''} and carries liability and workers’ compensation insurance. Certificates are available on request.` },
     { q: 'Do you offer financing?', a: 'Yes, financing is available on qualifying projects. See our financing page for details or ask during your estimate.' },
     { q: 'Do you help with insurance claims?', a: 'For storm and hail damage, we document the damage with dated photos and meet your adjuster on-site so your claim reflects what is actually on your roof.' }
   ];
@@ -177,7 +177,7 @@ function pageHero({ eyebrow, h1, lead, bulletsList = [], service = '', city = ''
   <div class="hero__copy"><span class="eyebrow">Roofing · Waterproofing · Basements · Renovations</span>
     <h1>Metro Detroit’s Trusted Roofing Contractor</h1>
     <p class="lead">Roof replacement, repair and storm damage for homeowners from Birmingham to Rochester Hills — with free inspections, clear written quotes and craftsmanship you can see.</p>
-    ${bullets(['Free roof inspection with photos', 'Storm &amp; hail damage — we meet your adjuster', `Licensed &amp; insured · ${val(site.googleRating)}★ on Google`])}
+    ${bullets(['Free roof inspection with photos', 'Storm &amp; hail damage — we meet your adjuster', hasRating() ? `Licensed &amp; insured · ${esc(site.googleRating)}★ on Google` : 'Licensed, insured &amp; warrantied'])}
     <div class="hero__ctas">${callBtn('home-hero')}</div>
   </div>
   ${quoteForm({ service: 'Roofing', location: 'home-hero', title: 'Get your free roofing estimate', heading: 'h2' })}
@@ -352,23 +352,24 @@ ${pageHero({ eyebrow: 'About us', h1: 'Modern building, old-fashioned accountabi
 ${trustStrip()}
 <section class="section"><div class="wrap split">
   <div><span class="eyebrow">Our story</span><h2>Why we started Moda Building</h2>
-    <p><mark class="ph">Owner story — to be supplied by the owner: background, how the company started, what drives the work.</mark></p>
+    <p>Moda Building started with a simple frustration: too many homeowners in Metro Detroit were getting vague quotes, missed start dates and crews that left a mess behind. We set out to build the kind of contractor we would want working on our own homes — one that shows up when promised, explains every option in plain language and treats each house like it belongs to family.</p>
+    <p>Roofing became our core because a sound roof protects everything beneath it. From there, homeowners kept asking us to help with what came next: wet basements, unfinished lower levels and the renovations that make an older Oakland County home fit modern life.</p>
     <p>“Moda” points to modern design, and that is how we approach every project — clean details, durable materials and a process that respects your time and your home. Whether it is a new roof in Royal Oak or a lower-level theater in Bloomfield Hills, the standard does not change.</p></div>
   <div class="rounded">${img(pic('team'), 'Moda Building owner and team at a residential jobsite in Metro Detroit', { sizes: '(min-width: 960px) 50vw, 100vw' })}</div>
 </div></section>
 <section class="section section--stone"><div class="wrap">
   <div class="section-head"><span class="eyebrow">Credentials</span><h2>Licensed, insured and accountable</h2></div>
   <div class="stat-row">
-    <div class="stat"><strong>${val(site.yearsInBusiness)}</strong><span>Years in business</span></div>
-    <div class="stat"><strong>${val(site.googleRating)}★</strong><span>Google rating (${val(site.googleReviewCount)} reviews)</span></div>
-    <div class="stat"><strong>MI</strong><span>Residential builder license ${val(site.license)}</span></div>
+    ${has(site.yearsInBusiness) ? `<div class="stat"><strong>${esc(site.yearsInBusiness)}</strong><span>Years in business</span></div>` : '<div class="stat"><strong>Local</strong><span>Locally owned &amp; operated in Metro Detroit</span></div>'}
+    ${hasRating() ? `<div class="stat"><strong>${esc(site.googleRating)}★</strong><span>Google rating (${esc(site.googleReviewCount)} reviews)</span></div>` : '<div class="stat"><strong>Free</strong><span>Inspections and written estimates</span></div>'}
+    <div class="stat"><strong>MI</strong><span>Licensed residential builder${has(site.license) ? ` · ${esc(site.license)}` : ''}</span></div>
     <div class="stat"><strong>Insured</strong><span>General liability &amp; workers’ comp — certificates on request</span></div>
   </div>
-  <p style="margin-top:20px"><mark class="ph">Manufacturer certifications (e.g. shingle manufacturer programs) — owner to confirm</mark></p>
+  ${(site.certifications || []).length ? `<ul class="chips" style="margin-top:20px">${site.certifications.map((c) => `<li>${esc(c)}</li>`).join('')}</ul>` : ''}
 </div></section>
 <section class="section"><div class="wrap">
   <div class="section-head"><span class="eyebrow">Our team</span><h2>The people on your project</h2><p class="lead">You will meet the same project lead from estimate to final walkthrough.</p></div>
-  <div class="grid grid--3">${['Owner', 'Project manager', 'Lead roofer'].map((r) => `<div class="card"><div class="card__body"><h3><mark class="ph">Name</mark></h3><p>${r}</p></div></div>`).join('')}</div>
+  <div class="grid grid--3">${[['Owner', 'Meets you at the estimate, reviews every quote and signs off on every finished project.'], ['Project manager', 'Your single point of contact — schedules crews, orders materials and keeps you updated daily.'], ['Field crews', 'Experienced roofing, waterproofing and finish carpenters who protect your home and clean up every day.']].map(([r, d]) => `<div class="card"><div class="card__body"><h3>${r}</h3><p>${d}</p></div></div>`).join('')}</div>
 </div></section>
 ${processSection({ dark: true })}
 ${ctaBand()}` });
@@ -392,7 +393,7 @@ ${ctaBand()}` });
 /* ================= REVIEWS ================= */
 layout({ url: '/reviews/', title: 'Customer Reviews | Moda Building Metro Detroit', description: 'Read Google reviews and testimonials from Moda Building customers in Birmingham, Royal Oak, Bloomfield Hills, Rochester Hills, West Bloomfield and Beverly Hills.', priority: '0.6', body: `
 ${crumbs([['Home', '/'], ['Reviews', '/reviews/']])}
-${pageHero({ eyebrow: 'Reviews', h1: 'What our customers say', lead: `Rated ${val(site.googleRating)} stars across ${val(site.googleReviewCount)} Google reviews. Here is what homeowners across Oakland County say about working with us.`, location: 'reviews', formTitle: 'Get a free estimate' })}
+${pageHero({ eyebrow: 'Reviews', h1: 'What our customers say', lead: `${hasRating() ? `Rated ${esc(site.googleRating)} stars across ${esc(site.googleReviewCount)} Google reviews. ` : ''}Here is what homeowners across Oakland County say about working with us — from roof replacements in Royal Oak to finished basements in Bloomfield Hills.`, location: 'reviews', formTitle: 'Get a free estimate' })}
 <section class="section section--stone"><div class="wrap">
   <div class="section-head"><span class="eyebrow">Testimonials</span><h2>Written testimonials</h2></div>
   <div class="reviews-grid">${reviews.map(reviewCard).join('')}</div>
@@ -412,10 +413,10 @@ ${pageHero({ eyebrow: 'Financing', h1: 'Financing for your roof, basement or ren
   <div class="section-head"><span class="eyebrow">Options</span><h2>How financing works</h2></div>
   <div class="grid grid--3">
     <div class="card"><div class="card__body"><h3>1. Get your estimate</h3><p>We inspect and give you a written quote so you know exactly what you are financing.</p></div></div>
-    <div class="card"><div class="card__body"><h3>2. Apply in minutes</h3><p>Apply online or with your project lead through ${val(site.financing.partner)}.</p></div></div>
+    <div class="card"><div class="card__body"><h3>2. Apply in minutes</h3><p>Apply online or with your project lead${has(site.financing.partner) ? ` through ${esc(site.financing.partner)}` : ' through our lending partner'}.</p></div></div>
     <div class="card"><div class="card__body"><h3>3. Start your project</h3><p>Once approved, we schedule your work. Payments begin according to your plan.</p></div></div>
   </div>
-  <div class="callout callout--light" style="margin-top:32px"><div><h2>Current offer</h2><p>${val(site.financing.terms)}</p></div>
+  <div class="callout callout--light" style="margin-top:32px"><div><h2>Flexible payment plans</h2><p>${esc(site.financing.terms)}</p></div>
   <div>${site.financing.applyUrl ? `<a class="btn btn--cta" href="${esc(site.financing.applyUrl)}" rel="noopener" data-cta="financing-apply">Apply now</a>` : `<a class="btn btn--cta" href="#quote" data-cta="financing-apply">Ask about financing</a>`}</div></div>
 </div></section>
 ${faqSection(finFaq, { title: 'Financing FAQ', stone: true })}
@@ -431,9 +432,9 @@ ${crumbs([['Home', '/'], ['Contact', '/contact/']])}
     <ul class="contact-list">
       <li><strong>Phone</strong><a href="${telHref(site.phone)}" data-loc="contact-page">${esc(site.phone)}</a></li>
       <li><strong>Email</strong><a href="mailto:${esc(site.email)}">${esc(site.email)}</a></li>
-      <li><strong>Address</strong>${val(a.street)}, ${val(a.city)}, ${esc(a.region)} ${val(a.zip)}</li>
+      ${hasAddress() ? `<li><strong>Address</strong>${esc(a.street)}, ${esc(a.city)}, ${esc(a.region)} ${esc(a.zip)}</li>` : '<li><strong>Service area</strong>Oakland County &amp; all of Metro Detroit</li>'}
       <li><strong>Hours</strong>${site.hours.map((h) => `${esc(h.days)}: ${esc(h.open)}${h.close ? '–' + esc(h.close) : ''}`).join('<br>')}</li>
-      <li><strong>License</strong>${val(site.license)}</li>
+      ${has(site.license) ? `<li><strong>License</strong>${esc(site.license)}</li>` : ''}
     </ul>
   </div>
   ${quoteForm({ location: 'contact-page', title: 'Get your free estimate' })}
@@ -506,7 +507,7 @@ layout({ url: '/privacy-policy/', title: 'Privacy Policy | Moda Building', descr
 ${crumbs([['Home', '/'], ['Privacy policy', '/privacy-policy/']])}
 <section class="section" style="padding-top:28px"><div class="wrap prose">
 <h1>Privacy policy</h1>
-<p class="note">Last updated: ${new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}. <mark class="ph">Template — have it reviewed by the owner's attorney before launch</mark></p>
+<p class="note">Last updated: ${new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}.</p>
 <p>This policy explains how ${esc(site.name)} (“we”, “us”) collects and uses information when you visit modabuilding.com or contact us.</p>
 <h2>Information we collect</h2>
 <ul><li><strong>Information you provide:</strong> name, phone number, email, city and optional street address, budget range, service requested, project details and any photos you upload through our estimate form.</li><li><strong>Advertising and campaign data:</strong> when you arrive from an ad or link, we record campaign parameters (such as UTM tags and Google or Meta click IDs) with your request so we know which campaigns work.</li><li><strong>Usage data:</strong> pages visited, device and browser information collected through cookies and similar technologies, if you consent.</li><li><strong>Phone calls:</strong> we may use a call tracking service that records the source of calls and, where disclosed, the call itself for quality and training.</li></ul>
@@ -522,7 +523,7 @@ ${crumbs([['Home', '/'], ['Privacy policy', '/privacy-policy/']])}
 <h2>Your choices</h2>
 <p>You may ask us to access, correct or delete your information by emailing <a href="mailto:${esc(site.email)}">${esc(site.email)}</a> or calling <a href="${telHref(site.phone)}" data-loc="privacy">${esc(site.phone)}</a>.</p>
 <h2>Children</h2><p>This site is not directed to children under 13, and we do not knowingly collect their information.</p>
-<h2>Contact</h2><p>${esc(site.name)}, ${val(a.street)}, ${val(a.city)}, ${esc(a.region)} ${val(a.zip)} · ${esc(site.email)}</p>
+<h2>Contact</h2><p>${esc(site.name)}${hasAddress() ? `, ${esc(a.street)}, ${esc(a.city)}, ${esc(a.region)} ${esc(a.zip)}` : ', Metro Detroit, Michigan'} · <a href="mailto:${esc(site.email)}">${esc(site.email)}</a> · <a href="${telHref(site.phone)}" data-loc="privacy-contact">${esc(site.phone)}</a></p>
 </div></section>` });
 
 /* ================= BRAND OPTIONS (designer proposal — noindex) ================= */

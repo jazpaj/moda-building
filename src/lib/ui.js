@@ -7,6 +7,10 @@ const esc = (s = '') => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').r
 const isPh = (v) => typeof v === 'string' && v.trim().startsWith('[');
 // Render a value; owner-supplied placeholders (in [brackets]) render as a visible highlight.
 const val = (v) => (isPh(v) ? `<mark class="ph">${esc(v.replace(/^\[|\]$/g, ''))}</mark>` : esc(v));
+// has(): a real, owner-confirmed value is present (empty or [bracketed] = unknown → show neutral copy instead).
+const has = (v) => (typeof v === 'string' ? v.trim() !== '' && !isPh(v) : !!v);
+const hasAddress = () => has(site.address.street) && has(site.address.city) && has(site.address.zip);
+const hasRating = () => has(site.googleRating) && has(site.googleReviewCount);
 const telHref = (p) => 'tel:+1' + p.replace(/\D/g, '').slice(-10);
 const svcBy = (k) => services.find((s) => s.key === k);
 const cityBy = (k) => cities.find((c) => c.key === k);
@@ -192,9 +196,9 @@ function mobileBar() {
 
 function trustStrip() {
   const items = [
-    [ICON.shield, 'Licensed &amp; insured', `Lic. ${val(site.license)}`],
-    [ICON.calendar, `${val(site.yearsInBusiness)} years in business`, 'Locally owned'],
-    [ICON.star, `${val(site.googleRating)}★ Google rating`, `${val(site.googleReviewCount)} reviews`],
+    [ICON.shield, 'Licensed &amp; insured', has(site.license) ? `Lic. ${esc(site.license)}` : 'Michigan residential builder'],
+    has(site.yearsInBusiness) ? [ICON.calendar, `${esc(site.yearsInBusiness)} years in business`, 'Locally owned'] : [ICON.calendar, 'Locally owned &amp; operated', 'Serving all of Metro Detroit'],
+    hasRating() ? [ICON.star, `${esc(site.googleRating)}★ Google rating`, `${esc(site.googleReviewCount)} reviews`] : [ICON.clipboard, 'Free written estimates', 'No pressure, no surprises'],
     [ICON.award, 'Warranties', esc(site.warranty)],
     [ICON.dollar, 'Financing available', 'On qualifying projects']
   ];
@@ -206,15 +210,15 @@ function footer({ minimal = false } = {}) {
   const year = new Date().getFullYear();
   const hours = site.hours.map((h) => `<li>${esc(h.days)}: ${esc(h.open)}${h.close ? '–' + esc(h.close) : ''}</li>`).join('');
   const social = Object.entries(site.social).map(([k, u]) => (u ? `<a href="${esc(u)}" rel="noopener" aria-label="${k}">${ICON[k]}</a>` : '')).join('');
-  const nap = `<address><strong style="color:#fff">${esc(site.name)}</strong><br>${val(addr.street)}<br>${val(addr.city)}, ${esc(addr.region)} ${val(addr.zip)}<br><a href="${telHref(site.phone)}" data-loc="footer">${esc(site.phone)}</a><br><a href="mailto:${esc(site.email)}">${esc(site.email)}</a></address>`;
+  const nap = `<address><strong style="color:#fff">${esc(site.name)}</strong><br>${hasAddress() ? `${esc(addr.street)}<br>${esc(addr.city)}, ${esc(addr.region)} ${esc(addr.zip)}` : 'Serving Oakland County &amp;<br>all of Metro Detroit, MI'}<br><a href="${telHref(site.phone)}" data-loc="footer">${esc(site.phone)}</a><br><a href="mailto:${esc(site.email)}">${esc(site.email)}</a></address>`;
   const cookieUi = `<div class="cookie" id="cookie" role="dialog" aria-live="polite" aria-label="Cookie notice"><p>We use cookies to measure our ads and improve this site. You can accept or decline non-essential cookies. <a href="/privacy-policy/#cookies">Read our cookie policy</a></p><div class="btns"><button class="btn btn--ghost" type="button" data-consent="decline">Decline</button><button class="btn btn--ghost" type="button" data-consent="accept" style="background:var(--ink);color:#fff">Accept</button></div></div>`;
   if (minimal) {
-    return `<footer class="footer"><div class="wrap">${nap}<div class="footer__bottom"><span>© ${year} ${esc(site.name)} · License ${val(site.license)}</span><span><a href="/privacy-policy/">Privacy policy</a> · <a href="#" data-cookie-settings>Cookie settings</a></span></div></div></footer>${cookieUi}`;
+    return `<footer class="footer"><div class="wrap">${nap}<div class="footer__bottom"><span>© ${year} ${esc(site.name)}${has(site.license) ? ` · License ${esc(site.license)}` : ' · Licensed &amp; insured in Michigan'}</span><span><a href="/privacy-policy/">Privacy policy</a> · <a href="#" data-cookie-settings>Cookie settings</a></span></div></div></footer>${cookieUi}`;
   }
   return `<footer class="footer"><div class="wrap">
   <div class="footer__grid">
     <div><a class="logo" href="/" aria-label="Moda Building home">${LOGO}</a>${nap}
-      <p style="margin-top:12px">License ${val(site.license)}<br>Licensed &amp; insured in Michigan</p>
+      <p style="margin-top:12px">${has(site.license) ? `License ${esc(site.license)}<br>` : ''}Licensed &amp; insured in Michigan</p>
       ${social ? `<div class="footer__social">${social}</div>` : ''}</div>
     <div><h2>Services</h2><ul>${services.map((s) => `<li><a href="${svcUrl(s)}">${esc(s.name)}</a></li>`).join('')}<li><a href="/financing/">Financing</a></li><li><a href="/gallery/">Project gallery</a></li></ul>
       <h2 style="margin-top:28px">Hours</h2><ul>${hours}</ul></div>
@@ -250,11 +254,11 @@ function reviewCard(r) {
   <figcaption><strong>${esc(r.name)}</strong>${r.sample ? '<span class="sample-tag">Sample</span>' : ''}<br>${esc(s.short)} · ${esc(c.name)}, MI</figcaption></figure>`;
 }
 
-function reviewsCarousel(list, { title = 'What homeowners say', eyebrow = 'Google reviews', stone = false, intro = '' } = {}) {
+function reviewsCarousel(list, { title = 'What homeowners say', eyebrow = 'Reviews', stone = false, intro = '' } = {}) {
   if (!list.length) return '';
   return `<section class="section${stone ? ' section--stone' : ''}"><div class="wrap" data-carousel>
   <div class="section-head"><span class="eyebrow">${esc(eyebrow)}</span><h2>${esc(title)}</h2>
-  <div class="rating-summary"><span class="big">${val(site.googleRating)}</span><span><span class="stars" style="color:#b7791f">★★★★★</span><br>${val(site.googleReviewCount)} Google reviews</span><a class="link-arrow" href="/reviews/">Read all reviews</a></div>${intro ? `<p class="lead" style="margin-top:12px">${intro}</p>` : ''}</div>
+  <div class="rating-summary">${hasRating() ? `<span class="big">${esc(site.googleRating)}</span><span><span class="stars" style="color:#b7791f">★★★★★</span><br>${esc(site.googleReviewCount)} Google reviews</span>` : ''}<a class="link-arrow" href="/reviews/">Read all reviews</a></div>${intro ? `<p class="lead" style="margin-top:12px">${intro}</p>` : ''}</div>
   <div class="reviews" tabindex="0" aria-label="Customer reviews">${list.map(reviewCard).join('')}</div>
   <div class="carousel-nav"><button class="icon-btn" type="button" data-dir="-1" aria-label="Previous reviews">←</button><button class="icon-btn" type="button" data-dir="1" aria-label="Next reviews">→</button></div>
 </div></section>`;
@@ -297,9 +301,9 @@ function areasSection({ dark = false, title = 'Areas we serve', intro = '' } = {
 
 function financingCallout() {
   return `<section class="section"><div class="wrap"><div class="callout">
-  <div><span class="eyebrow">Financing</span><h2>${esc(site.financing.headline)}</h2><p>Spread the cost of a new roof, a dry basement or a full renovation into manageable monthly payments. ${val(site.financing.terms)}</p></div>
+  <div><span class="eyebrow">Financing</span><h2>${esc(site.financing.headline)}</h2><p>Spread the cost of a new roof, a dry basement or a full renovation into manageable monthly payments. ${esc(site.financing.terms)}</p></div>
   <div style="display:flex;gap:12px;flex-wrap:wrap"><a class="btn btn--cta" href="/financing/" data-cta="financing-callout">See financing options</a></div>
 </div></div></section>`;
 }
 
-module.exports = { pic, hasPhoto, site, services, cities, coreCities, esc, val, isPh, telHref, svcBy, cityBy, svcUrl, cityUrl, ICON, LOGO, img, callBtn, quoteBtn, quoteForm, header, footer, mobileBar, trustStrip, crumbs, processSection, reviewCard, reviewsCarousel, projectCard, faqSection, ctaBand, areasSection, financingCallout, PROCESS };
+module.exports = { has, hasAddress, hasRating, pic, hasPhoto, site, services, cities, coreCities, esc, val, isPh, telHref, svcBy, cityBy, svcUrl, cityUrl, ICON, LOGO, img, callBtn, quoteBtn, quoteForm, header, footer, mobileBar, trustStrip, crumbs, processSection, reviewCard, reviewsCarousel, projectCard, faqSection, ctaBand, areasSection, financingCallout, PROCESS };
