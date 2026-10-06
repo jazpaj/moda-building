@@ -61,7 +61,7 @@ The preview banner is off (`"preview": false` in `src/data/site.json`). Set it t
   - Phone (currently a 555 placeholder), address, license number, years in business, Google rating and review count
   - Financing partner and terms, social links
   - Confirmed budget ranges
-  - GTM ID and Google reviews embed
+  - GTM ID
 
   Values in `[brackets]` show highlighted on the site until they're replaced.
 - **`src/data/reviews.js`:** all reviews are samples and show a "Sample" tag. Replace them with real reviews.

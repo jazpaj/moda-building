@@ -393,11 +393,6 @@ ${ctaBand()}` });
 layout({ url: '/reviews/', title: 'Customer Reviews | Moda Building Metro Detroit', description: 'Read Google reviews and testimonials from Moda Building customers in Birmingham, Royal Oak, Bloomfield Hills, Rochester Hills, West Bloomfield and Beverly Hills.', priority: '0.6', body: `
 ${crumbs([['Home', '/'], ['Reviews', '/reviews/']])}
 ${pageHero({ eyebrow: 'Reviews', h1: 'What our customers say', lead: `Rated ${val(site.googleRating)} stars across ${val(site.googleReviewCount)} Google reviews. Here is what homeowners across Oakland County say about working with us.`, location: 'reviews', formTitle: 'Get a free estimate' })}
-<section class="section"><div class="wrap">
-  <div class="section-head"><span class="eyebrow">Google reviews</span><h2>Live from Google</h2></div>
-  ${site.googleReviewsEmbed || `<div class="material" style="text-align:center;padding:40px"><p><mark class="ph">Google reviews widget — paste the embed code into site.json → googleReviewsEmbed</mark></p></div>`}
-  ${site.googleBusinessProfileUrl ? `<p style="margin-top:16px"><a class="btn btn--ghost" href="${esc(site.googleBusinessProfileUrl)}" rel="noopener">See us on Google</a></p>` : ''}
-</div></section>
 <section class="section section--stone"><div class="wrap">
   <div class="section-head"><span class="eyebrow">Testimonials</span><h2>Written testimonials</h2></div>
   <div class="reviews-grid">${reviews.map(reviewCard).join('')}</div>
