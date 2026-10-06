@@ -102,10 +102,10 @@ function quoteForm({ service = '', city = '', location = 'page', title = 'Get yo
       <legend class="sr-only">Location and budget</legend>
       <div class="row2">
         <div class="field"><label for="${f('city')}">City</label>
-          <select id="${f('city')}" name="city" required aria-describedby="${f('city')}-e"><option value="">Choose your city</option>${cityOpts}</select>
+          <select id="${f('city')}" name="city" required aria-describedby="${f('city')}-e"><option value="">Select city</option>${cityOpts}</select>
           <p class="err" id="${f('city')}-e">Please choose your city.</p></div>
         <div class="field"><label for="${f('budget')}">Budget</label>
-          <select id="${f('budget')}" name="budget" required aria-describedby="${f('budget')}-e"><option value="">Choose a range</option>${budgetOpts}</select>
+          <select id="${f('budget')}" name="budget" required aria-describedby="${f('budget')}-e"><option value="">Select range</option>${budgetOpts}</select>
           <p class="err" id="${f('budget')}-e">Please choose a budget range.</p></div>
       </div>
       <div class="field other-city"><label for="${f('city_other')}">Your city or ZIP code</label>

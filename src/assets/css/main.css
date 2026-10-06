@@ -209,7 +209,7 @@ ul { padding-left: 1.2em; }
 .qf.is-steps:not(.on-first) .qf-back { display: inline-flex; }
 .qf.is-steps.on-first .qf-back { display: none; }
 .qf-card { container-type: inline-size; }
-@container (min-width: 480px) { .qf .row2 { grid-template-columns: 1fr 1fr; } }
+@container (min-width: 330px) { .qf .row2 { grid-template-columns: 1fr 1fr; } }
 @media (min-width: 960px) { .qf-card { padding: 30px 28px; } }
 
 /* Cards / grids */
@@ -447,3 +447,17 @@ ul { padding-left: 1.2em; }
 .qf-more summary { cursor: pointer; font-weight: 700; font-size: .92rem; color: var(--ink); padding: 6px 0; }
 .qf-more summary .opt { font-weight: 500; color: var(--muted); }
 .qf-more[open] summary { margin-bottom: 10px; }
+
+/* Hero left-column content beside the form (desktop only — on phones the form stays near the top) */
+.hero__extra { margin-top: 28px; }
+.hero__extra .hero__media { margin-top: 0; }
+.hero__extra .proj { box-shadow: var(--shadow); }
+.hero__reviews { display: grid; gap: 14px; }
+.hero__reviews .review { box-shadow: var(--shadow); }
+.hero__post .hero__media { border-radius: 0; }
+.hero__post:hover h2 { text-decoration: underline; }
+@media (max-width: 959px) { .hero__copy .hero__extra { display: none; } }
+@media (min-width: 560px) { .contact-list { grid-template-columns: 1fr 1fr; gap: 16px 24px; } }
+.map--wide { aspect-ratio: 16 / 7; min-height: 320px; }
+.next-steps { margin: 0; padding-left: 1.3em; display: grid; gap: 8px; }
+.next-steps strong { color: var(--ink); }
