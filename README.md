@@ -55,7 +55,7 @@ On localhost the form skips the POST and goes straight to `/thank-you/` so the f
 
 ## Placeholder content: replace before launch
 
-`"preview": true` in `src/data/site.json` shows a yellow banner. Set it to `false` once real content is in.
+The preview banner is off (`"preview": false` in `src/data/site.json`). Set it to `true` to show a yellow "awaiting real content" banner on every page.
 
 - **`src/data/site.json`** — fields to fill in:
   - Phone (currently a 555 placeholder), address, license number, years in business, Google rating and review count
