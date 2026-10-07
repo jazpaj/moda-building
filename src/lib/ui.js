@@ -279,7 +279,7 @@ function projectCard(p, { slider = true } = {}) {
   const after = pic(`${p.id}-after`), before = pic(`${p.id}-before`);
   const altBase = `${p.title} — ${s.short.toLowerCase()} project in ${c.name}, MI`;
   const media = p.before && slider
-    ? `<div class="ba">${img(after, `After: ${altBase}`).replace('<img ', '<img draggable="false" ')}${img(before, `Before: ${altBase}`, { cls: 'ba__before' }).replace('<img ', '<img draggable="false" ')}<span class="ba__line"></span><span class="ba__tag ba__tag--b">Before</span><span class="ba__tag ba__tag--a">After</span><input type="range" min="0" max="100" value="50" aria-label="Drag to compare before and after: ${esc(p.title)}"></div>`
+    ? `<div class="ba">${img(after, `After: ${altBase}`).replace('<img ', '<img draggable="false" ')}${img(before, `Before: ${altBase}`, { cls: 'ba__before' }).replace('<img ', '<img draggable="false" ')}<span class="ba__line"></span><span class="ba__tag ba__tag--b">Before</span><span class="ba__tag ba__tag--a">After</span><input type="range" min="0" max="100" value="50" autocomplete="off" aria-label="Drag to compare before and after: ${esc(p.title)}"></div>`
     : `<div class="card__img">${img(after, altBase)}</div>`;
   return `<article class="proj" data-service="${p.service}" data-city="${p.city}">${media}<div class="proj__body"><p class="proj__meta">${esc(s.short)} · ${esc(c.name)}</p><h3>${esc(p.title)}</h3><p>${esc(p.scope)}</p></div></article>`;
 }

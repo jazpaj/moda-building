@@ -233,7 +233,7 @@
       drag = null;
     }
     ['pointerup', 'pointercancel'].forEach(function (t) { ba.addEventListener(t, end); });
-    setPct(Number(r.value));
+    setPct(50); // always start centred (browsers may restore an old range value on reload/back)
   });
 
   /* ---------- Reviews carousel ---------- */
