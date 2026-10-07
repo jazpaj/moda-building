@@ -72,7 +72,6 @@ ul { padding-left: 1.2em; }
 .header { position: sticky; top: 0; z-index: 50; background: rgba(255,255,255,.97); backdrop-filter: saturate(1.4) blur(8px); border-bottom: 1px solid var(--line); }
 .header__in { display: flex; align-items: center; gap: 16px; height: var(--header-h); }
 .logo { display: flex; align-items: center; text-decoration: none; color: var(--ink); flex: none; }
-.logo svg { height: 34px; width: auto; }
 .nav { display: none; }
 .header__actions { margin-left: auto; display: flex; align-items: center; gap: 10px; }
 .header__phone { display: none; font-weight: 800; text-decoration: none; color: var(--ink); white-space: nowrap; }
@@ -436,14 +435,7 @@ ul { padding-left: 1.2em; }
 
 /* Logo */
 .logo { gap: 10px; }
-.logo__mark { color: var(--ink); display: block; }
-.logo__mark svg { width: 38px; height: 38px; }
-.logo__word { font-weight: 800; font-size: 1.28rem; letter-spacing: .16em; line-height: 1; color: inherit; display: flex; flex-direction: column; }
-.logo__word small { font-size: .5rem; letter-spacing: .5em; font-weight: 700; color: var(--muted); margin-top: 4px; }
-.footer .logo__mark { color: #fff; }
-.footer .logo__mark svg path { stroke: var(--ink); }
-.footer .logo__word small { color: #aeb8c2; }
-.qf-more { margin: 2px 0 14px; }
+.footer .footer .qf-more { margin: 2px 0 14px; }
 .qf-more summary { cursor: pointer; font-weight: 700; font-size: .92rem; color: var(--ink); padding: 6px 0; }
 .qf-more summary .opt { font-weight: 500; color: var(--muted); }
 .qf-more[open] summary { margin-bottom: 10px; }
@@ -487,8 +479,7 @@ ul { padding-left: 1.2em; }
   .header__in { gap: 10px; }
   .nav { margin-left: 4px; }
   .nav > ul > li > a, .nav > ul > li > button { padding: 10px 6px; font-size: .88rem; }
-  .logo__word { font-size: 1.15rem; }
-}
+  }
 /* Before/after: JS handles dragging; allow vertical page scroll on touch */
 .ba { touch-action: pan-y; cursor: ew-resize; }
 .ba input[type=range] { pointer-events: none; }
@@ -508,3 +499,13 @@ ul { padding-left: 1.2em; }
 .footer .logo__img { height: 46px; }
 .brand-logo-bg .logo__img { height: 36px; }
 @media (min-width: 1500px) { .header .wrap { max-width: 1420px; } }
+/* Before/after: the container receives all pointer input; images can't be dragged or selected */
+.ba { -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
+.ba img { pointer-events: none; -webkit-user-drag: none; }
+.ba:focus-within { outline: none; }
+.ba:has(input:focus-visible) { outline: 3px solid #1d63c4; outline-offset: 2px; }
+/* Ad landing pages on small phones: logo + full phone number must fit side by side */
+@media (max-width: 400px) {
+  .lp-header .logo__img { height: 32px; }
+  .lp-header .header__phone { font-size: .95rem; }
+}

@@ -201,20 +201,38 @@
   }
 
   /* ---------- Before / after sliders ---------- */
-  // Drag anywhere on the photo (mouse or touch); vertical swipes still scroll the page.
-  // The hidden range input stays for keyboard users (arrow keys).
+  // Before/after slider. Mouse: press-and-drag anywhere. Touch: a horizontal swipe drags, a vertical swipe
+  // scrolls the page untouched, a tap jumps to that spot. The hidden range input handles keyboard (arrow keys).
   $$('.ba').forEach(function (ba) {
-    var r = $('input[type=range]', ba), dragging = false;
-    function setPct(p) { p = Math.max(0, Math.min(100, p)); r.value = p; ba.style.setProperty('--pos', p + '%'); }
+    var r = $('input[type=range]', ba), drag = null;
+    function setPct(p) { p = Math.max(0, Math.min(100, p)); r.value = Math.round(p); ba.style.setProperty('--pos', p + '%'); }
     function fromX(x) { var b = ba.getBoundingClientRect(); setPct(((x - b.left) / b.width) * 100); }
     r.addEventListener('input', function () { setPct(Number(r.value)); });
+    ba.addEventListener('dragstart', function (e) { e.preventDefault(); });
     ba.addEventListener('pointerdown', function (e) {
       if (e.pointerType === 'mouse' && e.button !== 0) return;
-      dragging = true; fromX(e.clientX);
-      try { ba.setPointerCapture(e.pointerId); } catch (err) {}
+      drag = { id: e.pointerId, x: e.clientX, y: e.clientY, touch: e.pointerType !== 'mouse', active: e.pointerType === 'mouse', moved: false };
+      if (drag.active) { e.preventDefault(); fromX(e.clientX); try { ba.setPointerCapture(e.pointerId); } catch (err) {} }
     });
-    ba.addEventListener('pointermove', function (e) { if (dragging) fromX(e.clientX); });
-    ['pointerup', 'pointercancel', 'lostpointercapture'].forEach(function (t) { ba.addEventListener(t, function () { dragging = false; }); });
+    ba.addEventListener('pointermove', function (e) {
+      if (!drag || e.pointerId !== drag.id) return;
+      var dx = e.clientX - drag.x, dy = e.clientY - drag.y;
+      if (!drag.active) {
+        if (Math.abs(dx) < 6 && Math.abs(dy) < 6) return;
+        drag.moved = true;
+        if (Math.abs(dx) <= Math.abs(dy)) { drag = null; return; } // vertical → let the page scroll
+        drag.active = true;
+        try { ba.setPointerCapture(e.pointerId); } catch (err) {}
+      }
+      drag.moved = true;
+      fromX(e.clientX);
+    });
+    function end(e) {
+      if (!drag || e.pointerId !== drag.id) return;
+      if (e.type === 'pointerup' && drag.touch && !drag.moved) fromX(e.clientX); // tap to jump
+      drag = null;
+    }
+    ['pointerup', 'pointercancel'].forEach(function (t) { ba.addEventListener(t, end); });
     setPct(Number(r.value));
   });
 
