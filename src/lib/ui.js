@@ -258,7 +258,7 @@ function reviewsCarousel(list, { title = 'What homeowners say', eyebrow = 'Revie
   if (!list.length) return '';
   return `<section class="section${stone ? ' section--stone' : ''}"><div class="wrap" data-carousel>
   <div class="section-head"><span class="eyebrow">${esc(eyebrow)}</span><h2>${esc(title)}</h2>
-  <div class="rating-summary">${hasRating() ? `<span class="big">${esc(site.googleRating)}</span><span><span class="stars" style="color:#b7791f">★★★★★</span><br>${esc(site.googleReviewCount)} Google reviews</span>` : ''}<a class="link-arrow" href="/reviews/">Read all reviews</a></div>${intro ? `<p class="lead" style="margin-top:12px">${intro}</p>` : ''}</div>
+  <div class="rating-summary">${hasRating() ? `<span class="big">${esc(site.googleRating)}</span><span><span class="stars" style="color:#b7791f">★★★★★</span><br>${esc(site.googleReviewCount)} Google reviews</span>` : ''}<a class="link-arrow" href="/reviews/">Read reviews</a></div>${intro ? `<p class="lead" style="margin-top:12px">${intro}</p>` : ''}</div>
   <div class="reviews" tabindex="0" aria-label="Customer reviews">${list.map(reviewCard).join('')}</div>
   <div class="carousel-nav"><button class="icon-btn" type="button" data-dir="-1" aria-label="Previous reviews">←</button><button class="icon-btn" type="button" data-dir="1" aria-label="Next reviews">→</button></div>
 </div></section>`;
