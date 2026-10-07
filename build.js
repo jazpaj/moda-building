@@ -27,6 +27,7 @@ function write(rel, content) {
 }
 function copyDir(src, dst) {
   if (!fs.existsSync(src)) return;
+  fs.mkdirSync(dst, { recursive: true });
   for (const e of fs.readdirSync(src, { withFileTypes: true })) {
     const s = path.join(src, e.name), d = path.join(dst, e.name);
     if (e.isDirectory()) { fs.mkdirSync(d, { recursive: true }); copyDir(s, d); } else fs.copyFileSync(s, d);
@@ -63,7 +64,7 @@ function businessSchema() {
     telephone: '+1-' + site.phone.replace(/\D/g, '').replace(/(\d{3})(\d{3})(\d{4})/, '$1-$2-$3'),
     email: site.email,
     image: `${SITE_URL}${picUrl('home-hero')}`,
-    logo: `${SITE_URL}/assets/logo.svg`,
+    logo: `${SITE_URL}/assets/brand/logo-600.png`,
     priceRange: '$$',
     areaServed: [...coreCities.map((c) => ({ '@type': 'City', name: `${c.name}, MI` })), { '@type': 'AdministrativeArea', name: 'Metro Detroit, MI' }],
     openingHours: site.hours.map((h) => h.schema).filter(Boolean),
@@ -98,7 +99,7 @@ function layout({ url, title, description, body, schema = [], noindex = false, m
 <meta name="description" content="${esc(description)}">
 <link rel="canonical" href="${SITE_URL}${url}">
 ${noindex || IS_PREVIEW_HOST ? '<meta name="robots" content="noindex, follow">' : '<meta name="robots" content="index, follow, max-image-preview:large">'}
-<meta name="theme-color" content="#121b24">
+<meta name="theme-color" content="#1e2a34">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="${esc(site.name)}">
 <meta property="og:title" content="${esc(title)}">
@@ -106,7 +107,10 @@ ${noindex || IS_PREVIEW_HOST ? '<meta name="robots" content="noindex, follow">' 
 <meta property="og:url" content="${SITE_URL}${url}">
 <meta property="og:image" content="${SITE_URL}${ogImage}">
 <meta name="twitter:card" content="summary_large_image">
-<link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="/assets/favicon.ico" sizes="48x48">
+<link rel="icon" href="/assets/favicon-32.png" type="image/png" sizes="32x32">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="manifest" href="/assets/site.webmanifest">
 ${fonts}
 <link rel="stylesheet" href="/assets/css/main.css?v=${CSS_V}">
 <script>
@@ -542,7 +546,7 @@ layout({ url: '/brand/', title: 'Brand Options | Moda Building', description: 'L
 <section class="section"><div class="wrap">
   <div class="section-head"><span class="eyebrow">For owner approval</span><h1>Brand options</h1><p class="lead">The brief asks the designer to propose 2–3 options until final logo and colors come from the owner. Each palette keeps one strong accent color reserved for buttons and calls-to-action. Option A is applied to this build; switching is a one-line change to the CSS variables.</p></div>
   <div class="grid grid--3">${palettes.map((p) => `<div class="card"><div class="card__body"><h2 style="font-size:1.15rem">${p.name}</h2><p>${p.note}</p>
-    <div style="display:flex;align-items:center;gap:10px;padding:16px;border-radius:12px;background:${p.c[1][1]};color:${p.c[0][1]};margin:6px 0 12px"><span class="logo" style="color:${p.c[0][1]}">${ui.LOGO}</span></div>
+    <div style="display:flex;align-items:center;gap:10px;padding:16px;border-radius:12px;background:${p.c[1][1]};color:${p.c[0][1]};margin:6px 0 12px"><span class="logo">${ui.logoImg({ alt: 'Moda Building logo' })}</span></div>
     <div class="swatches">${p.c.map(([n, h]) => `<div class="swatch"><div style="background:${h}"></div><p><strong>${n}</strong><br>${h}</p></div>`).join('')}</div>
     <p style="margin-top:14px"><span class="btn" style="background:${p.c[3][1]};color:#fff">Get a Free Estimate</span></p></div></div>`).join('')}</div>
 </div></section>` });
@@ -553,8 +557,7 @@ layout({ url: '/404.html', title: 'Page Not Found | Moda Building', description:
 <ul class="chips" style="justify-content:center">${services.map((s) => `<li><a href="${svcUrl(s)}">${esc(s.name)}</a></li>`).join('')}<li><a href="/contact/">Free estimate</a></li></ul></div></section>` });
 
 /* ---------- Static assets ---------- */
-write('assets/favicon.svg', `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40"><rect width="40" height="40" rx="9" fill="#121b24"/><path d="M8 22 20 11l12 11" fill="none" stroke="#fff" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M13 21v9h14v-9" fill="none" stroke="#c2410c" stroke-width="3.2" stroke-linejoin="round"/></svg>`);
-write('assets/logo.svg', `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 40"><rect width="40" height="40" rx="9" fill="#121b24"/><path d="M8 22 20 11l12 11" fill="none" stroke="#fff" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M13 21v9h14v-9" fill="none" stroke="#fff" stroke-width="3.2" stroke-linejoin="round"/><text x="52" y="24" font-family="Manrope,Arial,sans-serif" font-weight="800" font-size="20" letter-spacing="3" fill="#121b24">MODA</text><text x="52" y="36" font-family="Manrope,Arial,sans-serif" font-weight="700" font-size="9" letter-spacing="4.2" fill="#5b6672">BUILDING</text></svg>`);
+fs.copyFileSync(path.join(OUT, 'assets/favicon.ico'), path.join(OUT, 'favicon.ico')); // root fallback for crawlers/browsers
 const today = new Date().toISOString().slice(0, 10);
 write('sitemap.xml', `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${pages.map((p) => `  <url><loc>${SITE_URL}${p.url}</loc><lastmod>${today}</lastmod><priority>${p.priority}</priority></url>`).join('\n')}\n</urlset>\n`);
 write('robots.txt', IS_PREVIEW_HOST ? 'User-agent: *\nDisallow: /\n' : `User-agent: *\nAllow: /\n\nSitemap: ${SITE_URL}/sitemap.xml\n`);

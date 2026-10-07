@@ -470,7 +470,7 @@ ul { padding-left: 1.2em; }
   .header__actions { gap: 8px; flex: none; }
   .nav { flex: 0 1 auto; min-width: 0; }
 }
-@media (min-width: 1080px) and (max-width: 1359px) {
+@media (min-width: 1080px) and (max-width: 1499px) {
   .header__phone { display: none; }
   .header .call-icon { display: inline-grid; }
 }
@@ -501,3 +501,10 @@ ul { padding-left: 1.2em; }
   .table td:last-child { white-space: normal; }
 }
 @media (max-width: 479px) { .btn { white-space: normal; text-align: center; } .header .btn, .mbar .btn { white-space: nowrap; } }
+
+/* Owner logo */
+.logo__img { height: 40px; width: auto; display: block; }
+@media (min-width: 1080px) { .logo__img { height: 44px; } }
+.footer .logo__img { height: 46px; }
+.brand-logo-bg .logo__img { height: 36px; }
+@media (min-width: 1500px) { .header .wrap { max-width: 1420px; } }

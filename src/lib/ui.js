@@ -37,7 +37,11 @@ const ICON = {
   youtube: '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M22 8.2a3 3 0 0 0-2-2C18.2 5.7 12 5.7 12 5.7s-6.2 0-8 .5a3 3 0 0 0-2 2A31 31 0 0 0 1.6 12 31 31 0 0 0 2 15.8a3 3 0 0 0 2 2c1.8.5 8 .5 8 .5s6.2 0 8-.5a3 3 0 0 0 2-2 31 31 0 0 0 .4-3.8 31 31 0 0 0-.4-3.8zM10 15.2V8.8l5.2 3.2z"/></svg>'
 };
 
-const LOGO = `<span class="logo__mark" aria-hidden="true"><svg viewBox="0 0 40 40" width="40" height="40"><rect width="40" height="40" rx="9" fill="currentColor"/><path d="M8 22 20 11l12 11" fill="none" stroke="#fff" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M13 21v9h14v-9" fill="none" stroke="#fff" stroke-width="3.2" stroke-linejoin="round"/></svg></span><span class="logo__word">MODA<small>BUILDING</small></span>`;
+// Owner-supplied logo (cut out from the supplied artwork; sources in /brand-source). Light version is for dark backgrounds.
+const LOGO_W = 609, LOGO_H = 132;
+const logoImg = ({ light = false, alt = '' } = {}) =>
+  `<img class="logo__img" src="/assets/brand/${light ? 'logo-light' : 'logo'}.webp" alt="${alt}" width="${LOGO_W}" height="${LOGO_H}" decoding="async">`;
+const LOGO = logoImg();
 
 // Photos live in src/img/photos/<name>.webp (+ <name>-800.webp for phones). Missing photos fall back to SVG placeholders.
 const fs = require('fs');
@@ -168,7 +172,7 @@ function header({ minimal = false, current = '' } = {}) {
   const preview = site.preview ? `<div class="preview-bar" role="note"><strong>Preview build:</strong> highlighted items, sample reviews and illustrated placeholder photos are awaiting real content from Moda Building.</div>` : '';
   if (minimal) {
     return `${preview}<header class="header lp-header"><div class="wrap header__in">
-  <span class="logo" aria-label="Moda Building">${LOGO}</span>
+  <span class="logo">${logoImg({ alt: 'Moda Building' })}</span>
   <a class="header__phone" href="${telHref(site.phone)}" data-loc="header"><small>Free estimate — call</small>${esc(site.phone)}</a>
 </div></header>`;
   }
@@ -223,7 +227,7 @@ function footer({ minimal = false } = {}) {
   }
   return `<footer class="footer"><div class="wrap">
   <div class="footer__grid">
-    <div><a class="logo" href="/" aria-label="Moda Building home">${LOGO}</a>${nap}
+    <div><a class="logo" href="/" aria-label="Moda Building home">${logoImg({ light: true })}</a>${nap}
       <p style="margin-top:12px">${has(site.license) ? `License ${esc(site.license)}<br>` : ''}Licensed &amp; insured in Michigan</p>
       ${social ? `<div class="footer__social">${social}</div>` : ''}</div>
     <div><h2>Services</h2><ul>${services.map((s) => `<li><a href="${svcUrl(s)}">${esc(s.name)}</a></li>`).join('')}<li><a href="/financing/">Financing</a></li><li><a href="/gallery/">Project gallery</a></li></ul>
@@ -312,4 +316,4 @@ function financingCallout() {
 </div></div></section>`;
 }
 
-module.exports = { picUrl, has, hasAddress, hasRating, pic, hasPhoto, site, services, cities, coreCities, esc, val, isPh, telHref, svcBy, cityBy, svcUrl, cityUrl, ICON, LOGO, img, callBtn, quoteBtn, quoteForm, header, footer, mobileBar, trustStrip, crumbs, processSection, reviewCard, reviewsCarousel, projectCard, faqSection, ctaBand, areasSection, financingCallout, PROCESS };
+module.exports = { logoImg, picUrl, has, hasAddress, hasRating, pic, hasPhoto, site, services, cities, coreCities, esc, val, isPh, telHref, svcBy, cityBy, svcUrl, cityUrl, ICON, LOGO, img, callBtn, quoteBtn, quoteForm, header, footer, mobileBar, trustStrip, crumbs, processSection, reviewCard, reviewsCarousel, projectCard, faqSection, ctaBand, areasSection, financingCallout, PROCESS };

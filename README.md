@@ -80,3 +80,9 @@ The preview banner is off (`"preview": false` in `src/data/site.json`). Set it t
 Every push to `main` builds the site with `BASE_PATH=/<repo-name>` and deploys it to GitHub Pages (`.github/workflows/pages.yml`).
 Preview builds are `noindex` and `robots.txt` blocks crawling, so they never compete with modabuilding.com.
 On the preview, the form skips the POST and goes straight to `/thank-you/`, the same as on localhost.
+
+## Logo & favicon
+- The owner-supplied logo was cut out of its background with smooth (anti-aliased) edges. Full-resolution transparent PNGs are in `brand-source/`: `logo-source.png`, `logo-light-source.png` (white version for dark backgrounds) and `mark-source.png` (house icon only).
+- Website files are in `src/assets/brand/`: `logo.webp` (header, ad landing pages), `logo-light.webp` (footer) and `logo-600.png` (Google/schema logo).
+- Favicons in `src/assets/`: `favicon.ico` (16/32/48), `favicon-32.png`, `apple-touch-icon.png` (180), `icon-192.png` / `icon-512.png` and `site.webmanifest`. `favicon.ico` is also copied to the site root.
+- Logo colors: navy `#1e2a34`, grey `#808080`, blue `#07649f`.
