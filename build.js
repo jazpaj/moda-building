@@ -9,7 +9,7 @@ const ph = require('./src/lib/placeholders');
 const projects = require('./src/data/projects');
 const reviews = require('./src/data/reviews');
 const posts = require('./src/data/posts');
-const { has, hasAddress, hasRating, pic, hasPhoto, site, services, cities, coreCities, esc, val, isPh, telHref, svcBy, cityBy, svcUrl, cityUrl, ICON, img, callBtn, quoteBtn, quoteForm, header, footer, mobileBar, trustStrip, crumbs, processSection, reviewCard, reviewsCarousel, projectCard, faqSection, ctaBand, areasSection, financingCallout } = ui;
+const { picUrl, has, hasAddress, hasRating, pic, hasPhoto, site, services, cities, coreCities, esc, val, isPh, telHref, svcBy, cityBy, svcUrl, cityUrl, ICON, img, callBtn, quoteBtn, quoteForm, header, footer, mobileBar, trustStrip, crumbs, processSection, reviewCard, reviewsCarousel, projectCard, faqSection, ctaBand, areasSection, financingCallout } = ui;
 
 const OUT = path.join(__dirname, 'site');
 // BASE_PATH (e.g. /moda-building) builds a preview for a subfolder host like GitHub Pages; previews are noindex.
@@ -62,7 +62,7 @@ function businessSchema() {
     url: SITE_URL + '/',
     telephone: '+1-' + site.phone.replace(/\D/g, '').replace(/(\d{3})(\d{3})(\d{4})/, '$1-$2-$3'),
     email: site.email,
-    image: `${SITE_URL}${pic('home-hero')}`,
+    image: `${SITE_URL}${picUrl('home-hero')}`,
     logo: `${SITE_URL}/assets/logo.svg`,
     priceRange: '$$',
     areaServed: [...coreCities.map((c) => ({ '@type': 'City', name: `${c.name}, MI` })), { '@type': 'AdministrativeArea', name: 'Metro Detroit, MI' }],
@@ -81,7 +81,7 @@ const crumbSchema = (list) => ({ '@type': 'BreadcrumbList', itemListElement: lis
 const serviceSchema = (s, areas, name) => ({ '@type': 'Service', name: name || s.name, serviceType: s.name, provider: { '@id': BIZ_ID }, areaServed: areas.map((c) => (c.isRegion ? { '@type': 'AdministrativeArea', name: 'Metro Detroit, MI' } : { '@type': 'City', name: `${c.name}, MI` })) });
 
 /* ---------- Layout ---------- */
-function layout({ url, title, description, body, schema = [], noindex = false, minimal = false, current = '', bodyAttr = '', ogImage = pic('home-hero'), sitemap = true, priority = '0.6' }) {
+function layout({ url, title, description, body, schema = [], noindex = false, minimal = false, current = '', bodyAttr = '', ogImage = picUrl('home-hero'), sitemap = true, priority = '0.6' }) {
   if (title.length > 70) console.warn(`! Title > 70 chars (${title.length}): ${url}`);
   if (!noindex && sitemap) pages.push({ url, priority });
   const graph = [businessSchema(), { '@type': 'WebPage', '@id': SITE_URL + url, url: SITE_URL + url, name: title, description, isPartOf: { '@type': 'WebSite', '@id': SITE_URL + '/#website', name: site.name, url: SITE_URL + '/' } }, ...schema];
@@ -266,7 +266,7 @@ ${reviewsCarousel(sReviews, { title: `${s.short} reviews`, stone: true })}
 ${processSection()}
 ${faqSection(s.faqs, { title: `${s.name} FAQ` })}
 ${ctaBand({ service: s.formValue, title: `Get a free ${s.short.toLowerCase()} estimate` })}`;
-  layout({ url: svcUrl(s), title: s.title, description: s.description, body, current: s.key, ogImage: pic(`${s.key}-hero`), priority: '0.9',
+  layout({ url: svcUrl(s), title: s.title, description: s.description, body, current: s.key, ogImage: picUrl(`${s.key}-hero`), priority: '0.9',
     schema: [serviceSchema(s, sCities), faqSchema(s.faqs), crumbSchema([['Home', '/'], [s.name, svcUrl(s)]])] });
 }
 
@@ -462,7 +462,7 @@ ${ctaBand()}` });
 for (const p of posts) {
   const s = svcBy(p.service);
   const url = `/blog/${p.slug}/`;
-  layout({ url, title: `${p.title} | Moda Building`.length > 70 ? p.title : `${p.title} | Moda Building`, description: p.description, priority: '0.5', ogImage: pic(`${p.service}-hero`),
+  layout({ url, title: `${p.title} | Moda Building`.length > 70 ? p.title : `${p.title} | Moda Building`, description: p.description, priority: '0.5', ogImage: picUrl(`${p.service}-hero`),
     schema: [{ '@type': 'BlogPosting', headline: p.title, description: p.description, datePublished: p.date, author: { '@id': BIZ_ID }, publisher: { '@id': BIZ_ID }, mainEntityOfPage: SITE_URL + url }, crumbSchema([['Home', '/'], ['Blog', '/blog/'], [p.title, url]])],
     body: `
 ${crumbs([['Home', '/'], ['Blog', '/blog/'], [p.title, url]])}

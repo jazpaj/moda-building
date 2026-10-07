@@ -45,6 +45,7 @@ const path = require('path');
 const PHOTO_DIR = path.join(__dirname, '../img/photos');
 const hasPhoto = (name) => fs.existsSync(path.join(PHOTO_DIR, name + '.webp'));
 const pic = (name) => (hasPhoto(name) ? `/img/photos/${name}.webp` : `/img/ph/${name}.svg`);
+const picUrl = (name) => (hasPhoto(name) ? `${pic(name)}?v=${ver(path.join(PHOTO_DIR, name + '.webp'))}` : pic(name));
 function webpWidth(file) {
   const b = fs.readFileSync(file);
   const fmt = b.toString('ascii', 12, 16);
@@ -54,10 +55,15 @@ function webpWidth(file) {
   return 1200;
 }
 const SIZES = '(min-width: 1000px) 33vw, (min-width: 700px) 50vw, 100vw';
+// ?v=<content hash> so replaced photos (same filename) are never served stale from browser/CDN caches.
+const ver = (file) => require('crypto').createHash('md5').update(fs.readFileSync(file)).digest('hex').slice(0, 8);
 function srcAttrs(src, sizes = SIZES) {
   const m = src.match(/^\/img\/photos\/(.+)\.webp$/);
-  if (!m || !fs.existsSync(path.join(PHOTO_DIR, m[1] + '-800.webp'))) return `src="${src}"`;
-  return `src="${src}" srcset="/img/photos/${m[1]}-800.webp 800w, ${src} ${webpWidth(path.join(PHOTO_DIR, m[1] + '.webp'))}w" sizes="${sizes}"`;
+  if (!m) return `src="${src}"`;
+  const full = path.join(PHOTO_DIR, m[1] + '.webp'), small = path.join(PHOTO_DIR, m[1] + '-800.webp');
+  const fullUrl = `${src}?v=${ver(full)}`;
+  if (!fs.existsSync(small)) return `src="${fullUrl}"`;
+  return `src="${fullUrl}" srcset="/img/photos/${m[1]}-800.webp?v=${ver(small)} 800w, ${fullUrl} ${webpWidth(full)}w" sizes="${sizes}"`;
 }
 const img = (src, alt, { eager = false, cls = '', w = 1200, h = 800, sizes } = {}) =>
   `<img ${srcAttrs(src, sizes)} alt="${esc(alt)}" width="${w}" height="${h}"${cls ? ` class="${cls}"` : ''} ${eager ? 'fetchpriority="high" decoding="async"' : 'loading="lazy" decoding="async"'}>`;
@@ -306,4 +312,4 @@ function financingCallout() {
 </div></div></section>`;
 }
 
-module.exports = { has, hasAddress, hasRating, pic, hasPhoto, site, services, cities, coreCities, esc, val, isPh, telHref, svcBy, cityBy, svcUrl, cityUrl, ICON, LOGO, img, callBtn, quoteBtn, quoteForm, header, footer, mobileBar, trustStrip, crumbs, processSection, reviewCard, reviewsCarousel, projectCard, faqSection, ctaBand, areasSection, financingCallout, PROCESS };
+module.exports = { picUrl, has, hasAddress, hasRating, pic, hasPhoto, site, services, cities, coreCities, esc, val, isPh, telHref, svcBy, cityBy, svcUrl, cityUrl, ICON, LOGO, img, callBtn, quoteBtn, quoteForm, header, footer, mobileBar, trustStrip, crumbs, processSection, reviewCard, reviewsCarousel, projectCard, faqSection, ctaBand, areasSection, financingCallout, PROCESS };
