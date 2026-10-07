@@ -95,7 +95,10 @@
       if (el.closest('.other-city') && !el.closest('.other-city').classList.contains('show')) return;
       if (!validField(el) && !bad) bad = el;
     });
-    if (bad) bad.focus();
+    if (bad) {
+      var det = bad.closest('details'); if (det) det.open = true; // reveal errors inside "Add project details"
+      bad.focus();
+    }
     return !bad;
   }
 
@@ -164,6 +167,12 @@
     });
   });
 
+  /* Back button from thank-you page restores the page from cache — re-enable submit buttons */
+  w.addEventListener('pageshow', function (e) {
+    if (!e.persisted) return;
+    $$('form.qf button[type=submit]').forEach(function (b) { b.disabled = false; b.textContent = 'Get My Free Estimate'; });
+  });
+
   /* Thank-you page conversion event (counted once per lead) */
   if (d.body.hasAttribute('data-thankyou')) {
     var lead = null;
@@ -192,21 +201,43 @@
   }
 
   /* ---------- Before / after sliders ---------- */
-  $$('.ba input[type=range]').forEach(function (r) {
-    var ba = r.closest('.ba');
-    function set() { ba.style.setProperty('--pos', r.value + '%'); }
-    r.addEventListener('input', set); set();
+  // Drag anywhere on the photo (mouse or touch); vertical swipes still scroll the page.
+  // The hidden range input stays for keyboard users (arrow keys).
+  $$('.ba').forEach(function (ba) {
+    var r = $('input[type=range]', ba), dragging = false;
+    function setPct(p) { p = Math.max(0, Math.min(100, p)); r.value = p; ba.style.setProperty('--pos', p + '%'); }
+    function fromX(x) { var b = ba.getBoundingClientRect(); setPct(((x - b.left) / b.width) * 100); }
+    r.addEventListener('input', function () { setPct(Number(r.value)); });
+    ba.addEventListener('pointerdown', function (e) {
+      if (e.pointerType === 'mouse' && e.button !== 0) return;
+      dragging = true; fromX(e.clientX);
+      try { ba.setPointerCapture(e.pointerId); } catch (err) {}
+    });
+    ba.addEventListener('pointermove', function (e) { if (dragging) fromX(e.clientX); });
+    ['pointerup', 'pointercancel', 'lostpointercapture'].forEach(function (t) { ba.addEventListener(t, function () { dragging = false; }); });
+    setPct(Number(r.value));
   });
 
   /* ---------- Reviews carousel ---------- */
+  var reduceMotion = w.matchMedia('(prefers-reduced-motion: reduce)');
   $$('[data-carousel]').forEach(function (wrap) {
-    var track = $('.reviews', wrap);
-    $$('[data-dir]', wrap).forEach(function (b) {
-      b.addEventListener('click', function () {
-        var card = track.firstElementChild; if (!card) return;
-        track.scrollBy({ left: (card.getBoundingClientRect().width + 16) * Number(b.dataset.dir), behavior: 'smooth' });
-      });
-    });
+    var track = $('.reviews', wrap), prev = $('[data-dir="-1"]', wrap), next = $('[data-dir="1"]', wrap);
+    function stepW() { var c = track.children; return c.length > 1 ? c[1].offsetLeft - c[0].offsetLeft : track.clientWidth; }
+    function maxX() { return track.scrollWidth - track.clientWidth; }
+    function update() {
+      if (prev) prev.disabled = track.scrollLeft <= 4;
+      if (next) next.disabled = track.scrollLeft >= maxX() - 4;
+    }
+    function go(dir) {
+      var sw = stepW(), target = (Math.round(track.scrollLeft / sw) + dir) * sw;
+      track.scrollTo({ left: Math.max(0, Math.min(maxX(), target)), behavior: reduceMotion.matches ? 'auto' : 'smooth' });
+      update(); setTimeout(update, 450);
+    }
+    if (prev) prev.addEventListener('click', function () { go(-1); });
+    if (next) next.addEventListener('click', function () { go(1); });
+    track.addEventListener('scroll', update, { passive: true });
+    w.addEventListener('resize', update);
+    update();
   });
 
   /* ---------- Cookie notice + Google Consent Mode ---------- */

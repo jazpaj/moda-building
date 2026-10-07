@@ -180,7 +180,7 @@ function header({ minimal = false, current = '' } = {}) {
   <div class="header__actions">
     <a class="header__phone" href="${telHref(site.phone)}" data-loc="header"><small>Call for a free estimate</small>${esc(site.phone)}</a>
     <a class="icon-btn call-icon" href="${telHref(site.phone)}" data-loc="header-icon" aria-label="Call ${esc(site.phone)}">${ICON.phone}</a>
-    ${quoteBtn('header')}
+    <a class="btn btn--cta" href="#quote" data-cta="header"><span class="cta-long">Get a Free Estimate</span><span class="cta-short">Free Estimate</span></a>
     <button class="icon-btn menu-toggle" type="button" aria-expanded="false" aria-controls="mnav" aria-label="Menu">${ICON.menu}</button>
   </div>
 </div>

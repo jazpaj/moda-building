@@ -461,3 +461,43 @@ ul { padding-left: 1.2em; }
 .map--wide { aspect-ratio: 16 / 7; min-height: 320px; }
 .next-steps { margin: 0; padding-left: 1.3em; display: grid; gap: 8px; }
 .next-steps strong { color: var(--ink); }
+
+/* Header fit: no horizontal overflow from 1080px up */
+.header .wrap { max-width: 1320px; }
+.cta-short { display: none; }
+@media (min-width: 1080px) {
+  .nav .dd::before { content: ''; position: absolute; left: 0; right: 0; top: -10px; height: 10px; } /* hover bridge over the gap */
+  .header__actions { gap: 8px; flex: none; }
+  .nav { flex: 0 1 auto; min-width: 0; }
+}
+@media (min-width: 1080px) and (max-width: 1359px) {
+  .header__phone { display: none; }
+  .header .call-icon { display: inline-grid; }
+}
+@media (min-width: 1080px) and (max-width: 1239px) {
+  .cta-long { display: none; }
+  .cta-short { display: inline; }
+  .header .btn--cta { padding: 10px 16px; }
+}
+@media (min-width: 1080px) {
+  .nav > ul > li:nth-last-child(-n+2) > .dd { left: auto; right: 0; } /* keep right-hand dropdowns on screen */
+}
+@media (min-width: 1080px) and (max-width: 1179px) {
+  .header .wrap { padding-left: 20px; padding-right: 20px; }
+  .header__in { gap: 10px; }
+  .nav { margin-left: 4px; }
+  .nav > ul > li > a, .nav > ul > li > button { padding: 10px 6px; font-size: .88rem; }
+  .logo__word { font-size: 1.15rem; }
+}
+/* Before/after: JS handles dragging; allow vertical page scroll on touch */
+.ba { touch-action: pan-y; cursor: ew-resize; }
+.ba input[type=range] { pointer-events: none; }
+.ba:focus-within { outline: 3px solid #1d63c4; outline-offset: 2px; }
+.carousel-nav .icon-btn:disabled { opacity: .35; cursor: default; }
+/* Small phones: grid columns may shrink below content width; price ranges may wrap */
+.split > *, .grid > *, .hero__grid > * { min-width: 0; }
+@media (max-width: 420px) {
+  .table th, .table td { padding: 12px; }
+  .table td:last-child { white-space: normal; }
+}
+@media (max-width: 479px) { .btn { white-space: normal; text-align: center; } .header .btn, .mbar .btn { white-space: nowrap; } }
