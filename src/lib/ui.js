@@ -168,8 +168,8 @@ function quoteForm({ service = '', city = '', location = 'page', title = 'Get yo
     <div class="qf-nav">
       <button type="button" class="btn btn--ghost qf-back" aria-label="Previous step">Back</button>
       <button type="button" class="btn btn--cta qf-next">Continue</button>
+      <button type="submit" class="btn btn--cta qf-submit">Get My Free Estimate</button>
     </div>
-    <div class="qf-submit-wrap"><button type="submit" class="btn btn--cta btn--block">Get My Free Estimate</button></div>
     <p class="consent">By submitting, you agree Moda Building may contact you by phone or email about your project. We only text you if you check the box above. No spam, ever. See our <a href="/privacy-policy/">privacy policy</a>.</p>
   </form>
   <div class="qf-trust"><span>Free, no-obligation</span><span>Licensed &amp; insured</span><span>Fast response</span></div>

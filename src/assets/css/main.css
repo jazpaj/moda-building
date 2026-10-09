@@ -185,7 +185,7 @@ ul { padding-left: 1.2em; }
 .qf .row2 { display: grid; gap: 0 14px; }
 .qf .hp { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
 .qf .consent { font-size: .78rem; color: var(--muted); margin: 12px 0 0; line-height: 1.5; }
-.qf .qf-nav { display: flex; gap: 10px; }
+.qf .qf-nav { display: flex; gap: 10px; align-items: stretch; margin-top: 4px; }
 .qf .qf-nav .btn { flex: 1; }
 .qf .qf-back { flex: 0 0 auto !important; }
 .qf-progress { display: none; gap: 6px; margin: 0 0 16px; }
@@ -202,8 +202,8 @@ ul { padding-left: 1.2em; }
 .qf.is-steps .qf-step { display: none; }
 .qf.is-steps .qf-step.is-active { display: block; }
 .qf:not(.is-steps) .qf-next, .qf:not(.is-steps) .qf-back { display: none; }
-.qf.is-steps .qf-submit-wrap { display: none; }
-.qf.is-steps.on-last .qf-submit-wrap { display: block; }
+/* One button row: desktop = submit only; phone steps = Back + Continue, last step = Back + Submit */
+.qf.is-steps:not(.on-last) .qf-submit { display: none; }
 .qf.is-steps.on-last .qf-next { display: none; }
 .qf.is-steps:not(.on-first) .qf-back { display: inline-flex; }
 .qf.is-steps.on-first .qf-back { display: none; }
