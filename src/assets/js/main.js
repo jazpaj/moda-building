@@ -121,6 +121,13 @@
     }
     mode();
     if (mqSteps.addEventListener) mqSteps.addEventListener('change', mode);
+    // Preset from a problem tile: service chosen + problem attached; on phones jump past the service step.
+    form.addEventListener('qf:preset', function (e) {
+      var d = e.detail || {};
+      if (d.service && form.elements.service) { form.elements.service.value = d.service; validField(form.elements.service); }
+      if (d.problem && form.elements.problem) form.elements.problem.value = d.problem;
+      if (form.classList.contains('is-steps') && form.elements.service.value) show(1);
+    });
 
     form.addEventListener('focusin', function () {
       if (started) return; started = true;
@@ -158,13 +165,36 @@
         return;
       }
       if (form.elements.company_website && form.elements.company_website.value) { e.preventDefault(); return; }
-      var lead = { service: form.elements.service.value, city: form.elements.city.value, budget: form.elements.budget.value, event_id: form.elements.event_id.value, form_location: form.elements.form_location.value };
+      var lead = { problem: form.elements.problem ? form.elements.problem.value : '', service: form.elements.service.value, city: form.elements.city.value, budget: form.elements.budget.value, event_id: form.elements.event_id.value, form_location: form.elements.form_location.value };
       try { sessionStorage.setItem('moda_lead', JSON.stringify(lead)); } catch (err) {}
-      push({ event: 'form_submit', service: lead.service, city: lead.city, budget: lead.budget, form_location: lead.form_location });
+      push({ event: 'form_submit', problem: lead.problem, service: lead.service, city: lead.city, budget: lead.budget, form_location: lead.form_location });
       var btn = $('button[type=submit]', form); if (btn) { btn.disabled = true; btn.textContent = 'Sending…'; }
       // Static preview (no form backend on localhost or GitHub Pages): go straight to the thank-you page.
       if (/^(localhost|127\.0\.0\.1|)$|\.github\.io$/.test(location.hostname)) { e.preventDefault(); location.href = (d.documentElement.getAttribute('data-base') || '') + '/thank-you/'; }
     });
+  });
+
+  /* ---------- Problem tiles → estimate form ---------- */
+  function preset(problem, service) {
+    $$('form.qf').forEach(function (f) { f.dispatchEvent(new CustomEvent('qf:preset', { detail: { problem: problem, service: service } })); });
+  }
+  var qp = new URLSearchParams(location.search).get('problem');
+  if (qp) preset(qp.slice(0, 80), '');
+  d.addEventListener('click', function (e) {
+    var a = e.target.closest('[data-problem]');
+    if (!a) return;
+    push({ event: 'problem_click', problem: a.getAttribute('data-problem'), service: a.getAttribute('data-service'), page_path: location.pathname });
+    var card = $('#quote');
+    if (!card) return; // no form here → follow the link to the service page's form
+    e.preventDefault();
+    preset(a.getAttribute('data-problem'), a.getAttribute('data-service'));
+    card.scrollIntoView({ behavior: reduceMotion.matches ? 'auto' : 'smooth', block: 'start' });
+    var f = $('form.qf', card), active = f && ($('.qf-step.is-active select, .qf-step.is-active input:not([type=hidden])', f) || $('select, input:not([type=hidden])', f));
+    setTimeout(function () {
+      var top = card.getBoundingClientRect().top;
+      if (top < -10 || top > w.innerHeight * 0.6) card.scrollIntoView({ block: 'start' }); // fallback if smooth scroll didn't run
+      if (active) active.focus({ preventScroll: true });
+    }, 700);
   });
 
   /* Back button from thank-you page restores the page from cache — re-enable submit buttons */
@@ -177,26 +207,31 @@
   if (d.body.hasAttribute('data-thankyou')) {
     var lead = null;
     try { lead = JSON.parse(sessionStorage.getItem('moda_lead')); sessionStorage.removeItem('moda_lead'); } catch (e) {}
-    if (lead) push({ event: 'generate_lead', service: lead.service, city: lead.city, budget: lead.budget, event_id: lead.event_id, form_location: lead.form_location });
+    if (lead) push({ event: 'generate_lead', problem: lead.problem, service: lead.service, city: lead.city, budget: lead.budget, event_id: lead.event_id, form_location: lead.form_location });
   }
 
-  /* ---------- Gallery filters ---------- */
+  /* ---------- Gallery filters (service, room, city; also from ?service= &room= &city=) ---------- */
   var gal = $('[data-gallery]');
   if (gal) {
-    var fs = $('#f-service'), fc = $('#f-city'), count = $('#f-count');
+    var fs = $('#f-service'), fr = $('#f-room'), fc = $('#f-city'), count = $('#f-count'), roomWrap = $('#f-room-wrap');
+    var ROOM_SERVICES = ['', 'finished-basements', 'renovations']; // services that have room types
     var p = new URLSearchParams(location.search);
-    if (p.get('service') && fs) fs.value = p.get('service');
-    if (p.get('city') && fc) fc.value = p.get('city');
+    [[fs, 'service'], [fr, 'room'], [fc, 'city']].forEach(function (x) {
+      var v = p.get(x[1]); if (v && x[0] && $$('option', x[0]).some(function (o) { return o.value === v; })) x[0].value = v;
+    });
     function apply() {
+      var roomsOk = ROOM_SERVICES.indexOf(fs.value) > -1;
+      if (roomWrap) roomWrap.hidden = !roomsOk;
+      if (!roomsOk && fr) fr.value = '';
       var n = 0;
       $$('.proj', gal).forEach(function (el) {
-        var ok = (!fs.value || el.dataset.service === fs.value) && (!fc.value || el.dataset.city === fc.value);
+        var ok = (!fs.value || el.dataset.service === fs.value) && (!fc.value || el.dataset.city === fc.value) && (!fr || !fr.value || el.dataset.room === fr.value);
         el.hidden = !ok; if (ok) n++;
       });
       if (count) count.textContent = n + (n === 1 ? ' project' : ' projects');
       var empty = $('#f-empty'); if (empty) empty.hidden = n > 0;
     }
-    [fs, fc].forEach(function (s) { s && s.addEventListener('change', apply); });
+    [fs, fr, fc].forEach(function (s) { s && s.addEventListener('change', apply); });
     apply();
   }
 

@@ -19,6 +19,17 @@ const cityUrl = (s, c) => `/${s.slug}/${c.slug}/`;
 const coreCities = cities.filter((c) => !c.isRegion);
 
 const ICON = {
+  drop: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2.7S5 10.4 5 15a7 7 0 0 0 14 0c0-4.6-7-12.3-7-12.3z"/></svg>',
+  storm: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17.5 17H7a5 5 0 1 1 1-9.9A6 6 0 0 1 19.5 9 4 4 0 0 1 17.5 17z"/><path d="m13 13-2 4h3l-2 4"/></svg>',
+  gutter: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18v3a3 3 0 0 1-3 3H6a3 3 0 0 1-3-3z"/><path d="M17 12v8M14 20h6"/></svg>',
+  crack: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="m11 3-2 5 4 3-3 4 2 6"/></svg>',
+  pump: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="7" y="9" width="10" height="12" rx="2"/><path d="M12 9V3M9 3h6M10 14h4"/></svg>',
+  wind: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 8h11a3 3 0 1 0-3-3M3 12h16a3 3 0 1 1-3 3M3 16h7"/></svg>',
+  sofa: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 11V8a3 3 0 0 1 3-3h10a3 3 0 0 1 3 3v3"/><path d="M2 13a2 2 0 0 1 4 0v2h12v-2a2 2 0 0 1 4 0v5H2z"/><path d="M5 18v2M19 18v2"/></svg>',
+  bed: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 18V6M3 13h18v5M21 13a4 4 0 0 0-4-4h-7v4"/><circle cx="7" cy="10" r="1.6"/></svg>',
+  kitchen: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 10h18M8 6h.01M12 6h.01M8 14v3"/></svg>',
+  layout: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 12h9V3M12 17h9"/></svg>',
+  bath: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12h18v3a5 5 0 0 1-5 5H8a5 5 0 0 1-5-5z"/><path d="M6 12V5a2 2 0 0 1 4 0M7 20l-1 2M17 20l1 2"/></svg>',
   phone: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.7a2 2 0 0 1-.5 2.1L8 9.8a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.7.7a2 2 0 0 1 1.7 2z"/></svg>',
   check: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10" stroke-width="1.8"/><path d="m8 12 3 3 5-6"/></svg>',
   shield: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>',
@@ -96,6 +107,7 @@ function quoteForm({ service = '', city = '', location = 'page', title = 'Get yo
   <form class="qf on-first" name="estimate" method="POST" action="/thank-you/" data-netlify="true" netlify-honeypot="company_website" enctype="multipart/form-data" novalidate>
     <input type="hidden" name="form-name" value="estimate">
     <input type="hidden" name="form_location" value="${esc(location)}">
+    <input type="hidden" name="problem">
     ${hidden}
     <div class="hp" aria-hidden="true"><label for="${f('hp')}">Leave this field empty</label><input id="${f('hp')}" name="company_website" tabindex="-1" autocomplete="off"></div>
     <p class="qf-steptext" aria-live="polite">Step 1 of 3</p>
@@ -138,6 +150,11 @@ function quoteForm({ service = '', city = '', location = 'page', title = 'Get yo
           <input id="${f('email')}" name="email" type="email" inputmode="email" autocomplete="email" required aria-describedby="${f('email')}-e">
           <p class="err" id="${f('email')}-e">Please enter a valid email address.</p></div>
       </div>
+      <div class="field qf-check">
+        <input type="checkbox" id="${f('sms')}" name="sms_consent" value="yes">
+        <label for="${f('sms')}">Text me updates about my estimate <span class="opt">(optional)</span>
+          <small>By checking this box, you agree to receive text messages from Moda Building about your estimate and appointment at the number above. Message frequency varies. Msg &amp; data rates may apply. Reply STOP to opt out, HELP for help. Consent is not required to get an estimate.</small></label>
+      </div>
       <details class="qf-more"><summary>Add project details or a photo <span class="opt">(optional)</span></summary>
       <div class="field"><label for="${f('message')}">Tell us about your project</label>
         <textarea id="${f('message')}" name="message" rows="3"></textarea></div>
@@ -153,10 +170,25 @@ function quoteForm({ service = '', city = '', location = 'page', title = 'Get yo
       <button type="button" class="btn btn--cta qf-next">Continue</button>
     </div>
     <div class="qf-submit-wrap"><button type="submit" class="btn btn--cta btn--block">Get My Free Estimate</button></div>
-    <p class="consent">By submitting, you agree Moda Building may contact you by phone, text or email about your project. No spam, ever. See our <a href="/privacy-policy/">privacy policy</a>.</p>
+    <p class="consent">By submitting, you agree Moda Building may contact you by phone or email about your project. We only text you if you check the box above. No spam, ever. See our <a href="/privacy-policy/">privacy policy</a>.</p>
   </form>
   <div class="qf-trust"><span>Free, no-obligation</span><span>Licensed &amp; insured</span><span>Fast response</span></div>
 </div>`;
+}
+
+/* ---------- Problem-based entry points ---------- */
+const PROBLEMS = require('../data/problems');
+function problemTiles(ids, { title = 'What’s going on at your home?', intro = 'Pick what you’re dealing with — we’ll set up your free estimate for it.', stone = false } = {}) {
+  const list = ids.map((id) => PROBLEMS.find((p) => p.id === id));
+  return `<section class="section${stone ? ' section--stone' : ''}" aria-labelledby="problems-h"><div class="wrap">
+  <div class="section-head"><span class="eyebrow">Start here</span><h2 id="problems-h">${esc(title)}</h2><p class="lead">${esc(intro)}</p></div>
+  <div class="problems">${list.map((p) => {
+    const s = svcBy(p.service), label = p.title.replace(/\?$/, '');
+    return `<a class="problem" href="${svcUrl(s)}?problem=${encodeURIComponent(label)}#quote" data-problem="${esc(label)}" data-service="${esc(s.formValue)}" data-cta="problem-${p.id}">
+      <span class="problem__icon">${ICON[p.icon] || ICON.home}</span>
+      <span class="problem__body"><strong>${esc(p.title)}</strong><span>${esc(p.text)}</span><span class="link-arrow">${esc(p.cta)}</span></span></a>`;
+  }).join('')}</div>
+</div></section>`;
 }
 
 /* ---------- Header / footer ---------- */
@@ -281,7 +313,7 @@ function projectCard(p, { slider = true } = {}) {
   const media = p.before && slider
     ? `<div class="ba">${img(after, `After: ${altBase}`).replace('<img ', '<img draggable="false" ')}${img(before, `Before: ${altBase}`, { cls: 'ba__before' }).replace('<img ', '<img draggable="false" ')}<span class="ba__line"></span><span class="ba__tag ba__tag--b">Before</span><span class="ba__tag ba__tag--a">After</span><input type="range" min="0" max="100" value="50" autocomplete="off" aria-label="Drag to compare before and after: ${esc(p.title)}"></div>`
     : `<div class="card__img">${img(after, altBase)}</div>`;
-  return `<article class="proj" data-service="${p.service}" data-city="${p.city}">${media}<div class="proj__body"><p class="proj__meta">${esc(s.short)} · ${esc(c.name)}</p><h3>${esc(p.title)}</h3><p>${esc(p.scope)}</p></div></article>`;
+  return `<article class="proj" data-service="${p.service}" data-city="${p.city}" data-room="${esc(p.room || '')}">${media}<div class="proj__body"><p class="proj__meta">${esc(s.short)}${p.room ? ` · ${esc(p.room)}` : ''} · ${esc(c.name)}</p><h3>${esc(p.title)}</h3><p>${esc(p.scope)}</p></div></article>`;
 }
 
 function faqSection(items, { title = 'Frequently asked questions', stone = false } = {}) {
@@ -316,4 +348,4 @@ function financingCallout() {
 </div></div></section>`;
 }
 
-module.exports = { logoImg, picUrl, has, hasAddress, hasRating, pic, hasPhoto, site, services, cities, coreCities, esc, val, isPh, telHref, svcBy, cityBy, svcUrl, cityUrl, ICON, LOGO, img, callBtn, quoteBtn, quoteForm, header, footer, mobileBar, trustStrip, crumbs, processSection, reviewCard, reviewsCarousel, projectCard, faqSection, ctaBand, areasSection, financingCallout, PROCESS };
+module.exports = { problemTiles, PROBLEMS, logoImg, picUrl, has, hasAddress, hasRating, pic, hasPhoto, site, services, cities, coreCities, esc, val, isPh, telHref, svcBy, cityBy, svcUrl, cityUrl, ICON, LOGO, img, callBtn, quoteBtn, quoteForm, header, footer, mobileBar, trustStrip, crumbs, processSection, reviewCard, reviewsCarousel, projectCard, faqSection, ctaBand, areasSection, financingCallout, PROCESS };

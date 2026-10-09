@@ -13,13 +13,15 @@ A fully static, lead-generating website built from *Moda Building — Website Bu
 | Homepage, sections 1–10 in the brief's order | `/` |
 | 4 service pages (roofing first in nav, grid, footer) | `/roofing/`, `/basement-waterproofing/`, `/finished-basements/`, `/renovations/` |
 | 24 location pages, unique copy each | Roofing and waterproofing: 6 cities + `/metro-detroit/`. Finished basements: 4 target cities. Renovations: 6 cities |
-| Company pages | `/about/`, `/gallery/` (filter by service + city, before/after sliders), `/reviews/`, `/financing/`, `/contact/` |
+| Company pages | `/about/`, `/gallery/` (filter by service, room type and city — also via `?service=&room=&city=` — before/after sliders), `/reviews/`, `/financing/`, `/contact/` |
 | Blog (phase 2), 2 starter articles | `/blog/` |
 | Ad landing pages: no nav, one offer, one form, `noindex` | `/lp/roofing/`, `/lp/basement-waterproofing/`, `/lp/finished-basements/`, `/lp/renovations/` |
 | Thank-you page (separate URL for conversion counting) | `/thank-you/` |
 | Privacy policy + cookie notice (Google Consent Mode v2) | `/privacy-policy/` |
 | Designer's 2–3 brand options for owner approval | `/brand/` (noindex) |
 | `sitemap.xml`, `robots.txt`, `404.html` | site root |
+
+**Problem boxes** ("Roof leaking?", "Water in the basement?"…) on the homepage and each service page pre-fill the estimate form with the service and attach the problem to the lead (`src/data/problems.js`).
 
 **Every page includes:**
 - A sticky header with a tap-to-call phone number and a "Get a Free Estimate" button.
@@ -28,7 +30,7 @@ A fully static, lead-generating website built from *Moda Building — Website Bu
 - A quote form in the hero.
 - A closing call-to-action band with a second form.
 
-**Lead form:** the six required fields are name, phone (US mask), email, city dropdown plus optional address, budget and service.
+**Lead form:** an optional text-message consent checkbox (unticked by default, with STOP/HELP wording) and a hidden `problem` field set by the problem boxes accompany the six required fields: name, phone (US mask), email, city dropdown plus optional address, budget and service.
 - "Service desired" is pre-selected on service pages; the city is pre-selected on city pages.
 - Optional extras: a project message and a photo upload.
 - It is three steps on mobile (Service → Location/Budget → Contact) and a single form on desktop.

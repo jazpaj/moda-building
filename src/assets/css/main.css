@@ -509,3 +509,23 @@ ul { padding-left: 1.2em; }
   .lp-header .logo__img { height: 32px; }
   .lp-header .header__phone { font-size: .95rem; }
 }
+
+/* Problem-based entry points */
+.problems { display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
+.problem { display: flex; gap: 14px; align-items: flex-start; background: #fff; border: 1px solid var(--line); border-radius: var(--radius); padding: 18px; text-decoration: none; color: var(--ink-2); transition: border-color .15s, box-shadow .15s, transform .15s; }
+.problem:hover { border-color: var(--ink); box-shadow: var(--shadow); color: var(--ink-2); transform: translateY(-1px); }
+.problem__icon { width: 46px; height: 46px; border-radius: 12px; background: var(--stone); color: var(--ink); display: grid; place-items: center; flex: none; }
+.problem__icon svg { width: 24px; height: 24px; }
+.problem__body { display: flex; flex-direction: column; gap: 4px; font-size: .95rem; line-height: 1.5; }
+.problem__body strong { color: var(--ink); font-size: 1.06rem; }
+.problem__body .link-arrow { margin-top: 4px; font-size: .92rem; }
+.problem:hover .link-arrow { text-decoration: underline; }
+
+/* Text-message consent checkbox */
+.qf .qf-check { display: flex; gap: 10px; align-items: flex-start; }
+.qf .qf-check input[type=checkbox] { width: 20px; height: 20px; min-height: 0; flex: none; margin: 2px 0 0; padding: 0; accent-color: var(--ink); cursor: pointer; }
+.qf .qf-check label { font-weight: 700; font-size: .9rem; margin: 0; cursor: pointer; }
+.qf .qf-check small { display: block; font-weight: 400; font-size: .74rem; line-height: 1.45; color: var(--muted); margin-top: 3px; }
+/* Forms sit on a white card even inside dark photo heroes / dark sections — keep their ghost buttons dark */
+.hero--photo .qf-card .btn--ghost, .section--ink .qf-card .btn--ghost, .cta-band .qf-card .btn--ghost { color: var(--ink); border-color: var(--ink); background: transparent; }
+.hero--photo .qf-card .btn--ghost:hover, .section--ink .qf-card .btn--ghost:hover, .cta-band .qf-card .btn--ghost:hover { background: var(--ink); color: #fff; }

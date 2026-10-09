@@ -9,7 +9,7 @@ const ph = require('./src/lib/placeholders');
 const projects = require('./src/data/projects');
 const reviews = require('./src/data/reviews');
 const posts = require('./src/data/posts');
-const { picUrl, has, hasAddress, hasRating, pic, hasPhoto, site, services, cities, coreCities, esc, val, isPh, telHref, svcBy, cityBy, svcUrl, cityUrl, ICON, img, callBtn, quoteBtn, quoteForm, header, footer, mobileBar, trustStrip, crumbs, processSection, reviewCard, reviewsCarousel, projectCard, faqSection, ctaBand, areasSection, financingCallout } = ui;
+const { problemTiles, PROBLEMS, picUrl, has, hasAddress, hasRating, pic, hasPhoto, site, services, cities, coreCities, esc, val, isPh, telHref, svcBy, cityBy, svcUrl, cityUrl, ICON, img, callBtn, quoteBtn, quoteForm, header, footer, mobileBar, trustStrip, crumbs, processSection, reviewCard, reviewsCarousel, projectCard, faqSection, ctaBand, areasSection, financingCallout } = ui;
 
 const OUT = path.join(__dirname, 'site');
 // BASE_PATH (e.g. /moda-building) builds a preview for a subfolder host like GitHub Pages; previews are noindex.
@@ -195,6 +195,8 @@ ${trustStrip()}
   <div class="svc-grid">${svcCards}</div>
 </div></section>
 
+${problemTiles(PROBLEMS.home, { stone: true })}
+
 <section class="section section--stone"><div class="wrap">
   <div class="section-head"><span class="eyebrow">Why Moda Building</span><h2>Premium work. Straight answers.</h2></div>
   <div class="why why--4">${why.map(([i, h, p]) => `<div class="why__item"><div class="why__icon">${i}</div><div><h3>${h}</h3><p>${p}</p></div></div>`).join('')}</div>
@@ -226,6 +228,7 @@ for (const s of services) {
 ${crumbs([['Home', '/'], [s.name, svcUrl(s)]])}
 ${pageHero({ eyebrow: `${s.name} · ${s.coverage}`, h1: esc(s.h1), lead: esc(s.heroSub), bulletsList: ['Free in-home inspection and written quote', 'Licensed, insured &amp; warrantied', 'Financing on qualifying projects'], service: s.formValue, location: s.key, formTitle: `Get a free ${s.short.toLowerCase()} estimate`, media: heroPhoto(pic(`${sProjects[0].id}-after`), projAlt(sProjects[0])) })}
 ${trustStrip()}
+${problemTiles(PROBLEMS.filter((p) => p.service === s.key).map((p) => p.id), { title: `What’s going on with your ${s.key === 'roofing' ? 'roof' : s.key === 'renovations' ? 'home' : 'basement'}?`, stone: true })}
 
 <section class="section"><div class="wrap split">
   <div><span class="eyebrow">${esc(s.name)}</span><h2>${s.key === 'roofing' ? 'Built for Michigan weather' : s.key === 'basement-waterproofing' ? 'Find the cause. Fix it for good.' : s.key === 'finished-basements' ? 'Space that feels like the main floor' : 'Modern design, respectful of your home'}</h2>${s.intro.map((p) => `<p>${esc(p)}</p>`).join('')}
@@ -388,6 +391,7 @@ ${pageHero({ eyebrow: 'Portfolio', h1: 'Project gallery', lead: 'Real projects, 
   <div class="section-head"><h2>Browse projects</h2></div>
   <div class="filters" role="group" aria-label="Filter projects">
     <div><label for="f-service">Service</label><select id="f-service"><option value="">All services</option>${services.map((s) => `<option value="${s.key}">${esc(s.name)}</option>`).join('')}</select></div>
+    <div id="f-room-wrap"><label for="f-room">Room</label><select id="f-room"><option value="">All rooms</option>${[...new Set(projects.filter((p) => p.room).map((p) => p.room))].sort().map((r) => `<option>${esc(r)}</option>`).join('')}</select></div>
     <div><label for="f-city">City</label><select id="f-city"><option value="">All cities</option>${coreCities.map((c) => `<option value="${c.key}">${esc(c.name)}</option>`).join('')}</select></div>
     <p class="count" id="f-count" aria-live="polite"></p>
   </div>
@@ -522,7 +526,7 @@ ${crumbs([['Home', '/'], ['Privacy policy', '/privacy-policy/']])}
 <h2>Information we collect</h2>
 <ul><li><strong>Information you provide:</strong> name, phone number, email, city and optional street address, budget range, service requested, project details and any photos you upload through our estimate form.</li><li><strong>Advertising and campaign data:</strong> when you arrive from an ad or link, we record campaign parameters (such as UTM tags and Google or Meta click IDs) with your request so we know which campaigns work.</li><li><strong>Usage data:</strong> pages visited, device and browser information collected through cookies and similar technologies, if you consent.</li><li><strong>Phone calls:</strong> we may use a call tracking service that records the source of calls and, where disclosed, the call itself for quality and training.</li></ul>
 <h2>How we use information</h2>
-<ul><li>To respond to your request, schedule estimates and provide our services.</li><li>To contact you by phone, text message or email about your project. Message and data rates may apply; reply STOP to opt out of texts.</li><li>To measure and improve our website and advertising.</li></ul>
+<ul><li>To respond to your request, schedule estimates and provide our services.</li><li>To contact you by phone or email about your project.</li><li>To send text messages about your estimate and appointment, <strong>only if you opt in</strong> by checking the text-message box on our form. Message frequency varies; message and data rates may apply. Reply STOP to opt out or HELP for help. Consent to texts is not a condition of any purchase. We do not share your phone number or text-message consent with third parties for their marketing.</li><li>To measure and improve our website and advertising.</li></ul>
 <p>We do not sell your personal information.</p>
 <h2 id="cookies">Cookies and advertising</h2>
 <p>With your consent, we use Google Analytics 4, Google Ads conversion tracking and the Meta Pixel (including Meta’s Conversions API) to understand how visitors use our site and to measure our ads. These providers may set cookies and process data under their own privacy policies. You can accept or decline non-essential cookies in our cookie notice and change your choice at any time using “Cookie settings” in the footer. You can also manage ad preferences at <a href="https://adssettings.google.com" rel="noopener">Google Ad Settings</a> and in your Meta account settings.</p>
