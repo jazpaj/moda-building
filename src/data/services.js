@@ -1,6 +1,8 @@
 // Service page content. Order = priority order from the brief (roofing first everywhere).
 // `formValue` must match an option in the lead form's "Service desired" dropdown.
 
+// cityPagesLive: only roofing city pages are published. Waterproofing / basements / renovations city pages are
+// held back until there are real local projects to show (Round 2 audit: 17 near-identical pages = thin content).
 module.exports = [
   {
     key: 'roofing',
@@ -11,6 +13,7 @@ module.exports = [
     navLabel: 'Roofing',
     coverage: 'All of Metro Detroit',
     cityKeys: ['birmingham', 'royal-oak', 'bloomfield-hills', 'rochester-hills', 'west-bloomfield', 'beverly-hills', 'metro-detroit'],
+    cityPagesLive: true,
     title: 'Roofing Contractor Metro Detroit | Roof Replacement | Moda Building',
     description: 'Metro Detroit roofing contractor for roof replacement, roof repair, storm and hail damage, insurance claims and gutters. Free roof inspection and written estimate.',
     keyword: 'roofing contractor Metro Detroit',
@@ -255,7 +258,7 @@ module.exports = [
       { q: 'Do you provide design, or do I need an architect?', a: 'We are design-build: our team handles design, drawings and selections. For additions and major structural changes we coordinate engineered and architectural drawings as needed for permits.' },
       { q: 'How do you handle surprises behind the walls?', a: 'Older Oakland County homes can hide outdated wiring or past repairs. We investigate during design where we can, include allowances in the proposal, and never proceed with a change without your written approval.' },
       { q: 'Do you serve areas outside the six core cities?', a: 'Our renovation work focuses on Birmingham, Royal Oak, Bloomfield Hills, Rochester Hills, West Bloomfield and Beverly Hills. Elsewhere in Metro Detroit, renovations are available on request — just ask.' },
-      { q: 'Is financing available?', a: 'Yes, financing options are available on qualifying projects. See our financing page or ask during your consultation.' }
+      { q: 'Is financing available?', a: 'Yes, financing options are available on qualifying projects. Ask about current options during your free consultation.' }
     ],
     crossSell: { to: 'finished-basements', text: 'Renovating upstairs? The basement is often the best place to add the space you need — a guest suite, gym or family room.', cta: 'See finished basements' }
   }

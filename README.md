@@ -88,3 +88,35 @@ On the preview, the form skips the POST and goes straight to `/thank-you/`, the 
 - Website files are in `src/assets/brand/`: `logo.webp` (header, ad landing pages), `logo-light.webp` (footer) and `logo-600.png` (Google/schema logo).
 - Favicons in `src/assets/`: `favicon.ico` (16/32/48), `favicon-32.png`, `apple-touch-icon.png` (180), `icon-192.png` / `icon-512.png` and `site.webmanifest`. `favicon.ico` is also copied to the site root.
 - Logo colors: navy `#1e2a34`, grey `#808080`, blue `#07649f`.
+
+## Round 2 changes (Oct 2026)
+- **Menu:** 5 items: Roofing · Basements (Waterproofing / Finished Basements) · Renovations · Our Work · About. City links live in the footer; the Blog is linked from the footer only.
+- **One form per page:**
+  - Desktop shows a single step and phones show steps. ZIP is asked once (the city dropdown is gone), Budget is optional, and the photo upload and SMS consent stay.
+  - The bottom of each page now has a phone + "Get a Free Estimate" band that scrolls up to the form.
+- **Repeated blocks removed:** "How it works" and the trust strip are on the homepage only (plus the landing pages' own versions). The 16-review carousel is gone.
+- **Homepage:** 8 sections: hero, trust strip, problem cards (3×2), 3 before/afters, reviews, How it works, 4 FAQs, final CTA.
+- **Held back:** city pages for waterproofing, finished basements and renovations (17 pages) until there are real local projects. Only roofing city pages are built. Turn others on with `cityPagesLive: true` in `src/data/services.js`.
+- **Landing pages (noindex, no menu, one form):**
+  - `/lp/roofing/` and `/lp/basements/`, plus `/lp/renovations/` on the same template.
+  - Each has its own thank-you URL (`/lp/<name>/thank-you/`) so conversions count separately.
+  - If `trackingPhone` is set in `site.json`, the call-tracking number shows on these pages only.
+- **Layout:**
+  - One shared container: 1200px wide with 24px side padding.
+  - Section spacing: 80px on desktop, 48px on phones.
+  - Breadcrumbs sit inside the hero.
+  - Card grids always come in full rows; the gallery's last row is centered.
+  - FAQ uses two columns, and single section buttons are centered.
+
+## Launch blockers — owner inputs still needed
+| Blocker | What to provide | Where it goes |
+|---|---|---|
+| Reviews | Confirm each review in `src/data/reviews.js` is a real Google review (or replace them), **or** provide the Google Business Profile review link / reviews widget embed | `reviewsVerified: true`, `googleReviewUrl`, `googleReviewsEmbed` in `src/data/site.json` |
+| Rating | Confirm the real Google rating + review count | `googleRating`, `googleReviewCount`, `ratingVerified: true` |
+| Photos | 15–20 real job photos (before/after), labeled by service + city. The current set is AI-generated | `src/img/photos/` (same filenames) |
+| License #, address, years | Michigan builder license #, street address (for Google Business Profile), years in business | `license`, `address`, `yearsInBusiness` |
+| Owner | Name, title, photo, short bio for About | `owner` |
+| Certifications | e.g. GAF / Owens Corning / CertainTeed | `certifications` |
+| Financing | Lender name, example payment/terms, apply link (the page is cut until these exist) | `financing.partner`, `financing.terms`, `financing.applyUrl` |
+| Prices | Owner must confirm the price ranges on each service page | `priceRanges` in `src/data/services.js` |
+| Indexing | The launch build (`node build.js`) is already `index`; only the GitHub preview is `noindex` | none |

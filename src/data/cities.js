@@ -270,7 +270,7 @@ module.exports = [
     key: 'metro-detroit',
     name: 'Metro Detroit',
     slug: 'metro-detroit',
-    county: 'Oakland, Macomb & Wayne Counties',
+    county: 'Oakland County & all of Metro Detroit',
     isRegion: true,
     neighborhoods: ['Troy', 'Southfield', 'Ferndale', 'Novi', 'Farmington Hills', 'Sterling Heights', 'Grosse Pointe', 'Livonia', 'Dearborn', 'Clawson', 'Berkley', 'Auburn Hills'],
     nearby: ['birmingham', 'royal-oak', 'bloomfield-hills', 'rochester-hills', 'west-bloomfield', 'beverly-hills'],
@@ -279,19 +279,19 @@ module.exports = [
     pages: {
       roofing: {
         intro: [
-          'Moda Building serves homeowners across Metro Detroit — Oakland, Macomb and Wayne counties — for roof replacement, roof repair, storm damage and gutters. From pre-war brick homes in Ferndale and Grosse Pointe to newer subdivisions in Novi and Sterling Heights, every roof gets the same inspection, the same written quote and the same cleanup standard.',
+          'Moda Building serves homeowners across Oakland County and all of Metro Detroit for roof replacement, roof repair, storm damage and gutters. From pre-war brick homes in Ferndale and Grosse Pointe to newer subdivisions in Novi and Sterling Heights, every roof gets the same inspection, the same written quote and the same cleanup standard.',
           'Southeast Michigan weather is the common thread: freeze–thaw cycles, ice dams and fast-moving summer storms with hail and wind. We build roofs to handle all of it.'
         ],
-        local: ['Free inspections throughout Oakland, Macomb and Wayne counties', 'Storm damage documentation and adjuster meetings region-wide', 'Emergency tarping after wind and hail events'],
+        local: ['Free inspections throughout Oakland County and all of Metro Detroit', 'Storm damage documentation and adjuster meetings region-wide', 'Emergency tarping after wind and hail events'],
         faq: { q: 'Do you charge more to travel outside Oakland County?', a: 'No. Roof inspections and estimates are free throughout Metro Detroit.' }
       },
       'basement-waterproofing': {
         intro: [
-          'From Livonia to St. Clair Shores, Metro Detroit basements share the same adversary: heavy clay soil that holds water against foundations, and spring thaws that push it through every crack. Moda Building waterproofs basements throughout Oakland, Macomb and Wayne counties.',
+          'From Livonia to St. Clair Shores, Metro Detroit basements share the same adversary: heavy clay soil that holds water against foundations, and spring thaws that push it through every crack. Moda Building waterproofs basements throughout Oakland County and all of Metro Detroit.',
           'Whether you have a block foundation in an older inner-ring suburb or poured walls in a newer subdivision, we diagnose the cause and recommend the fix that will last.'
         ],
         local: ['Crack repair, drain tile and sump systems region-wide', 'Free basement inspections throughout Metro Detroit', 'Written, transferable warranty on waterproofing systems'],
-        faq: { q: 'Which areas do you cover for waterproofing?', a: 'All of Metro Detroit, including Oakland, Macomb and Wayne counties. If you are unsure whether we serve your city, call us or submit the form and we will confirm.' }
+        faq: { q: 'Which areas do you cover for waterproofing?', a: 'Oakland County and all of Metro Detroit. If you are unsure whether we serve your city, call us or submit the form and we will confirm.' }
       }
     }
   }

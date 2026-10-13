@@ -82,6 +82,7 @@
     if (el.required && !v) ok = false;
     else if (el.type === 'email' && v) ok = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v);
     else if (el.type === 'tel' && v) ok = digits(v).length === 10;
+    else if (el.name === 'zip' && v) ok = /^\d{5}$/.test(v);
     else if (el.type === 'file' && el.files && el.files[0]) ok = el.files[0].size <= 8 * 1024 * 1024;
     if (f) f.classList.toggle('has-error', !ok);
     el.classList.toggle('is-invalid', !ok);
@@ -92,7 +93,6 @@
     var bad = null;
     $$('input, select, textarea', scope).forEach(function (el) {
       if (el.type === 'hidden' || el.closest('.hp') || (el.offsetParent === null && !el.closest('.qf-step'))) return;
-      if (el.closest('.other-city') && !el.closest('.other-city').classList.contains('show')) return;
       if (!validField(el) && !bad) bad = el;
     });
     if (bad) {
@@ -126,7 +126,9 @@
       var d = e.detail || {};
       if (d.service && form.elements.service) { form.elements.service.value = d.service; validField(form.elements.service); }
       if (d.problem && form.elements.problem) form.elements.problem.value = d.problem;
-      if (form.classList.contains('is-steps') && form.elements.service.value) show(1);
+      // Skip ahead only when the first step asks for nothing but the service (main site). LP step 1 also asks for ZIP.
+      var firstFields = $$('input:not([type=hidden]), select', steps[0]).filter(function (x) { return !x.closest('.hp'); });
+      if (form.classList.contains('is-steps') && form.elements.service.value && firstFields.length === 1) show(1);
     });
 
     form.addEventListener('focusin', function () {
@@ -143,12 +145,8 @@
 
     var tel = form.elements.phone;
     if (tel) tel.addEventListener('input', function () { tel.value = fmtPhone(tel.value); });
-    var city = form.elements.city, other = $('.other-city', form);
-    if (city && other) city.addEventListener('change', function () {
-      var on = city.value === 'Other';
-      other.classList.toggle('show', on);
-      other.querySelector('input').required = on;
-    });
+    var zip = form.elements.zip;
+    if (zip) zip.addEventListener('input', function () { zip.value = zip.value.replace(/\D/g, '').slice(0, 5); });
     $$('input, select, textarea', form).forEach(function (el) {
       el.addEventListener('blur', function () { if (el.value) validField(el); });
       el.addEventListener('change', function () { if (el.classList.contains('is-invalid')) validField(el); });
@@ -165,12 +163,12 @@
         return;
       }
       if (form.elements.company_website && form.elements.company_website.value) { e.preventDefault(); return; }
-      var lead = { problem: form.elements.problem ? form.elements.problem.value : '', service: form.elements.service.value, city: form.elements.city.value, budget: form.elements.budget.value, event_id: form.elements.event_id.value, form_location: form.elements.form_location.value };
+      var lead = { problem: form.elements.problem ? form.elements.problem.value : '', service: form.elements.service.value, city: form.elements.city.value, zip: form.elements.zip ? form.elements.zip.value : '', budget: form.elements.budget.value, event_id: form.elements.event_id.value, form_location: form.elements.form_location.value };
       try { sessionStorage.setItem('moda_lead', JSON.stringify(lead)); } catch (err) {}
-      push({ event: 'form_submit', problem: lead.problem, service: lead.service, city: lead.city, budget: lead.budget, form_location: lead.form_location });
+      push({ event: 'form_submit', problem: lead.problem, service: lead.service, city: lead.city, zip: lead.zip, budget: lead.budget, form_location: lead.form_location });
       var btn = $('button[type=submit]', form); if (btn) { btn.disabled = true; btn.textContent = 'Sending…'; }
       // Static preview (no form backend on localhost or GitHub Pages): go straight to the thank-you page.
-      if (/^(localhost|127\.0\.0\.1|)$|\.github\.io$/.test(location.hostname)) { e.preventDefault(); location.href = (d.documentElement.getAttribute('data-base') || '') + '/thank-you/'; }
+      if (/^(localhost|127\.0\.0\.1|)$|\.github\.io$/.test(location.hostname)) { e.preventDefault(); location.href = form.getAttribute('action'); } // action already includes the base path (e.g. /lp/roofing/thank-you/)
     });
   });
 
@@ -207,7 +205,7 @@
   if (d.body.hasAttribute('data-thankyou')) {
     var lead = null;
     try { lead = JSON.parse(sessionStorage.getItem('moda_lead')); sessionStorage.removeItem('moda_lead'); } catch (e) {}
-    if (lead) push({ event: 'generate_lead', problem: lead.problem, service: lead.service, city: lead.city, budget: lead.budget, event_id: lead.event_id, form_location: lead.form_location });
+    if (lead) push({ event: 'generate_lead', landing_page_variant: d.body.getAttribute('data-lp') || 'main', problem: lead.problem, service: lead.service, zip: lead.zip, city: lead.city, budget: lead.budget, event_id: lead.event_id, form_location: lead.form_location });
   }
 
   /* ---------- Gallery filters (service, room, city; also from ?service= &room= &city=) ---------- */

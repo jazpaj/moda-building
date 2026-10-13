@@ -10,7 +10,13 @@ const val = (v) => (isPh(v) ? `<mark class="ph">${esc(v.replace(/^\[|\]$/g, ''))
 // has(): a real, owner-confirmed value is present (empty or [bracketed] = unknown → show neutral copy instead).
 const has = (v) => (typeof v === 'string' ? v.trim() !== '' && !isPh(v) : !!v);
 const hasAddress = () => has(site.address.street) && has(site.address.city) && has(site.address.zip);
-const hasRating = () => has(site.googleRating) && has(site.googleReviewCount);
+// Rating / reviews only show once the owner has verified them (site.json ratingVerified / reviewsVerified).
+const hasRating = () => site.ratingVerified === true && has(site.googleRating) && has(site.googleReviewCount);
+const ALL_REVIEWS = require('../data/reviews');
+const liveReviews = () => (site.reviewsVerified === true ? ALL_REVIEWS.filter((r) => !r.sample) : []);
+const reviewsPageLive = () => has(site.googleReviewsEmbed) || has(site.googleReviewUrl) || liveReviews().length >= 3;
+const financingPageLive = () => has(site.financing.partner) && has(site.financing.applyUrl);
+const lpPhone = () => (has(site.trackingPhone) ? site.trackingPhone : site.phone); // call-tracking number: landing pages only
 const telHref = (p) => 'tel:+1' + p.replace(/\D/g, '').slice(-10);
 const svcBy = (k) => services.find((s) => s.key === k);
 const cityBy = (k) => cities.find((c) => c.key === k);
@@ -83,63 +89,41 @@ function srcAttrs(src, sizes = SIZES) {
 const img = (src, alt, { eager = false, cls = '', w = 1200, h = 800, sizes } = {}) =>
   `<img ${srcAttrs(src, sizes)} alt="${esc(alt)}" width="${w}" height="${h}"${cls ? ` class="${cls}"` : ''} ${eager ? 'fetchpriority="high" decoding="async"' : 'loading="lazy" decoding="async"'}>`;
 
-const callBtn = (loc, cls = 'btn btn--ghost', label) =>
-  `<a class="${cls}" href="${telHref(site.phone)}" data-loc="${loc}">${ICON.phone}<span>${label || 'Call ' + esc(site.phone)}</span></a>`;
+const callBtn = (loc, cls = 'btn btn--ghost', label, phone = site.phone) =>
+  `<a class="${cls}" href="${telHref(phone)}" data-loc="${loc}">${ICON.phone}<span>${label || 'Call ' + esc(phone)}</span></a>`;
 const quoteBtn = (loc, label = 'Get a Free Estimate', href = '#quote') => `<a class="btn btn--cta" href="${href}" data-cta="${loc}">${label}</a>`;
 
 function stars(n) { const r = Math.round(n); return '★★★★★'.slice(0, r) + '☆☆☆☆☆'.slice(0, 5 - r); }
 
-/* ---------- Lead form ---------- */
+
+/* ---------- Lead form ----------
+   One form, reused site-wide. Desktop: single step. Phones: steps.
+   variant 'main' → 3 steps (Service → ZIP/Budget/Address → Contact)
+   variant 'lp'   → 2 steps (Service + ZIP + Budget → Contact), as specified for the ad landing pages. */
+const MAIN_SERVICES = ['Roofing', 'Basement Waterproofing', 'Finished Basement', 'Full Renovation', 'Other'];
 let formCount = 0;
-function quoteForm({ service = '', city = '', location = 'page', title = 'Get your free estimate', sub = 'Takes about 60 seconds. We reply within one business day — usually much sooner.', id = 'quote', heading = 'h2' } = {}) {
+function quoteForm({ service = '', city = '', location = 'page', title = 'Get your free estimate', sub = 'Takes about 60 seconds. We reply within one business day — usually much sooner.', id = 'quote', heading = 'h2', action = '/thank-you/', options = MAIN_SERVICES, variant = 'main', photo = true, address = true, submitLabel = 'Get My Free Estimate', serviceLabel = 'Service desired' } = {}) {
   const n = ++formCount;
   const f = (name) => `f${n}-${name}`;
-  const svcOpts = ['Roofing', 'Basement Waterproofing', 'Finished Basement', 'Full Renovation', 'Other']
-    .map((o) => `<option${o === service ? ' selected' : ''}>${o}</option>`).join('');
-  const cityOpts = coreCities.map((c) => `<option${c.name === city ? ' selected' : ''}>${c.name}</option>`).join('') + '<option value="Other">Other city in Metro Detroit</option>';
+  const svcOpts = options.map((o) => `<option${o === service ? ' selected' : ''}>${esc(o)}</option>`).join('');
   const budgetOpts = site.budgets.map((b) => `<option>${esc(b)}</option>`).join('');
   const hidden = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content', 'gclid', 'gbraid', 'wbraid', 'fbclid', 'msclkid', 'first_touch', 'landing_page', 'referrer', 'page_url', 'fbp', 'fbc', 'event_id']
     .map((h) => `<input type="hidden" name="${h}">`).join('');
   const turnstile = site.tracking.turnstileSiteKey ? `<div class="cf-turnstile" data-sitekey="${esc(site.tracking.turnstileSiteKey)}" data-size="flexible"></div>` : '';
-  return `<div class="qf-card" id="${id}">
-  <${heading} class="qf-title">${esc(title)}</${heading}>
-  <p class="qf-sub">${esc(sub)}</p>
-  <form class="qf on-first" name="estimate" method="POST" action="/thank-you/" data-netlify="true" netlify-honeypot="company_website" enctype="multipart/form-data" novalidate>
-    <input type="hidden" name="form-name" value="estimate">
-    <input type="hidden" name="form_location" value="${esc(location)}">
-    <input type="hidden" name="problem">
-    ${hidden}
-    <div class="hp" aria-hidden="true"><label for="${f('hp')}">Leave this field empty</label><input id="${f('hp')}" name="company_website" tabindex="-1" autocomplete="off"></div>
-    <p class="qf-steptext" aria-live="polite">Step 1 of 3</p>
-    <div class="qf-progress" aria-hidden="true"><span class="on"></span><span></span><span></span></div>
-
-    <fieldset class="qf-step is-active">
-      <legend class="sr-only">Your project</legend>
-      <div class="field"><label for="${f('service')}">Service desired</label>
-        <select id="${f('service')}" name="service" required aria-describedby="${f('service')}-e"><option value="">Choose a service</option>${svcOpts}</select>
-        <p class="err" id="${f('service')}-e">Please choose a service.</p></div>
-    </fieldset>
-
-    <fieldset class="qf-step">
-      <legend class="sr-only">Location and budget</legend>
-      <div class="row2">
-        <div class="field"><label for="${f('city')}">City</label>
-          <select id="${f('city')}" name="city" required aria-describedby="${f('city')}-e"><option value="">Select city</option>${cityOpts}</select>
-          <p class="err" id="${f('city')}-e">Please choose your city.</p></div>
-        <div class="field"><label for="${f('budget')}">Budget</label>
-          <select id="${f('budget')}" name="budget" required aria-describedby="${f('budget')}-e"><option value="">Select range</option>${budgetOpts}</select>
-          <p class="err" id="${f('budget')}-e">Please choose a budget range.</p></div>
-      </div>
-      <div class="field other-city"><label for="${f('city_other')}">Your city or ZIP code</label>
-        <input id="${f('city_other')}" name="city_other" autocomplete="address-level2" aria-describedby="${f('city_other')}-e">
-        <p class="err" id="${f('city_other')}-e">Please enter your city or ZIP.</p></div>
-      <div class="field"><label for="${f('address')}">Street address <span class="opt">(optional)</span></label>
-        <input id="${f('address')}" name="address" autocomplete="street-address"></div>
-    </fieldset>
-
-    <fieldset class="qf-step">
-      <legend class="sr-only">Contact information</legend>
-      <div class="field"><label for="${f('name')}">Full name</label>
+  const serviceField = `<div class="field"><label for="${f('service')}">${esc(serviceLabel)}</label>
+        <select id="${f('service')}" name="service" required aria-describedby="${f('service')}-e"><option value="">Choose one</option>${svcOpts}</select>
+        <p class="err" id="${f('service')}-e">Please choose an option.</p></div>`;
+  const zipField = `<div class="field"><label for="${f('zip')}">ZIP code</label>
+          <input id="${f('zip')}" name="zip" inputmode="numeric" autocomplete="postal-code" maxlength="5" placeholder="e.g. 48009" required aria-describedby="${f('zip')}-e">
+          <p class="err" id="${f('zip')}-e">Please enter a 5-digit ZIP code.</p></div>`;
+  const budgetField = `<div class="field"><label for="${f('budget')}">Budget <span class="opt">(optional)</span></label>
+          <select id="${f('budget')}" name="budget"><option value="">Select range</option>${budgetOpts}</select></div>`;
+  const addressField = address ? `<div class="field"><label for="${f('address')}">Street address <span class="opt">(optional)</span></label>
+        <input id="${f('address')}" name="address" autocomplete="street-address"></div>` : '';
+  const photoField = `<div class="field"><label for="${f('photo')}">Add a photo <span class="opt">(great for roof or leak damage)</span></label>
+        <input id="${f('photo')}" name="photo" type="file" accept="image/*" aria-describedby="${f('photo')}-e">
+        <p class="err" id="${f('photo')}-e">Please choose an image under 8 MB.</p></div>`;
+  const contact = `<div class="field"><label for="${f('name')}">Full name</label>
         <input id="${f('name')}" name="name" autocomplete="name" required aria-describedby="${f('name')}-e">
         <p class="err" id="${f('name')}-e">Please enter your name.</p></div>
       <div class="row2">
@@ -154,25 +138,39 @@ function quoteForm({ service = '', city = '', location = 'page', title = 'Get yo
         <input type="checkbox" id="${f('sms')}" name="sms_consent" value="yes">
         <label for="${f('sms')}">Text me updates about my estimate <span class="opt">(optional)</span>
           <small>By checking this box, you agree to receive text messages from Moda Building about your estimate and appointment at the number above. Message frequency varies. Msg &amp; data rates may apply. Reply STOP to opt out, HELP for help. Consent is not required to get an estimate.</small></label>
-      </div>
-      <details class="qf-more"><summary>Add project details or a photo <span class="opt">(optional)</span></summary>
-      <div class="field"><label for="${f('message')}">Tell us about your project</label>
-        <textarea id="${f('message')}" name="message" rows="3"></textarea></div>
-      <div class="field"><label for="${f('photo')}">Add a photo <span class="opt">(great for roof or leak damage)</span></label>
-        <input id="${f('photo')}" name="photo" type="file" accept="image/*" aria-describedby="${f('photo')}-e">
-        <p class="err" id="${f('photo')}-e">Please choose an image under 8 MB.</p></div>
-      </details>
-      ${turnstile}
-    </fieldset>
-
+      </div>`;
+  const steps = variant === 'lp'
+    ? [
+      `<legend class="sr-only">Your project</legend>${serviceField}<div class="row2">${zipField}${budgetField}</div>`,
+      `<legend class="sr-only">Contact information</legend>${contact}${photo ? `<details class="qf-more"><summary>Add a photo <span class="opt">(optional)</span></summary>${photoField}</details>` : ''}${turnstile}`
+    ]
+    : [
+      `<legend class="sr-only">Your project</legend>${serviceField}`,
+      `<legend class="sr-only">Location and budget</legend><div class="row2">${zipField}${budgetField}</div>${addressField}`,
+      `<legend class="sr-only">Contact information</legend>${contact}${photo ? `<details class="qf-more"><summary>Add project details or a photo <span class="opt">(optional)</span></summary>
+      <div class="field"><label for="${f('message')}">Tell us about your project</label><textarea id="${f('message')}" name="message" rows="3"></textarea></div>${photoField}</details>` : ''}${turnstile}`
+    ];
+  return `<div class="qf-card" id="${id}">
+  <${heading} class="qf-title">${esc(title)}</${heading}>
+  <p class="qf-sub">${esc(sub)}</p>
+  <form class="qf on-first" name="estimate" method="POST" action="${action}" data-netlify="true" netlify-honeypot="company_website" enctype="multipart/form-data" novalidate>
+    <input type="hidden" name="form-name" value="estimate">
+    <input type="hidden" name="form_location" value="${esc(location)}">
+    <input type="hidden" name="problem">
+    <input type="hidden" name="city" value="${esc(city)}">
+    ${hidden}
+    <div class="hp" aria-hidden="true"><label for="${f('hp')}">Leave this field empty</label><input id="${f('hp')}" name="company_website" tabindex="-1" autocomplete="off"></div>
+    <p class="qf-steptext" aria-live="polite">Step 1 of ${steps.length}</p>
+    <div class="qf-progress" aria-hidden="true">${steps.map((_, i) => `<span${i === 0 ? ' class="on"' : ''}></span>`).join('')}</div>
+    ${steps.map((html, i) => `<fieldset class="qf-step${i === 0 ? ' is-active' : ''}">${html}</fieldset>`).join('\n    ')}
     <div class="qf-nav">
       <button type="button" class="btn btn--ghost qf-back" aria-label="Previous step">Back</button>
       <button type="button" class="btn btn--cta qf-next">Continue</button>
-      <button type="submit" class="btn btn--cta qf-submit">Get My Free Estimate</button>
+      <button type="submit" class="btn btn--cta qf-submit">${esc(submitLabel)}</button>
     </div>
     <p class="consent">By submitting, you agree Moda Building may contact you by phone or email about your project. We only text you if you check the box above. No spam, ever. See our <a href="/privacy-policy/">privacy policy</a>.</p>
   </form>
-  <div class="qf-trust"><span>Free, no-obligation</span><span>Licensed &amp; insured</span><span>Fast response</span></div>
+  <div class="qf-trust"><span>Free, no-obligation</span><span>Licensed &amp; insured${has(site.license) ? ` · MI Lic. ${esc(site.license)}` : ''}</span><span>Fast response</span></div>
 </div>`;
 }
 
@@ -181,8 +179,8 @@ const PROBLEMS = require('../data/problems');
 function problemTiles(ids, { title = 'What’s going on at your home?', intro = 'Pick what you’re dealing with — we’ll set up your free estimate for it.', stone = false } = {}) {
   const list = ids.map((id) => PROBLEMS.find((p) => p.id === id));
   return `<section class="section${stone ? ' section--stone' : ''}" aria-labelledby="problems-h"><div class="wrap">
-  <div class="section-head"><span class="eyebrow">Start here</span><h2 id="problems-h">${esc(title)}</h2><p class="lead">${esc(intro)}</p></div>
-  <div class="problems">${list.map((p) => {
+  <div class="section-head section-head--center"><span class="eyebrow">Start here</span><h2 id="problems-h">${esc(title)}</h2><p class="lead">${esc(intro)}</p></div>
+  <div class="problems problems--${list.length % 3 === 0 && list.length > 3 ? '6' : '3'}">${list.map((p) => {
     const s = svcBy(p.service), label = p.title.replace(/\?$/, '');
     return `<a class="problem" href="${svcUrl(s)}?problem=${encodeURIComponent(label)}#quote" data-problem="${esc(label)}" data-service="${esc(s.formValue)}" data-cta="problem-${p.id}">
       <span class="problem__icon">${ICON[p.icon] || ICON.home}</span>
@@ -192,86 +190,97 @@ function problemTiles(ids, { title = 'What’s going on at your home?', intro = 
 }
 
 /* ---------- Header / footer ---------- */
-function navData() {
-  return services.map((s) => ({
-    s,
-    subs: s.subservices.filter((x) => x.id !== 'cost-ranges' && x.id !== 'warranty').slice(0, 6),
-    cities: s.cityKeys.map(cityBy)
-  }));
-}
+// Main menu: 5 items only (Roofing · Basements · Renovations · Our Work · About). Cities live in the footer.
+const NAV = [
+  { key: 'roofing', label: 'Roofing', href: '/roofing/' },
+  { key: 'basements', label: 'Basements', children: [['Basement Waterproofing', '/basement-waterproofing/'], ['Finished Basements', '/finished-basements/']] },
+  { key: 'renovations', label: 'Renovations', href: '/renovations/' },
+  { key: 'work', label: 'Our Work', href: '/gallery/' },
+  { key: 'about', label: 'About', href: '/about/' }
+];
+const navKeyFor = (current) => ({ 'basement-waterproofing': 'basements', 'finished-basements': 'basements', gallery: 'work' }[current] || current);
 
-function header({ minimal = false, current = '' } = {}) {
-  const preview = site.preview ? `<div class="preview-bar" role="note"><strong>Preview build:</strong> highlighted items, sample reviews and illustrated placeholder photos are awaiting real content from Moda Building.</div>` : '';
+function header({ minimal = false, current = '', lp = null } = {}) {
   if (minimal) {
-    return `${preview}<header class="header lp-header"><div class="wrap header__in">
+    const phone = lp ? lp.phone : site.phone;
+    return `<header class="header lp-header"><div class="wrap header__in">
   <span class="logo">${logoImg({ alt: 'Moda Building' })}</span>
-  <a class="header__phone" href="${telHref(site.phone)}" data-loc="header"><small>Free estimate — call</small>${esc(site.phone)}</a>
+  <div class="header__actions">
+    <a class="header__phone" href="${telHref(phone)}" data-loc="header">${esc(phone)}</a>
+    <a class="icon-btn call-icon" href="${telHref(phone)}" data-loc="header-icon" aria-label="Call ${esc(phone)}">${ICON.phone}</a>
+    ${lp ? `<a class="btn btn--cta lp-cta" href="#quote" data-cta="header">${esc(lp.cta)}</a>` : ''}
+  </div>
 </div></header>`;
   }
-  const nd = navData();
-  const desktop = nd.map(({ s, subs, cities: cs }) => `<li><button type="button" aria-expanded="false"${current === s.key ? ' aria-current="true"' : ''}>${esc(s.navLabel)}</button>
-    <div class="dd dd--wide"><div><p class="dd__label">${esc(s.short)} services</p><a href="${svcUrl(s)}">${esc(s.name)} overview</a>${subs.map((x) => `<a href="${svcUrl(s)}#${x.id}">${esc(x.title.replace(/ and .*$| &.*$/, ''))}</a>`).join('')}</div>
-    <div><p class="dd__label">${esc(s.short)} by city</p>${cs.map((c) => `<a href="${cityUrl(s, c)}">${esc(c.name)}</a>`).join('')}</div></div></li>`).join('');
-  const company = [['About', '/about/'], ['Gallery', '/gallery/'], ['Reviews', '/reviews/'], ['Financing', '/financing/'], ['Blog', '/blog/'], ['Contact', '/contact/']];
-  const mobile = nd.map(({ s, cities: cs }) => `<li><details><summary>${esc(s.name)}</summary><ul><li><a href="${svcUrl(s)}">${esc(s.name)} overview</a></li>${cs.map((c) => `<li><a href="${cityUrl(s, c)}">${esc(s.short)} in ${esc(c.name)}</a></li>`).join('')}</ul></details></li>`).join('');
-  return `${preview}<header class="header"><div class="wrap header__in">
+  const cur = navKeyFor(current);
+  const desktop = NAV.map((n) => n.children
+    ? `<li><button type="button" aria-expanded="false"${cur === n.key ? ' aria-current="true"' : ''}>${n.label}</button><div class="dd">${n.children.map(([l, h]) => `<a href="${h}">${l}</a>`).join('')}</div></li>`
+    : `<li><a href="${n.href}"${cur === n.key ? ' aria-current="page"' : ''}>${n.label}</a></li>`).join('');
+  const mobile = NAV.map((n) => n.children
+    ? `<li><details><summary>${n.label}</summary><ul>${n.children.map(([l, h]) => `<li><a href="${h}">${l}</a></li>`).join('')}</ul></details></li>`
+    : `<li><a href="${n.href}">${n.label}</a></li>`).join('');
+  return `<header class="header"><div class="wrap header__in">
   <a class="logo" href="/" aria-label="Moda Building home">${LOGO}</a>
-  <nav class="nav" aria-label="Main"><ul>${desktop}
-    <li><button type="button" aria-expanded="false">Company</button><div class="dd">${company.map(([l, h]) => `<a href="${h}">${l}</a>`).join('')}</div></li>
-  </ul></nav>
+  <nav class="nav" aria-label="Main"><ul>${desktop}</ul></nav>
   <div class="header__actions">
     <a class="header__phone" href="${telHref(site.phone)}" data-loc="header"><small>Call for a free estimate</small>${esc(site.phone)}</a>
     <a class="icon-btn call-icon" href="${telHref(site.phone)}" data-loc="header-icon" aria-label="Call ${esc(site.phone)}">${ICON.phone}</a>
-    <a class="btn btn--cta" href="#quote" data-cta="header"><span class="cta-long">Get a Free Estimate</span><span class="cta-short">Free Estimate</span></a>
+    <a class="btn btn--cta" href="#quote" data-cta="header">Get a Free Estimate</a>
     <button class="icon-btn menu-toggle" type="button" aria-expanded="false" aria-controls="mnav" aria-label="Menu">${ICON.menu}</button>
   </div>
 </div>
-<nav class="mnav" id="mnav" aria-label="Mobile"><ul>${mobile}
-  ${company.map(([l, h]) => `<li><a href="${h}">${l}</a></li>`).join('')}
-</ul><a class="btn btn--cta btn--block" href="/contact/" data-cta="mobile-menu">Get a Free Estimate</a></nav>
+<nav class="mnav" id="mnav" aria-label="Mobile"><ul>${mobile}</ul>
+<a class="btn btn--cta btn--block" href="/contact/" data-cta="mobile-menu">Get a Free Estimate</a></nav>
 </header>`;
 }
 
-function mobileBar() {
-  return `<div class="mbar" role="region" aria-label="Quick contact">${callBtn('sticky-bar', 'btn btn--ghost', 'Call')}<a class="btn btn--cta" href="#quote" data-cta="sticky-bar">Get Quote</a></div>`;
+function mobileBar({ label = 'Get Quote', phone = site.phone } = {}) {
+  return `<div class="mbar" role="region" aria-label="Quick contact">${callBtn('sticky-bar', 'btn btn--ghost', 'Call', phone)}<a class="btn btn--cta" href="#quote" data-cta="sticky-bar">${esc(label)}</a></div>`;
 }
 
+// Trust strip (homepage only). Shows only verified facts; unverified stats are never shown.
 function trustStrip() {
   const items = [
-    [ICON.shield, 'Licensed &amp; insured', has(site.license) ? `Lic. ${esc(site.license)}` : 'Michigan residential builder'],
-    has(site.yearsInBusiness) ? [ICON.calendar, `${esc(site.yearsInBusiness)} years in business`, 'Locally owned'] : [ICON.calendar, 'Locally owned &amp; operated', 'Serving all of Metro Detroit'],
+    [ICON.shield, 'Licensed &amp; insured', has(site.license) ? `MI Lic. ${esc(site.license)}` : 'Michigan residential builder'],
+    has(site.yearsInBusiness) ? [ICON.calendar, `${esc(site.yearsInBusiness)} years in business`, 'Locally owned'] : [ICON.calendar, 'Locally owned &amp; operated', esc(site.serviceArea)],
     hasRating() ? [ICON.star, `${esc(site.googleRating)}★ Google rating`, `${esc(site.googleReviewCount)} reviews`] : [ICON.clipboard, 'Free written estimates', 'No pressure, no surprises'],
     [ICON.award, 'Warranties', esc(site.warranty)],
     [ICON.dollar, 'Financing available', 'On qualifying projects']
   ];
-  return `<section class="trust" aria-label="Why homeowners trust us"><div class="wrap"><ul>${items.map(([i, a, b]) => `<li>${i}<span>${a}<small>${b}</small></span></li>`).join('')}</ul></div></section>`;
+  return trustBar(items);
 }
+const trustBar = (items) => `<section class="trust" aria-label="Why homeowners trust us"><div class="wrap"><ul class="trust--${items.length}">${items.map(([i, a, b]) => `<li>${i}<span>${a}${b ? `<small>${b}</small>` : ''}</span></li>`).join('')}</ul></div></section>`;
 
-function footer({ minimal = false } = {}) {
+const cookieUi = `<div class="cookie" id="cookie" role="dialog" aria-live="polite" aria-label="Cookie notice"><p>We use cookies to measure our ads and improve this site. You can accept or decline non-essential cookies. <a href="/privacy-policy/#cookies">Read our cookie policy</a></p><div class="btns"><button class="btn btn--ghost" type="button" data-consent="decline">Decline</button><button class="btn btn--ghost" type="button" data-consent="accept" style="background:var(--ink);color:#fff">Accept</button></div></div>`;
+
+function footer({ minimal = false, lp = null } = {}) {
   const addr = site.address;
   const year = new Date().getFullYear();
+  if (minimal) {
+    // Landing-page mini footer: business name, phone, license #, privacy policy. Nothing else.
+    const phone = lp ? lp.phone : site.phone;
+    return `<footer class="footer footer--mini"><div class="wrap"><p><strong>${esc(site.name)}</strong> · <a href="${telHref(phone)}" data-loc="footer">${esc(phone)}</a> · ${has(site.license) ? `MI License ${esc(site.license)}` : 'Licensed &amp; insured in Michigan'} · <a href="/privacy-policy/">Privacy policy</a></p></div></footer>${cookieUi}`;
+  }
   const hours = site.hours.map((h) => `<li>${esc(h.days)}: ${esc(h.open)}${h.close ? '–' + esc(h.close) : ''}</li>`).join('');
   const social = Object.entries(site.social).map(([k, u]) => (u ? `<a href="${esc(u)}" rel="noopener" aria-label="${k}">${ICON[k]}</a>` : '')).join('');
-  const nap = `<address><strong style="color:#fff">${esc(site.name)}</strong><br>${hasAddress() ? `${esc(addr.street)}<br>${esc(addr.city)}, ${esc(addr.region)} ${esc(addr.zip)}` : 'Serving Oakland County &amp;<br>all of Metro Detroit, MI'}<br><a href="${telHref(site.phone)}" data-loc="footer">${esc(site.phone)}</a><br><a href="mailto:${esc(site.email)}">${esc(site.email)}</a></address>`;
-  const cookieUi = `<div class="cookie" id="cookie" role="dialog" aria-live="polite" aria-label="Cookie notice"><p>We use cookies to measure our ads and improve this site. You can accept or decline non-essential cookies. <a href="/privacy-policy/#cookies">Read our cookie policy</a></p><div class="btns"><button class="btn btn--ghost" type="button" data-consent="decline">Decline</button><button class="btn btn--ghost" type="button" data-consent="accept" style="background:var(--ink);color:#fff">Accept</button></div></div>`;
-  if (minimal) {
-    return `<footer class="footer"><div class="wrap">${nap}<div class="footer__bottom"><span>© ${year} ${esc(site.name)}${has(site.license) ? ` · License ${esc(site.license)}` : ' · Licensed &amp; insured in Michigan'}</span><span><a href="/privacy-policy/">Privacy policy</a> · <a href="#" data-cookie-settings>Cookie settings</a></span></div></div></footer>${cookieUi}`;
-  }
+  const nap = `<address><strong style="color:#fff">${esc(site.name)}</strong><br>${hasAddress() ? `${esc(addr.street)}<br>${esc(addr.city)}, ${esc(addr.region)} ${esc(addr.zip)}` : `Serving ${esc(site.serviceArea)}`}<br><a href="${telHref(site.phone)}" data-loc="footer">${esc(site.phone)}</a><br><a href="mailto:${esc(site.email)}">${esc(site.email)}</a></address>`;
+  const company = [['About us', '/about/'], reviewsPageLive() ? ['Reviews', '/reviews/'] : null, financingPageLive() ? ['Financing', '/financing/'] : null, ['Blog', '/blog/'], ['Contact / Free estimate', '/contact/'], ['Privacy policy', '/privacy-policy/']].filter(Boolean);
   return `<footer class="footer"><div class="wrap">
   <div class="footer__grid">
     <div><a class="logo" href="/" aria-label="Moda Building home">${logoImg({ light: true })}</a>${nap}
-      <p style="margin-top:12px">${has(site.license) ? `License ${esc(site.license)}<br>` : ''}Licensed &amp; insured in Michigan</p>
+      <p style="margin-top:12px">${has(site.license) ? `MI License ${esc(site.license)}<br>` : ''}Licensed &amp; insured in Michigan</p>
       ${social ? `<div class="footer__social">${social}</div>` : ''}</div>
-    <div><h2>Services</h2><ul>${services.map((s) => `<li><a href="${svcUrl(s)}">${esc(s.name)}</a></li>`).join('')}<li><a href="/financing/">Financing</a></li><li><a href="/gallery/">Project gallery</a></li></ul>
+    <div><h2>Services</h2><ul>${services.map((s) => `<li><a href="${svcUrl(s)}">${esc(s.name)}</a></li>`).join('')}<li><a href="/gallery/">Project gallery</a></li></ul>
       <h2 style="margin-top:28px">Hours</h2><ul>${hours}</ul></div>
     <div><h2>Service areas</h2><ul>${cities.map((c) => `<li><a href="${cityUrl(services[0], c)}">${c.isRegion ? 'All of Metro Detroit' : esc(c.name) + ', MI'}</a></li>`).join('')}</ul></div>
-    <div><h2>Company</h2><ul><li><a href="/about/">About us</a></li><li><a href="/reviews/">Reviews</a></li><li><a href="/blog/">Blog</a></li><li><a href="/contact/">Contact / Free estimate</a></li><li><a href="/privacy-policy/">Privacy policy</a></li></ul></div>
+    <div><h2>Company</h2><ul>${company.map(([l, h]) => `<li><a href="${h}">${l}</a></li>`).join('')}</ul></div>
   </div>
   <div class="footer__bottom"><span>© ${year} ${esc(site.name)}. All rights reserved.</span><span><a href="/privacy-policy/">Privacy policy</a> · <a href="#" data-cookie-settings>Cookie settings</a> · <a href="/sitemap.xml">Sitemap</a></span></div>
 </div></footer>${cookieUi}`;
 }
 
 /* ---------- Content components ---------- */
+// Breadcrumb lives inside the top of the hero (same background) — no separate white strip.
 function crumbs(list) {
   return `<nav class="crumbs wrap" aria-label="Breadcrumb"><ol>${list.map(([n, u], i) => (i === list.length - 1 ? `<li aria-current="page">${esc(n)}</li>` : `<li><a href="${u}">${esc(n)}</a></li>`)).join('')}</ol></nav>`;
 }
@@ -282,10 +291,10 @@ const PROCESS = [
   ['Build', 'A dedicated project lead, a protected home and a clean site every day. You always know what is next.'],
   ['Warranty', 'Final walkthrough, warranty registration and documentation. We stand behind the work after we leave.']
 ];
-function processSection({ dark = false, title = 'How it works', intro = 'Four simple steps from first call to finished project.' } = {}) {
+function processSection({ dark = false, title = 'How it works', intro = 'Four simple steps from first call to finished project.', steps = PROCESS } = {}) {
   return `<section class="section${dark ? ' section--ink' : ' section--stone'}"><div class="wrap">
-  <div class="section-head"><span class="eyebrow">Our process</span><h2>${esc(title)}</h2><p class="lead"${dark ? ' style="color:#c9d1d9"' : ''}>${esc(intro)}</p></div>
-  <ol class="process">${PROCESS.map(([h, p]) => `<li><h3>${h}</h3><p>${p}</p></li>`).join('')}</ol>
+  <div class="section-head section-head--center"><span class="eyebrow">Our process</span><h2>${esc(title)}</h2><p class="lead"${dark ? ' style="color:#c9d1d9"' : ''}>${esc(intro)}</p></div>
+  <ol class="process process--${steps.length}">${steps.map(([h, p]) => `<li><h3>${h}</h3><p>${p}</p></li>`).join('')}</ol>
 </div></section>`;
 }
 
@@ -293,59 +302,54 @@ function reviewCard(r) {
   const c = cityBy(r.city), s = svcBy(r.service);
   return `<figure class="review"><div class="stars" aria-label="${r.rating} out of 5 stars">${stars(r.rating)}</div>
   <blockquote><p>${esc(r.text)}</p></blockquote>
-  <figcaption><strong>${esc(r.name)}</strong>${r.sample ? '<span class="sample-tag">Sample</span>' : ''}<br>${esc(r.label || s.short)} · ${esc(c.name)}, MI</figcaption></figure>`;
+  <figcaption><strong>${esc(r.name)}</strong><br>${esc(r.label || s.short)} · ${esc(c.name)}, MI</figcaption></figure>`;
 }
 
-function reviewsCarousel(list, { title = 'What homeowners say', eyebrow = 'Reviews', stone = false, intro = '' } = {}) {
-  if (!list.length) return '';
-  return `<section class="section${stone ? ' section--stone' : ''}"><div class="wrap" data-carousel>
-  <div class="section-head"><span class="eyebrow">${esc(eyebrow)}</span><h2>${esc(title)}</h2>
-  <div class="rating-summary">${hasRating() ? `<span class="big">${esc(site.googleRating)}</span><span><span class="stars" style="color:#b7791f">★★★★★</span><br>${esc(site.googleReviewCount)} Google reviews</span>` : ''}<a class="link-arrow" href="/reviews/">Read reviews</a></div>${intro ? `<p class="lead" style="margin-top:12px">${intro}</p>` : ''}</div>
-  <div class="reviews" tabindex="0" aria-label="Customer reviews">${list.map(reviewCard).join('')}</div>
-  <div class="carousel-nav"><button class="icon-btn" type="button" data-dir="-1" aria-label="Previous reviews">←</button><button class="icon-btn" type="button" data-dir="1" aria-label="Next reviews">→</button></div>
+// Reviews: static grid, always a multiple of 3 (no orphan cards). Renders nothing until reviews are verified.
+function reviewsBlock(list, { title = 'What homeowners say', eyebrow = 'Reviews', stone = false, max = 3 } = {}) {
+  const n = Math.min(max, Math.floor(list.length / 3) * 3);
+  if (!n) return '';
+  const more = has(site.googleReviewUrl) ? `<a class="btn btn--ghost" href="${esc(site.googleReviewUrl)}" rel="noopener">Read all our reviews on Google</a>` : (reviewsPageLive() ? `<a class="btn btn--ghost" href="/reviews/">Read more reviews</a>` : '');
+  return `<section class="section${stone ? ' section--stone' : ''}"><div class="wrap">
+  <div class="section-head section-head--center"><span class="eyebrow">${esc(eyebrow)}</span><h2>${esc(title)}</h2>
+  ${hasRating() ? `<div class="rating-summary"><span class="big">${esc(site.googleRating)}</span><span><span class="stars" style="color:#b7791f">★★★★★</span><br>${esc(site.googleReviewCount)} Google reviews</span></div>` : ''}</div>
+  <div class="reviews-grid">${list.slice(0, n).map(reviewCard).join('')}</div>
+  ${more ? `<p class="section-cta">${more}</p>` : ''}
 </div></section>`;
 }
 
-function projectCard(p, { slider = true } = {}) {
+function projectCard(p, { slider = true, caption = '' } = {}) {
   const s = svcBy(p.service), c = cityBy(p.city);
   const after = pic(`${p.id}-after`), before = pic(`${p.id}-before`);
   const altBase = `${p.title} — ${s.short.toLowerCase()} project in ${c.name}, MI`;
   const media = p.before && slider
     ? `<div class="ba">${img(after, `After: ${altBase}`).replace('<img ', '<img draggable="false" ')}${img(before, `Before: ${altBase}`, { cls: 'ba__before' }).replace('<img ', '<img draggable="false" ')}<span class="ba__line"></span><span class="ba__tag ba__tag--b">Before</span><span class="ba__tag ba__tag--a">After</span><input type="range" min="0" max="100" value="50" autocomplete="off" aria-label="Drag to compare before and after: ${esc(p.title)}"></div>`
     : `<div class="card__img">${img(after, altBase)}</div>`;
-  return `<article class="proj" data-service="${p.service}" data-city="${p.city}" data-room="${esc(p.room || '')}">${media}<div class="proj__body"><p class="proj__meta">${esc(s.short)}${p.room ? ` · ${esc(p.room)}` : ''} · ${esc(c.name)}</p><h3>${esc(p.title)}</h3><p>${esc(p.scope)}</p></div></article>`;
+  return `<article class="proj" data-service="${p.service}" data-city="${p.city}" data-room="${esc(p.room || '')}">${media}<div class="proj__body">${caption ? '' : `<p class="proj__meta">${esc(s.short)} · ${esc(c.name)}</p>`}<h3>${esc(caption || p.title)}</h3>${caption ? '' : `<p>${esc(p.scope)}</p>`}</div></article>`;
 }
 
-function faqSection(items, { title = 'Frequently asked questions', stone = false } = {}) {
-  return `<section class="section${stone ? ' section--stone' : ''}" id="faq"><div class="wrap"><div class="section-head"><span class="eyebrow">FAQ</span><h2>${esc(title)}</h2></div>
+// FAQ: two columns — heading, intro and a call line on the left; accordion on the right.
+function faqSection(items, { title = 'Frequently asked questions', stone = false, intro = 'Quick answers to what homeowners ask us most.', phone = site.phone } = {}) {
+  return `<section class="section${stone ? ' section--stone' : ''}" id="faq"><div class="wrap faq-layout">
+  <div class="faq-layout__head"><span class="eyebrow">FAQ</span><h2>${esc(title)}</h2><p>${esc(intro)}</p>
+    <p class="faq-call">Still have a question?<br><a href="${telHref(phone)}" data-loc="faq">Call ${esc(phone)}</a></p></div>
   <div class="faq">${items.map((f, i) => `<details${i === 0 ? ' open' : ''}><summary>${esc(f.q)}</summary><div><p>${esc(f.a)}</p></div></details>`).join('')}</div></div></section>`;
 }
 
-function ctaBand({ service = '', city = '', title = 'Ready for a free estimate?', text = 'Tell us about your project and we will schedule a free, no-pressure visit. Prefer to talk? Call us now.' } = {}) {
-  return `<section class="cta-band" aria-labelledby="cta-h"><div class="wrap split">
-  <div><span class="eyebrow" style="color:#9aa7b4">Free estimate</span><h2 id="cta-h">${esc(title)}</h2><p>${esc(text)}</p>
-    <a class="phone-big" href="${telHref(site.phone)}" data-loc="cta-band">${esc(site.phone)}</a>
-    <ul class="hero__bullets">${['Free inspection and written quote', 'Licensed, insured, warrantied work', 'Financing available on qualifying projects'].map((b) => `<li>${ICON.check}${b}</li>`).join('')}</ul></div>
-  ${quoteForm({ service, city, location: 'cta-band', id: 'quote-2', title: 'Request your free estimate' })}
+/* Final call-to-action band — no second form (it scrolls up to the page's one form).
+   Two equal columns: headline, trust points (+ a review when verified) left; phone + button card right.
+   On phones the action card comes first. */
+function ctaBand({ title = 'Ready for a free estimate?', text = 'Tell us about your project and we will schedule a free, no-pressure visit.', points = ['Free inspection and written quote', 'Licensed &amp; insured in Michigan', 'Workmanship + manufacturer warranties', 'Financing available on qualifying projects'], review = null, buttonLabel = 'Get a Free Estimate', phone = site.phone, href = '#quote' } = {}) {
+  return `<section class="cta-band" aria-labelledby="cta-h"><div class="wrap cta-band__grid">
+  <div class="cta-band__copy"><span class="eyebrow">Free estimate</span><h2 id="cta-h">${title}</h2><p>${esc(text)}</p>
+    <ul class="hero__bullets">${points.map((b) => `<li>${ICON.check}<span>${b}</span></li>`).join('')}</ul>
+    ${review ? reviewCard(review) : ''}</div>
+  <div class="cta-card"><p class="cta-card__label">Prefer to talk?</p>
+    <a class="phone-big" href="${telHref(phone)}" data-loc="cta-band">${esc(phone)}</a>
+    <p class="cta-card__hours">${esc(site.hours[0].days)} ${esc(site.hours[0].open)}–${esc(site.hours[0].close)}</p>
+    <a class="btn btn--cta btn--block" href="${href}" data-cta="cta-band">${esc(buttonLabel)}</a>
+    <p class="cta-card__note">Takes about 60 seconds · Free, no obligation</p></div>
 </div></section>`;
 }
 
-function areasSection({ dark = false, title = 'Areas we serve', intro = '' } = {}) {
-  const cards = coreCities.map((c) => {
-    const links = services.filter((s) => s.cityKeys.includes(c.key)).map((s) => `<li><a href="${cityUrl(s, c)}">${esc(s.short)}</a></li>`).join('');
-    return `<div class="area"><h3>${esc(c.name)}, MI</h3><ul>${links}</ul></div>`;
-  }).join('');
-  const metro = `<div class="area"><h3>All of Metro Detroit</h3><ul><li><a href="${cityUrl(services[0], cityBy('metro-detroit'))}">Roofing</a></li><li><a href="${cityUrl(services[1], cityBy('metro-detroit'))}">Waterproofing</a></li></ul></div>`;
-  return `<section class="section${dark ? ' section--ink' : ''}" id="areas"><div class="wrap">
-  <div class="section-head"><span class="eyebrow">Service areas</span><h2>${esc(title)}</h2><p class="lead"${dark ? ' style="color:#c9d1d9"' : ''}>${intro || 'Roofing and waterproofing across all of Metro Detroit. Finished basements and full renovations focused on six Oakland County communities.'}</p></div>
-  <div class="areas">${cards}${metro}</div></div></section>`;
-}
-
-function financingCallout() {
-  return `<section class="section"><div class="wrap"><div class="callout">
-  <div><span class="eyebrow">Financing</span><h2>${esc(site.financing.headline)}</h2><p>Spread the cost of a new roof, a dry basement or a full renovation into manageable monthly payments. ${esc(site.financing.terms)}</p></div>
-  <div style="display:flex;gap:12px;flex-wrap:wrap"><a class="btn btn--cta" href="/financing/" data-cta="financing-callout">See financing options</a></div>
-</div></div></section>`;
-}
-
-module.exports = { problemTiles, PROBLEMS, logoImg, picUrl, has, hasAddress, hasRating, pic, hasPhoto, site, services, cities, coreCities, esc, val, isPh, telHref, svcBy, cityBy, svcUrl, cityUrl, ICON, LOGO, img, callBtn, quoteBtn, quoteForm, header, footer, mobileBar, trustStrip, crumbs, processSection, reviewCard, reviewsCarousel, projectCard, faqSection, ctaBand, areasSection, financingCallout, PROCESS };
+module.exports = { ALL_REVIEWS, liveReviews, reviewsPageLive, financingPageLive, lpPhone, trustBar, reviewsBlock, MAIN_SERVICES, problemTiles, PROBLEMS, logoImg, picUrl, has, hasAddress, hasRating, pic, hasPhoto, site, services, cities, coreCities, esc, val, isPh, telHref, svcBy, cityBy, svcUrl, cityUrl, ICON, LOGO, img, callBtn, quoteForm, header, footer, mobileBar, trustStrip, crumbs, processSection, reviewCard, projectCard, faqSection, ctaBand, PROCESS };

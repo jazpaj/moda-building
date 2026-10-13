@@ -1,11 +1,12 @@
 {
-  "_note": "Leave a field empty (\"\") until the real value is known — the site shows neutral wording instead. Never enter estimated ratings, review counts or license numbers.",
+  "_note": "Leave a field empty (\"\") until the real value is known — the site shows neutral wording instead. Never enter estimated ratings, review counts or license numbers. Set ratingVerified / reviewsVerified to true only after the owner confirms the Google rating/count and that every review in src/data/reviews.js is a real Google review.",
   "preview": false,
   "name": "Moda Building",
   "url": "https://modabuilding.com",
   "phone": "(248) 801-9000",
   "trackingPhone": "",
   "email": "reno@modabuilding.com",
+  "serviceArea": "Oakland County & all of Metro Detroit",
   "address": {
     "street": "",
     "city": "",
@@ -36,6 +37,10 @@
   "yearsInBusiness": "",
   "googleRating": "4.9",
   "googleReviewCount": "127",
+  "ratingVerified": false,
+  "reviewsVerified": false,
+  "googleReviewUrl": "",
+  "googleReviewsEmbed": "",
   "googleBusinessProfileUrl": "",
   "warranty": "Workmanship + manufacturer warranties",
   "financing": {
@@ -63,5 +68,12 @@
     "gtmId": "",
     "callRailScript": "",
     "turnstileSiteKey": ""
-  }
+  },
+  "owner": {
+    "name": "",
+    "title": "Owner",
+    "photo": "",
+    "bio": ""
+  },
+  "certifications": []
 }
