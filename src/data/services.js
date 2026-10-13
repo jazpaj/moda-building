@@ -82,6 +82,27 @@ module.exports = [
       { label: 'Designer shingle or synthetic slate', range: '$25,000 – $60,000+' },
       { label: 'Seamless gutters', range: '$1,800 – $5,000' }
     ],
+    // Instant price range (roofing page). Every band sits inside a row of the cost table above —
+    // owner to confirm along with priceRanges. hi: null = open-ended ("$28,000+"). bands: null = priced on-site.
+    estimator: {
+      sizes: [
+        { id: 'small', label: 'Small', hint: 'Ranch, bungalow or Cape Cod' },
+        { id: 'medium', label: 'Medium', hint: 'Typical colonial or two-story' },
+        { id: 'large', label: 'Large', hint: 'Large two-story or complex roofline' },
+        { id: 'xl', label: 'Very large', hint: 'Estate home, many valleys or dormers' }
+      ],
+      materials: [
+        { id: 'architectural', label: 'Architectural shingles', hint: 'Most common · 25–30+ years', row: 'Architectural shingle replacement (typical home)', bands: { small: [12000, 18000], medium: [16000, 24000], large: [22000, 30000], xl: [28000, null] } },
+        { id: 'designer', label: 'Designer shingles', hint: 'Sculpted, slate- or shake-style', row: 'Designer shingle or synthetic slate', bands: { small: [25000, 35000], medium: [32000, 45000], large: [42000, 60000], xl: [55000, null] } },
+        { id: 'synthetic', label: 'Synthetic slate or shake', hint: 'Slate look, 40–50 years', row: 'Designer shingle or synthetic slate', bands: { small: [25000, 35000], medium: [32000, 45000], large: [42000, 60000], xl: [55000, null] } },
+        { id: 'metal', label: 'Standing-seam metal', hint: 'Modern lines, 40–60 years', row: '', bands: null }
+      ],
+      layers: [
+        { id: 'one', label: 'One layer', hint: 'Lower part of the range' },
+        { id: 'two', label: 'Two or more', hint: 'More tear-off and disposal' },
+        { id: 'unsure', label: 'Not sure', hint: 'We’ll check at the inspection' }
+      ]
+    },
     faqs: [
       { q: 'How do I know if I need a roof repair or a full replacement?', a: 'Age, the extent of damage and how many leaks you have all matter. A roof under about 15 years old with isolated damage is usually a repair candidate. Widespread granule loss, curling, multiple leaks or a roof over 20 years old usually points to replacement. Our free inspection gives you photos and a straight answer.' },
       { q: 'How long does a roof replacement take?', a: 'Most single-family homes are torn off and re-roofed in one to two days. Larger or steeper roofs, or premium materials like synthetic slate, can take longer. We give you a schedule before we start.' },

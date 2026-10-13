@@ -118,5 +118,12 @@ On the preview, the form skips the POST and goes straight to `/thank-you/`, the 
 | Owner | Name, title, photo, short bio for About | `owner` |
 | Certifications | e.g. GAF / Owens Corning / CertainTeed | `certifications` |
 | Financing | Lender name, example payment/terms, apply link (the page is cut until these exist) | `financing.partner`, `financing.terms`, `financing.applyUrl` |
-| Prices | Owner must confirm the price ranges on each service page | `priceRanges` in `src/data/services.js` |
+| Prices | Owner must confirm the price ranges on each service page **and the instant-estimator bands** (roofing) | `priceRanges` and `estimator` in `src/data/services.js` |
 | Indexing | The launch build (`node build.js`) is already `index`; only the GitHub preview is `noindex` | none |
+
+## Instant price range (Roofing page)
+- **Questions:** roof size, material and current layers.
+- **Ranges:** taken from the roofing cost table. Each size/material band sits inside that table's row: architectural shingles $12k–$30k, designer shingles / synthetic slate $25k–$60k+. One layer shows the lower 75% of the band, two or more layers the upper 75%, and "not sure" the full band. Metal isn't in the table, so it shows "Priced on-site".
+- **Hand-off:** "Get my exact quote" pre-fills the estimate form (service = Roofing). The answers and range go into the lead's `problem` and `estimate` fields.
+- **Tracking:** fires `estimator_start` / `estimator_complete` events.
+- **Editing:** change bands, sizes and labels in `estimator` in `src/data/services.js` (roofing). The owner must confirm these numbers before launch.

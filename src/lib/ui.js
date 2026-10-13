@@ -157,6 +157,7 @@ function quoteForm({ service = '', city = '', location = 'page', title = 'Get yo
     <input type="hidden" name="form-name" value="estimate">
     <input type="hidden" name="form_location" value="${esc(location)}">
     <input type="hidden" name="problem">
+    <input type="hidden" name="estimate">
     <input type="hidden" name="city" value="${esc(city)}">
     ${hidden}
     <div class="hp" aria-hidden="true"><label for="${f('hp')}">Leave this field empty</label><input id="${f('hp')}" name="company_website" tabindex="-1" autocomplete="off"></div>
@@ -352,4 +353,29 @@ function ctaBand({ title = 'Ready for a free estimate?', text = 'Tell us about y
 </div></section>`;
 }
 
-module.exports = { ALL_REVIEWS, liveReviews, reviewsPageLive, financingPageLive, lpPhone, trustBar, reviewsBlock, MAIN_SERVICES, problemTiles, PROBLEMS, logoImg, picUrl, has, hasAddress, hasRating, pic, hasPhoto, site, services, cities, coreCities, esc, val, isPh, telHref, svcBy, cityBy, svcUrl, cityUrl, ICON, LOGO, img, callBtn, quoteForm, header, footer, mobileBar, trustStrip, crumbs, processSection, reviewCard, projectCard, faqSection, ctaBand, PROCESS };
+/* ---------- Instant price range (3 questions → ballpark from the cost table → quote form) ----------
+   Hidden until JS runs; without JS the cost table above still shows the ranges. */
+function priceEstimator(cfg) {
+  const tiles = (q, list) => list.map((o) => `<button type="button" class="est__opt" data-q="${q}" data-v="${o.id}" aria-pressed="false"><strong>${esc(o.label)}</strong><span>${esc(o.hint)}</span></button>`).join('');
+  return `<section class="section" id="instant-estimate" data-estimator hidden><div class="wrap">
+  <div class="section-head section-head--center"><span class="eyebrow">Instant price range</span><h2>What will my new roof cost?</h2><p class="lead">Answer 3 quick questions for a ballpark from our typical Metro Detroit prices. Your exact price comes from a free on-site inspection.</p></div>
+  <div class="est">
+    <div class="est__progress" aria-hidden="true"><span class="on"></span><span></span><span></span></div>
+    <p class="est__steptext" aria-live="polite">Question 1 of 3</p>
+    <div class="est__q is-active" role="group" aria-labelledby="est-q1"><h3 id="est-q1">How big is your roof?</h3><div class="est__opts est__opts--4">${tiles('size', cfg.sizes)}</div></div>
+    <div class="est__q" role="group" aria-labelledby="est-q2"><h3 id="est-q2">Which roofing material?</h3><div class="est__opts est__opts--4">${tiles('material', cfg.materials)}</div></div>
+    <div class="est__q" role="group" aria-labelledby="est-q3"><h3 id="est-q3">How many layers of shingles are on it now?</h3><div class="est__opts est__opts--3">${tiles('layers', cfg.layers)}</div></div>
+    <div class="est__result" hidden>
+      <p class="est__label">Your ballpark range</p>
+      <p class="est__range" tabindex="-1"></p>
+      <p class="est__summary"></p>
+      <p class="est__note"></p>
+      <div class="est__ctas"><a class="btn btn--cta" href="#quote" data-service="Roofing" data-problem="" data-cta="estimator-quote">Get my exact quote</a><button type="button" class="btn btn--ghost est__restart">Start over</button></div>
+    </div>
+    <div class="est__nav"><button type="button" class="est__back link-btn" hidden>← Back</button></div>
+  </div>
+  <script type="application/json" id="est-data">${JSON.stringify(cfg).replace(/</g, '\\u003c')}</script>
+</div></section>`;
+}
+
+module.exports = { priceEstimator, ALL_REVIEWS, liveReviews, reviewsPageLive, financingPageLive, lpPhone, trustBar, reviewsBlock, MAIN_SERVICES, problemTiles, PROBLEMS, logoImg, picUrl, has, hasAddress, hasRating, pic, hasPhoto, site, services, cities, coreCities, esc, val, isPh, telHref, svcBy, cityBy, svcUrl, cityUrl, ICON, LOGO, img, callBtn, quoteForm, header, footer, mobileBar, trustStrip, crumbs, processSection, reviewCard, projectCard, faqSection, ctaBand, PROCESS };

@@ -8,7 +8,7 @@ const ui = require('./src/lib/ui');
 const ph = require('./src/lib/placeholders');
 const projects = require('./src/data/projects');
 const posts = require('./src/data/posts');
-const { ALL_REVIEWS, liveReviews, reviewsPageLive, financingPageLive, lpPhone, trustBar, reviewsBlock, problemTiles, PROBLEMS, picUrl, has, hasAddress, hasRating, pic, hasPhoto, site, services, cities, coreCities, esc, telHref, svcBy, cityBy, svcUrl, cityUrl, ICON, img, callBtn, quoteForm, header, footer, mobileBar, trustStrip, crumbs, processSection, reviewCard, projectCard, faqSection, ctaBand } = ui;
+const { priceEstimator, ALL_REVIEWS, liveReviews, reviewsPageLive, financingPageLive, lpPhone, trustBar, reviewsBlock, problemTiles, PROBLEMS, picUrl, has, hasAddress, hasRating, pic, hasPhoto, site, services, cities, coreCities, esc, telHref, svcBy, cityBy, svcUrl, cityUrl, ICON, img, callBtn, quoteForm, header, footer, mobileBar, trustStrip, crumbs, processSection, reviewCard, projectCard, faqSection, ctaBand } = ui;
 
 const OUT = path.join(__dirname, 'site');
 // BASE_PATH (e.g. /moda-building) builds a preview for a subfolder host like GitHub Pages; previews are noindex.
@@ -242,8 +242,10 @@ ${dryThenFinish}
 <section class="section section--stone" id="cost"><div class="wrap split" style="align-items:start">
   <div><span class="eyebrow">Cost</span><h2>What affects the cost of ${esc(s.name.toLowerCase())}?</h2>${checks(s.costFactors)}</div>
   <div><table class="table"><caption class="sr-only">Typical price ranges</caption><thead><tr><th scope="col">Project</th><th scope="col">Typical range</th></tr></thead><tbody>${s.priceRanges.map((r) => `<tr><td>${esc(r.label)}</td><td>${esc(r.range)}</td></tr>`).join('')}</tbody></table>
-  <p class="note" style="margin-top:10px">Ballpark ranges for planning only. Your written quote is based on an on-site inspection.</p></div>
+  <p class="note" style="margin-top:10px">Ballpark ranges for planning only. Your written quote is based on an on-site inspection.</p>
+  ${s.estimator ? '<p class="est-link" hidden><a class="link-arrow" href="#instant-estimate">Get an instant price range for your roof</a></p>' : ''}</div>
 </div></section>
+${s.estimator ? priceEstimator(s.estimator) : ''}
 
 ${shownProjects.length ? `<section class="section"><div class="wrap">
   <div class="section-head section-head--center"><span class="eyebrow">Project gallery</span><h2>Recent ${esc(s.short.toLowerCase())} projects</h2></div>

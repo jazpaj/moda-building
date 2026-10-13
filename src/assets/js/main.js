@@ -163,9 +163,9 @@
         return;
       }
       if (form.elements.company_website && form.elements.company_website.value) { e.preventDefault(); return; }
-      var lead = { problem: form.elements.problem ? form.elements.problem.value : '', service: form.elements.service.value, city: form.elements.city.value, zip: form.elements.zip ? form.elements.zip.value : '', budget: form.elements.budget.value, event_id: form.elements.event_id.value, form_location: form.elements.form_location.value };
+      var lead = { estimate: form.elements.estimate ? form.elements.estimate.value : '', problem: form.elements.problem ? form.elements.problem.value : '', service: form.elements.service.value, city: form.elements.city.value, zip: form.elements.zip ? form.elements.zip.value : '', budget: form.elements.budget.value, event_id: form.elements.event_id.value, form_location: form.elements.form_location.value };
       try { sessionStorage.setItem('moda_lead', JSON.stringify(lead)); } catch (err) {}
-      push({ event: 'form_submit', problem: lead.problem, service: lead.service, city: lead.city, zip: lead.zip, budget: lead.budget, form_location: lead.form_location });
+      push({ event: 'form_submit', estimate: lead.estimate, problem: lead.problem, service: lead.service, city: lead.city, zip: lead.zip, budget: lead.budget, form_location: lead.form_location });
       var btn = $('button[type=submit]', form); if (btn) { btn.disabled = true; btn.textContent = 'Sending…'; }
       // Static preview (no form backend on localhost or GitHub Pages): go straight to the thank-you page.
       if (/^(localhost|127\.0\.0\.1|)$|\.github\.io$/.test(location.hostname)) { e.preventDefault(); location.href = form.getAttribute('action'); } // action already includes the base path (e.g. /lp/roofing/thank-you/)
@@ -195,6 +195,74 @@
     }, 700);
   });
 
+  /* ---------- Instant price range (roofing page) ----------
+     3 questions → ballpark taken from the cost table bands in services.js → hands the result to the quote form. */
+  var est = $('[data-estimator]');
+  if (est) {
+    est.hidden = false;
+    $$('.est-link').forEach(function (l) { l.hidden = false; });
+    var cfg = JSON.parse($('#est-data', est).textContent);
+    var qs = $$('.est__q', est), result = $('.est__result', est), back = $('.est__back', est);
+    var bars = $$('.est__progress span', est), stepText = $('.est__steptext', est), cta = $('[data-cta="estimator-quote"]', est);
+    var ans = {}, cur = 0, lastRange = '';
+    var money = function (n) { return '$' + Math.round(n).toLocaleString('en-US'); };
+    var r500 = function (n) { return Math.round(n / 500) * 500; };
+    var find = function (list, id) { return list.filter(function (o) { return o.id === id; })[0]; };
+    function showQ(n) {
+      cur = n;
+      qs.forEach(function (q, k) { q.classList.toggle('is-active', k === n); });
+      result.hidden = n < qs.length;
+      bars.forEach(function (b, k) { b.classList.toggle('on', k <= Math.min(n, qs.length - 1)); });
+      stepText.textContent = n < qs.length ? 'Question ' + (n + 1) + ' of ' + qs.length : '';
+      stepText.hidden = n >= qs.length;
+      back.hidden = n === 0;
+    }
+    function compute() {
+      var size = find(cfg.sizes, ans.size), mat = find(cfg.materials, ans.material), lay = find(cfg.layers, ans.layers);
+      var summary = size.label + ' roof · ' + mat.label + ' · ' + lay.label.toLowerCase().replace('not sure', 'layers not sure');
+      var range, note;
+      if (!mat.bands) {
+        range = 'Priced on-site';
+        note = 'Metal roofs vary too much by profile and detailing for a fair ballpark — we measure and price them at your free inspection.';
+      } else {
+        var b = mat.bands[ans.size], lo = b[0], hi = b[1];
+        if (hi === null) { range = money(lo) + '+'; }
+        else {
+          var span = hi - lo;
+          if (ans.layers === 'one') hi = lo + span * 0.75;
+          if (ans.layers === 'two') lo = lo + span * 0.25;
+          range = money(r500(lo)) + ' – ' + money(r500(hi));
+        }
+        note = 'Based on our typical range for ' + mat.row.charAt(0).toLowerCase() + mat.row.slice(1) + '. Pitch, decking, flashing, ventilation and permits set the exact price — your written quote follows a free inspection.';
+      }
+      $('.est__range', est).textContent = range;
+      $('.est__summary', est).textContent = summary;
+      $('.est__note', est).textContent = note;
+      lastRange = range;
+      cta.setAttribute('data-problem', 'Instant estimate: ' + summary + ' (' + range + ')');
+      push({ event: 'estimator_complete', size: ans.size, material: ans.material, layers: ans.layers, range: range });
+    }
+    $$('.est__opt', est).forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var q = btn.getAttribute('data-q');
+        ans[q] = btn.getAttribute('data-v');
+        $$('.est__opt[data-q="' + q + '"]', est).forEach(function (o) { o.setAttribute('aria-pressed', String(o === btn)); });
+        if (cur === 0) push({ event: 'estimator_start' });
+        if (cur < qs.length - 1) { showQ(cur + 1); var first = $('.est__opt', qs[cur]); first && first.focus(); }
+        else { compute(); showQ(qs.length); $('.est__range', est).focus(); }
+      });
+    });
+    back.addEventListener('click', function () { showQ(Math.max(0, cur - 1)); var sel = $('.est__opt[aria-pressed="true"]', qs[cur]) || $('.est__opt', qs[cur]); sel && sel.focus(); });
+    $('.est__restart', est).addEventListener('click', function () {
+      ans = {}; $$('.est__opt', est).forEach(function (o) { o.setAttribute('aria-pressed', 'false'); });
+      showQ(0); $('.est__opt', qs[0]).focus();
+    });
+    // Hand the range to the quote form (the [data-problem] handler below pre-fills service + problem and scrolls up).
+    cta.addEventListener('click', function () {
+      $$('form.qf').forEach(function (f) { if (f.elements.estimate) f.elements.estimate.value = lastRange; });
+    });
+  }
+
   /* Back button from thank-you page restores the page from cache — re-enable submit buttons */
   w.addEventListener('pageshow', function (e) {
     if (!e.persisted) return;
@@ -205,7 +273,7 @@
   if (d.body.hasAttribute('data-thankyou')) {
     var lead = null;
     try { lead = JSON.parse(sessionStorage.getItem('moda_lead')); sessionStorage.removeItem('moda_lead'); } catch (e) {}
-    if (lead) push({ event: 'generate_lead', landing_page_variant: d.body.getAttribute('data-lp') || 'main', problem: lead.problem, service: lead.service, zip: lead.zip, city: lead.city, budget: lead.budget, event_id: lead.event_id, form_location: lead.form_location });
+    if (lead) push({ event: 'generate_lead', landing_page_variant: d.body.getAttribute('data-lp') || 'main', estimate: lead.estimate || '', problem: lead.problem, service: lead.service, zip: lead.zip, city: lead.city, budget: lead.budget, event_id: lead.event_id, form_location: lead.form_location });
   }
 
   /* ---------- Gallery filters (service, room, city; also from ?service= &room= &city=) ---------- */
