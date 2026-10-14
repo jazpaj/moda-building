@@ -231,7 +231,7 @@ ${problemTiles(PROBLEMS.filter((p) => p.service === s.key).slice(0, 3).map((p) =
 ${dryThenFinish}
 <section class="section section--stone"><div class="wrap">
   <div class="section-head"><span class="eyebrow">What we do</span><h2>${esc(s.name)} services</h2></div>
-  ${s.subservices.map((x) => `<div class="sub" id="${x.id}"><h3>${esc(x.title)}</h3><div><p>${esc(x.text)}</p>${x.points.length ? checks(x.points) : ''}${x.id === 'free-inspection' || x.id === 'design-build' || x.id === 'design-process' ? `<p style="margin-top:14px"><a class="btn btn--cta" href="#quote" data-cta="${s.key}-${x.id}">Book a free visit</a></p>` : ''}</div></div>`).join('')}
+  ${s.subservices.map((x) => `<div class="sub" id="${x.id}"><h3>${esc(x.title)}</h3><div><p>${esc(x.text)}</p>${x.points.length ? checks(x.points) : ''}</div></div>`).join('')}
 </div></section>
 
 <section class="section"><div class="wrap">
