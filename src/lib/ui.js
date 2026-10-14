@@ -265,7 +265,7 @@ function footer({ minimal = false, lp = null } = {}) {
   const hours = site.hours.map((h) => `<li>${esc(h.days)}: ${esc(h.open)}${h.close ? '–' + esc(h.close) : ''}</li>`).join('');
   const social = Object.entries(site.social).map(([k, u]) => (u ? `<a href="${esc(u)}" rel="noopener" aria-label="${k}">${ICON[k]}</a>` : '')).join('');
   const nap = `<address><strong style="color:#fff">${esc(site.name)}</strong><br>${hasAddress() ? `${esc(addr.street)}<br>${esc(addr.city)}, ${esc(addr.region)} ${esc(addr.zip)}` : `Serving ${esc(site.serviceArea)}`}<br><a href="${telHref(site.phone)}" data-loc="footer">${esc(site.phone)}</a><br><a href="mailto:${esc(site.email)}">${esc(site.email)}</a></address>`;
-  const company = [['About us', '/about/'], reviewsPageLive() ? ['Reviews', '/reviews/'] : null, financingPageLive() ? ['Financing', '/financing/'] : null, ['Blog', '/blog/'], ['Contact / Free estimate', '/contact/'], ['Privacy policy', '/privacy-policy/']].filter(Boolean);
+  const company = [['About us', '/about/'], reviewsPageLive() ? ['Reviews', '/reviews/'] : null, financingPageLive() ? ['Financing', '/financing/'] : null, ['Contact / Free estimate', '/contact/'], ['Privacy policy', '/privacy-policy/']].filter(Boolean);
   return `<footer class="footer"><div class="wrap">
   <div class="footer__grid">
     <div><a class="logo" href="/" aria-label="Moda Building home">${logoImg({ light: true })}</a>${nap}
