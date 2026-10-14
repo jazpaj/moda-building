@@ -90,7 +90,7 @@ On the preview, the form skips the POST and goes straight to `/thank-you/`, the 
 - Logo colors: navy `#1e2a34`, grey `#808080`, blue `#07649f`.
 
 ## Round 2 changes (Oct 2026)
-- **Menu:** 5 items: Roofing · Basements (Waterproofing / Finished Basements) · Renovations · Our Work · About. City links live in the footer. The Blog is not linked from the menu or footer (its pages still exist at /blog/).
+- **Menu:** 5 items: Roofing · Basements · Renovations · Our Work · About. City links live in the footer. The Blog is not linked from the menu or footer (its pages still exist at /blog/).
 - **One form per page:**
   - Desktop shows a single step and phones show steps. ZIP is asked once (the city dropdown is gone), Budget is optional, and the photo upload and SMS consent stay.
   - The bottom of each page now has a phone + "Get a Free Estimate" band that scrolls up to the form.
@@ -127,3 +127,8 @@ On the preview, the form skips the POST and goes straight to `/thank-you/`, the 
 - **Hand-off:** "Get my exact quote" pre-fills the estimate form (service = Roofing). The answers and range go into the lead's `problem` and `estimate` fields.
 - **Tracking:** fires `estimator_start` / `estimator_complete` events.
 - **Editing:** change bands, sizes and labels in `estimator` in `src/data/services.js` (roofing). The owner must confirm these numbers before launch.
+
+## Basements: one combined page
+- Waterproofing and finished basements live on **one page, `/basements/`**. It follows the "dry it, then finish it" order: a waterproofing section (`#waterproofing`), a finishing section (`#finishing`), side-by-side solutions and cost tables, 6 projects and one FAQ.
+- The old URLs `/basement-waterproofing/` and `/finished-basements/` redirect to `/basements/#waterproofing` and `/basements/#finishing`. On GitHub Pages this uses static redirect pages; on Netlify, `_redirects` returns real 301s.
+- The two services still exist separately in `src/data/services.js` (`page: 'basements'`). That keeps the form options ("Basement Waterproofing" / "Finished Basement"), the gallery filters and the project labels distinct. The combined page's title, headline, intro and FAQ picks are in `basementsPage` at the bottom of that file.

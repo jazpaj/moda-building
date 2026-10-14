@@ -20,7 +20,18 @@ const lpPhone = () => (has(site.trackingPhone) ? site.trackingPhone : site.phone
 const telHref = (p) => 'tel:+1' + p.replace(/\D/g, '').slice(-10);
 const svcBy = (k) => services.find((s) => s.key === k);
 const cityBy = (k) => cities.find((c) => c.key === k);
-const svcUrl = (s) => `/${s.slug}/`;
+const svcUrl = (s) => `/${s.page || s.slug}/`; // waterproofing + finished basements share /basements/
+// One entry per service page (Roofing · Basements · Renovations) — for footer, 404 and cross-links.
+const servicePages = () => {
+  const seen = new Set(), out = [];
+  for (const s of services) {
+    const url = svcUrl(s);
+    if (seen.has(url)) continue;
+    seen.add(url);
+    out.push({ url, name: s.page ? services.basementsPage.name : s.name, key: s.page || s.key });
+  }
+  return out;
+};
 const cityUrl = (s, c) => `/${s.slug}/${c.slug}/`;
 const coreCities = cities.filter((c) => !c.isRegion);
 
@@ -194,7 +205,7 @@ function problemTiles(ids, { title = 'What’s going on at your home?', intro = 
 // Main menu: 5 items only (Roofing · Basements · Renovations · Our Work · About). Cities live in the footer.
 const NAV = [
   { key: 'roofing', label: 'Roofing', href: '/roofing/' },
-  { key: 'basements', label: 'Basements', children: [['Basement Waterproofing', '/basement-waterproofing/'], ['Finished Basements', '/finished-basements/']] },
+  { key: 'basements', label: 'Basements', href: '/basements/' },
   { key: 'renovations', label: 'Renovations', href: '/renovations/' },
   { key: 'work', label: 'Our Work', href: '/gallery/' },
   { key: 'about', label: 'About', href: '/about/' }
@@ -271,7 +282,7 @@ function footer({ minimal = false, lp = null } = {}) {
     <div><a class="logo" href="/" aria-label="Moda Building home">${logoImg({ light: true })}</a>${nap}
       <p style="margin-top:12px">${has(site.license) ? `MI License ${esc(site.license)}<br>` : ''}Licensed &amp; insured in Michigan</p>
       ${social ? `<div class="footer__social">${social}</div>` : ''}</div>
-    <div><h2>Services</h2><ul>${services.map((s) => `<li><a href="${svcUrl(s)}">${esc(s.name)}</a></li>`).join('')}<li><a href="/gallery/">Project gallery</a></li></ul>
+    <div><h2>Services</h2><ul>${servicePages().map((p) => `<li><a href="${p.url}">${esc(p.name)}</a></li>`).join('')}<li><a href="/gallery/">Project gallery</a></li></ul>
       <h2 style="margin-top:28px">Hours</h2><ul>${hours}</ul></div>
     <div><h2>Service areas</h2><ul>${cities.map((c) => `<li><a href="${cityUrl(services[0], c)}">${c.isRegion ? 'All of Metro Detroit' : esc(c.name) + ', MI'}</a></li>`).join('')}</ul></div>
     <div><h2>Company</h2><ul>${company.map(([l, h]) => `<li><a href="${h}">${l}</a></li>`).join('')}</ul></div>
@@ -378,4 +389,4 @@ function priceEstimator(cfg) {
 </div></section>`;
 }
 
-module.exports = { priceEstimator, ALL_REVIEWS, liveReviews, reviewsPageLive, financingPageLive, lpPhone, trustBar, reviewsBlock, MAIN_SERVICES, problemTiles, PROBLEMS, logoImg, picUrl, has, hasAddress, hasRating, pic, hasPhoto, site, services, cities, coreCities, esc, val, isPh, telHref, svcBy, cityBy, svcUrl, cityUrl, ICON, LOGO, img, callBtn, quoteForm, header, footer, mobileBar, trustStrip, crumbs, processSection, reviewCard, projectCard, faqSection, ctaBand, PROCESS };
+module.exports = { servicePages, priceEstimator, ALL_REVIEWS, liveReviews, reviewsPageLive, financingPageLive, lpPhone, trustBar, reviewsBlock, MAIN_SERVICES, problemTiles, PROBLEMS, logoImg, picUrl, has, hasAddress, hasRating, pic, hasPhoto, site, services, cities, coreCities, esc, val, isPh, telHref, svcBy, cityBy, svcUrl, cityUrl, ICON, LOGO, img, callBtn, quoteForm, header, footer, mobileBar, trustStrip, crumbs, processSection, reviewCard, projectCard, faqSection, ctaBand, PROCESS };

@@ -116,6 +116,7 @@ module.exports = [
   {
     key: 'basement-waterproofing',
     slug: 'basement-waterproofing',
+    page: 'basements', // shares the combined /basements/ page (waterproofing + finishing on one page)
     name: 'Basement Waterproofing',
     short: 'Waterproofing',
     formValue: 'Basement Waterproofing',
@@ -174,6 +175,7 @@ module.exports = [
   {
     key: 'finished-basements',
     slug: 'finished-basements',
+    page: 'basements', // shares the combined /basements/ page (waterproofing + finishing on one page)
     name: 'Finished Basements',
     short: 'Finished Basements',
     formValue: 'Finished Basement',
@@ -284,3 +286,21 @@ module.exports = [
     crossSell: { to: 'finished-basements', text: 'Renovating upstairs? The basement is often the best place to add the space you need — a guest suite, gym or family room.', cta: 'See finished basements' }
   }
 ];
+
+// Combined Basements page (/basements/): waterproofing and finishing sold as one story — dry it, then finish it.
+module.exports.basementsPage = {
+  slug: 'basements',
+  name: 'Basement Waterproofing & Finishing',
+  navLabel: 'Basements',
+  title: 'Basement Waterproofing & Finishing Metro Detroit | Moda Building',
+  description: 'Basement waterproofing and finished basements by one team in Metro Detroit: leak and crack repair, drain tile, sump pumps, then family rooms, bars, theaters and guest suites.',
+  eyebrow: 'Basement waterproofing & finishing · Metro Detroit',
+  h1: 'Dry it, then finish it — basements by one team',
+  heroSub: 'We find where water gets in and fix it for good, then turn the dry space into a family room, bar, theater, gym or guest suite. One team, one plan, one warranty conversation.',
+  intro: [
+    'Oakland County sits on dense clay soil that holds water against foundation walls. Spring thaw, heavy rain and aging drain tile mean even well-built homes end up with damp walls, efflorescence or water on the floor — and finishing over that moisture leads to mold and torn-out drywall.',
+    'Moda Building handles the whole basement. We diagnose the water source first and fix it with the least invasive solution that will last. Then we design and build a lower level that feels like part of the house — warm, bright and quiet.'
+  ],
+  // FAQ: merged from both services, without repeats
+  faqs: [['basement-waterproofing', 0], ['basement-waterproofing', 1], ['basement-waterproofing', 3], ['basement-waterproofing', 4], ['finished-basements', 0], ['finished-basements', 1], ['finished-basements', 2], ['finished-basements', 4]]
+};
