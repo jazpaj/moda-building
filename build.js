@@ -403,7 +403,7 @@ ${ctaBand()}` });
 
 /* ================= CONTACT ================= */
 const a = site.address;
-layout({ url: '/contact/', title: 'Contact Us | Free Estimate | Moda Building', description: 'Request a free estimate from Moda Building for roofing, basement waterproofing, finished basements or renovations in Metro Detroit. Call or send the form.', priority: '0.8',
+layout({ url: '/contact/', current: 'contact', title: 'Contact Us | Free Estimate | Moda Building', description: 'Request a free estimate from Moda Building for roofing, basement waterproofing, finished basements or renovations in Metro Detroit. Call or send the form.', priority: '0.8',
   schema: [crumbSchema([['Home', '/'], ['Contact', '/contact/']])], body: `
 <section class="hero">${crumbs([['Home', '/'], ['Contact', '/contact/']])}<div class="wrap hero__grid">
   <div class="hero__copy"><span class="eyebrow">Contact / Free estimate</span><h1>Request your free estimate</h1>

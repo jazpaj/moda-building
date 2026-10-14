@@ -193,13 +193,15 @@ function problemTiles(ids, { title = 'What’s going on at your home?', intro = 
 /* ---------- Header / footer ---------- */
 // Main menu: 5 items only (Roofing · Basements · Renovations · Our Work · About). Cities live in the footer.
 const NAV = [
-  { key: 'roofing', label: 'Roofing', href: '/roofing/' },
+  { key: 'roofing', label: 'Roofing', children: [['All roofing services', '/roofing/'], ['Roof Replacement', '/roofing/#roof-replacement'], ['Roof Repair', '/roofing/#roof-repair'], ['Storm &amp; Hail Damage', '/roofing/#storm-damage'], ['Gutters', '/roofing/#gutters'], ['Instant Price Estimate', '/roofing/#instant-estimate']] },
   { key: 'basements', label: 'Basements', children: [['Basement Waterproofing', '/basement-waterproofing/'], ['Finished Basements', '/finished-basements/']] },
-  { key: 'renovations', label: 'Renovations', href: '/renovations/' },
-  { key: 'work', label: 'Our Work', href: '/gallery/' },
-  { key: 'about', label: 'About', href: '/about/' }
+  { key: 'renovations', label: 'Renovations', children: [['All renovation services', '/renovations/'], ['Kitchens', '/renovations/#kitchens'], ['Bathrooms', '/renovations/#bathrooms'], ['Additions', '/renovations/#additions'], ['Whole-Home Remodels', '/renovations/#whole-home']] },
+  { key: 'work', label: 'Our Work', children: [['All projects', '/gallery/'], ['Roofing projects', '/gallery/?service=roofing'], ['Waterproofing projects', '/gallery/?service=basement-waterproofing'], ['Finished basement projects', '/gallery/?service=finished-basements'], ['Renovation projects', '/gallery/?service=renovations']] },
+  { key: 'about', label: 'About', children: () => [['About us', '/about/'], reviewsPageLive() ? ['Reviews', '/reviews/'] : null, financingPageLive() ? ['Financing', '/financing/'] : null, ['Contact / Free estimate', '/contact/']].filter(Boolean) }
 ];
-const navKeyFor = (current) => ({ 'basement-waterproofing': 'basements', 'finished-basements': 'basements', gallery: 'work' }[current] || current);
+// Submenus stay short (2–6 links); cities live in the footer, not the menu.
+const navChildren = (n) => (typeof n.children === 'function' ? n.children() : n.children);
+const navKeyFor = (current) => ({ 'basement-waterproofing': 'basements', 'finished-basements': 'basements', gallery: 'work', contact: 'about', reviews: 'about', financing: 'about' }[current] || current);
 
 function header({ minimal = false, current = '', lp = null } = {}) {
   if (minimal) {
@@ -215,10 +217,10 @@ function header({ minimal = false, current = '', lp = null } = {}) {
   }
   const cur = navKeyFor(current);
   const desktop = NAV.map((n) => n.children
-    ? `<li><button type="button" aria-expanded="false"${cur === n.key ? ' aria-current="true"' : ''}>${n.label}</button><div class="dd">${n.children.map(([l, h]) => `<a href="${h}">${l}</a>`).join('')}</div></li>`
+    ? `<li><button type="button" aria-expanded="false"${cur === n.key ? ' aria-current="true"' : ''}>${n.label}</button><div class="dd">${navChildren(n).map(([l, h]) => `<a href="${h}">${l}</a>`).join('')}</div></li>`
     : `<li><a href="${n.href}"${cur === n.key ? ' aria-current="page"' : ''}>${n.label}</a></li>`).join('');
   const mobile = NAV.map((n) => n.children
-    ? `<li><details><summary>${n.label}</summary><ul>${n.children.map(([l, h]) => `<li><a href="${h}">${l}</a></li>`).join('')}</ul></details></li>`
+    ? `<li><details><summary>${n.label}</summary><ul>${navChildren(n).map(([l, h]) => `<li><a href="${h}">${l}</a></li>`).join('')}</ul></details></li>`
     : `<li><a href="${n.href}">${n.label}</a></li>`).join('');
   return `<header class="header"><div class="wrap header__in">
   <a class="logo" href="/" aria-label="Moda Building home">${LOGO}</a>

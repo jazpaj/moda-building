@@ -17,6 +17,11 @@
       d.body.style.overflow = open ? 'hidden' : '';
     });
   }
+  // If the screen widens to the desktop menu (e.g. tablet rotation) while the mobile menu is open, close it.
+  var mqDesktop = w.matchMedia('(min-width: 1080px)');
+  if (mqDesktop.addEventListener) mqDesktop.addEventListener('change', function (e) {
+    if (e.matches && mnav && mnav.classList.contains('is-open')) { mnav.classList.remove('is-open'); toggle.setAttribute('aria-expanded', 'false'); d.body.style.overflow = ''; }
+  });
   /* Desktop dropdowns (click/keyboard support; hover handled in CSS) */
   $$('.nav button[aria-expanded]').forEach(function (b) {
     b.addEventListener('click', function () {
@@ -26,6 +31,14 @@
     });
   });
   d.addEventListener('click', function (e) { if (!e.target.closest('.nav')) $$('.nav button[aria-expanded]').forEach(function (o) { o.setAttribute('aria-expanded', 'false'); }); });
+  // Submenu links that jump to a section of the current page: close the dropdown / mobile menu so it doesn't cover the content.
+  d.addEventListener('click', function (e) {
+    var a = e.target.closest('.nav .dd a, #mnav a');
+    if (!a) return;
+    $$('.nav button[aria-expanded]').forEach(function (o) { o.setAttribute('aria-expanded', 'false'); });
+    if (a.closest('.nav')) a.blur();
+    if (mnav && mnav.classList.contains('is-open') && toggle) toggle.click();
+  });
   d.addEventListener('keydown', function (e) {
     if (e.key !== 'Escape') return;
     $$('.nav button[aria-expanded="true"]').forEach(function (o) { o.setAttribute('aria-expanded', 'false'); o.focus(); });

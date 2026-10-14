@@ -71,7 +71,7 @@ ul { padding-left: 1.2em; }
 .link-arrow:hover { text-decoration: underline; }
 
 /* Header */
-.header { position: sticky; top: 0; z-index: 50; background: rgba(255,255,255,.97); backdrop-filter: saturate(1.4) blur(8px); border-bottom: 1px solid var(--line); }
+.header { position: sticky; top: 0; z-index: 50; background: #fff; border-bottom: 1px solid var(--line); } /* no backdrop-filter: it would trap the fixed mobile menu inside the header box */
 .header__in { display: flex; align-items: center; gap: 16px; height: var(--header-h); }
 .logo { display: flex; align-items: center; text-decoration: none; color: var(--ink); flex: none; }
 .nav { display: none; }
@@ -632,3 +632,6 @@ ul { padding-left: 1.2em; }
   .qf-trust { margin-top: 10px; }
 }
 .mbar--call { grid-template-columns: 1fr; }
+/* Right-hand dropdowns (Our Work, About) open leftwards so they stay on screen */
+@media (min-width: 1080px) { .nav > ul > li:nth-last-child(-n+2) > .dd { left: auto; right: 0; } .nav .dd { min-width: 240px; } }
+@media (min-width: 1080px) { .mnav, .mnav.is-open { display: none !important; } }
