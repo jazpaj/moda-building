@@ -53,6 +53,6 @@ module.exports = [
 <p>A pump that cycles nonstop means heavy water pressure; one that never runs may have failed. Both deserve attention before the next storm.</p>
 <h2>What to do next</h2>
 <ul><li>Check your gutters and downspouts first. Extending downspouts several feet from the house is the cheapest fix there is.</li><li>Make sure soil slopes away from your foundation.</li><li>Get a professional inspection to find the actual entry point — crack, cove joint, window well or failed drain tile.</li></ul>
-<p>And if you are planning to finish your basement, fix the water first. <a href="/basements/#waterproofing">See our basement waterproofing services</a> or <a href="/basements/#finishing">learn how we finish basements</a> once they are dry.</p>`
+<p>And if you are planning to finish your basement, fix the water first. <a href="/basement-waterproofing/">See our basement waterproofing services</a> or <a href="/finished-basements/">learn how we finish basements</a> once they are dry.</p>`
   }
 ];

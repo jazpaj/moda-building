@@ -8,7 +8,7 @@ const ui = require('./src/lib/ui');
 const ph = require('./src/lib/placeholders');
 const projects = require('./src/data/projects');
 const posts = require('./src/data/posts');
-const { servicePages, priceEstimator, ALL_REVIEWS, liveReviews, reviewsPageLive, financingPageLive, lpPhone, trustBar, reviewsBlock, problemTiles, PROBLEMS, picUrl, has, hasAddress, hasRating, pic, hasPhoto, site, services, cities, coreCities, esc, telHref, svcBy, cityBy, svcUrl, cityUrl, ICON, img, callBtn, quoteForm, header, footer, mobileBar, trustStrip, crumbs, processSection, reviewCard, projectCard, faqSection, ctaBand } = ui;
+const { priceEstimator, ALL_REVIEWS, liveReviews, reviewsPageLive, financingPageLive, lpPhone, trustBar, reviewsBlock, problemTiles, PROBLEMS, picUrl, has, hasAddress, hasRating, pic, hasPhoto, site, services, cities, coreCities, esc, telHref, svcBy, cityBy, svcUrl, cityUrl, ICON, img, callBtn, quoteForm, header, footer, mobileBar, trustStrip, crumbs, processSection, reviewCard, projectCard, faqSection, ctaBand } = ui;
 
 const OUT = path.join(__dirname, 'site');
 // BASE_PATH (e.g. /moda-building) builds a preview for a subfolder host like GitHub Pages; previews are noindex.
@@ -198,33 +198,44 @@ ${ctaBand({ title: 'Get your free estimate today' })}`;
   layout({ url: '/', title: 'Moda Building | Metro Detroit Roofing & Home Contractor', description: 'Moda Building is a Metro Detroit roofing contractor for roof replacement, repair and storm damage, plus basement waterproofing, finished basements and renovations. Free estimates.', body, schema: [faqSchema(homeFaq)], priority: '1.0' });
 })();
 
-/* ================= SERVICE PAGES (Roofing, Renovations; basements are one combined page below) ================= */
-for (const s of services.filter((x) => !x.page)) {
+/* ================= SERVICE PAGES ================= */
+for (const s of services) {
   const sProjects = projects.filter((p) => p.service === s.key);
   const sReviews = liveReviews().filter((r) => r.service === s.key);
   const sCities = s.cityKeys.map(cityBy);
   const cross = svcBy(s.crossSell.to);
   const bc = [['Home', '/'], [s.name, svcUrl(s)]];
-  const crossBox = `<div class="cross"><span class="eyebrow">Related service</span><h3>${esc(cross.page ? services.basementsPage.name : cross.name)}</h3><p>${esc(s.crossSell.text)}</p><a class="link-arrow" href="${svcUrl(cross)}">${esc(s.crossSell.cta)}</a></div>`;
+  const isWp = s.key === 'basement-waterproofing';
+  const crossBox = `<div class="cross"><span class="eyebrow">Related service</span><h3>${esc(cross.name)}</h3><p>${esc(s.crossSell.text)}</p><a class="link-arrow" href="${svcUrl(cross)}">${esc(s.crossSell.cta)}</a></div>`;
   const roofBox = `<div class="cross"><span class="eyebrow">Roof + basement</span><h3>Need a roof, too?</h3><p>Water problems often start at the roof line. Overflowing gutters and roof leaks are a common source of interior water damage — we can inspect both in one visit.</p><a class="link-arrow" href="/roofing/">Roofing services</a></div>`;
-  const related = s.key === 'roofing' ? crossBox : `<div class="grid grid--2">${crossBox}${roofBox}</div>`;
+  const related = s.key === 'roofing' ? crossBox : isWp ? roofBox : `<div class="grid grid--2">${crossBox}${roofBox}</div>`;
+  // Waterproofing pushes the whole-basement story right after the intro: dry it, then finish it.
+  const dryThenFinish = isWp ? `
+<section class="section section--ink"><div class="wrap">
+  <div class="section-head section-head--center"><span class="eyebrow">Dry it, then finish it</span><h2>One team for the whole basement</h2><p class="lead" style="color:#c9d1d9">Water follows a path — roof, gutters, grading, foundation. We stop it, then turn the dry space into living space.</p></div>
+  <div class="grid grid--2 steps2">
+    <div class="step2"><span class="step2__n">1</span><h3>Dry it</h3><p>We find where water gets in — cracks, failed drain tile, the wall–floor joint, gutters or grading — and fix the cause with a written, transferable warranty.</p><a class="btn btn--cta" href="#quote" data-cta="wp-dry-it">Book a free inspection</a></div>
+    <div class="step2"><span class="step2__n">2</span><h3>Finish it</h3><p>With the water handled, your basement becomes the most affordable square footage you can add: a family room, bar, theater, gym or guest suite.</p><a class="btn btn--ghost" href="/finished-basements/">See finished basements</a></div>
+  </div>
+</div></section>` : '';
   const shownProjects = triple(sProjects);
   const body = `
 ${pageHero({ crumbsList: bc, eyebrow: `${s.name} · ${s.coverage}`, h1: esc(s.h1), lead: esc(s.heroSub), bulletsList: ['Free in-home inspection and written quote', 'Licensed, insured &amp; warrantied', 'Financing on qualifying projects'], service: s.formValue, location: s.key, formTitle: `Get a free ${s.short.toLowerCase()} estimate`, media: heroPhoto(pic(`${sProjects[0].id}-after`), projAlt(sProjects[0])) })}
 ${problemTiles(PROBLEMS.filter((p) => p.service === s.key).slice(0, 3).map((p) => p.id), { title: `What’s going on with your ${s.key === 'roofing' ? 'roof' : s.key === 'renovations' ? 'home' : 'basement'}?`, stone: true })}
 
 <section class="section"><div class="wrap split">
-  <div><span class="eyebrow">${esc(s.name)}</span><h2>${s.key === 'roofing' ? 'Built for Michigan weather' : 'Modern design, respectful of your home'}</h2>${s.intro.map((p) => `<p>${esc(p)}</p>`).join('')}
+  <div><span class="eyebrow">${esc(s.name)}</span><h2>${s.key === 'roofing' ? 'Built for Michigan weather' : isWp ? 'Find the cause. Fix it for good.' : s.key === 'finished-basements' ? 'Space that feels like the main floor' : 'Modern design, respectful of your home'}</h2>${s.intro.map((p) => `<p>${esc(p)}</p>`).join('')}
     <ul class="toc" aria-label="On this page">${s.subservices.map((x) => `<li><a href="#${x.id}">${esc(x.title)}</a></li>`).join('')}</ul></div>
   <div class="rounded">${img(pic(`${s.key}-hero`), `${s.name} by Moda Building in Oakland County, MI`, { sizes: '(min-width: 960px) 50vw, 100vw' })}</div>
 </div></section>
+${dryThenFinish}
 <section class="section section--stone"><div class="wrap">
   <div class="section-head"><span class="eyebrow">What we do</span><h2>${esc(s.name)} services</h2></div>
   ${s.subservices.map((x) => `<div class="sub" id="${x.id}"><h3>${esc(x.title)}</h3><div><p>${esc(x.text)}</p>${x.points.length ? checks(x.points) : ''}</div></div>`).join('')}
 </div></section>
 
 <section class="section"><div class="wrap">
-  <div class="section-head"><span class="eyebrow">${s.key === 'renovations' ? 'Projects & timelines' : 'Shingle types & materials'}</span><h2>${s.key === 'roofing' ? 'Choosing your roofing material' : 'Typical project types'}</h2></div>
+  <div class="section-head"><span class="eyebrow">${s.key === 'renovations' ? 'Projects & timelines' : isWp ? 'Solutions' : s.key === 'finished-basements' ? 'Materials' : 'Shingle types & materials'}</span><h2>${s.key === 'roofing' ? 'Choosing your roofing material' : isWp ? 'Which waterproofing fix fits your home?' : s.key === 'finished-basements' ? 'Built for below grade' : 'Typical project types'}</h2></div>
   <div class="materials">${s.materials.map((m) => `<div class="material"><h3>${esc(m.name)}</h3><span class="life">${esc(m.life)}</span><p>${esc(m.note)}</p></div>`).join('')}</div>
 </div></section>
 
@@ -251,78 +262,6 @@ ${ctaBand({ title: `Get a free ${esc(s.short.toLowerCase())} estimate` })}`;
   layout({ url: svcUrl(s), title: s.title, description: s.description, body, current: s.key, ogImage: picUrl(`${s.key}-hero`), priority: '0.9',
     schema: [serviceSchema(s, sCities), faqSchema(s.faqs), crumbSchema(bc)] });
 }
-
-/* ================= BASEMENTS — one combined page: waterproofing + finishing (dry it, then finish it) ================= */
-(function basementsPage() {
-  const B = services.basementsPage, wp = svcBy('basement-waterproofing'), fb = svcBy('finished-basements');
-  const url = `/${B.slug}/`, bc = [['Home', '/'], ['Basements', url]];
-  const projs = [...triple(projects.filter((p) => p.service === wp.key), 3), ...triple(projects.filter((p) => p.service === fb.key), 3)];
-  const revs = liveReviews().filter((r) => r.service === wp.key || r.service === fb.key);
-  const faqs = B.faqs.map(([k, i]) => svcBy(k).faqs[i]);
-  const subs = (s) => s.subservices.filter((x) => x.id !== 'cost-ranges').map((x) => `<div class="sub" id="${x.id}"><h3>${esc(x.title)}</h3><div><p>${esc(x.text)}</p>${x.points.length ? checks(x.points) : ''}</div></div>`).join('');
-  const mats = (s, title) => `<div><h3 class="col-title">${title}</h3><div class="materials materials--stack">${s.materials.map((m) => `<div class="material"><h3>${esc(m.name)}</h3><span class="life">${esc(m.life)}</span><p>${esc(m.note)}</p></div>`).join('')}</div></div>`;
-  const cost = (s, title) => `<div><h3 class="col-title">${title}</h3><table class="table"><caption class="sr-only">${title} — typical price ranges</caption><thead><tr><th scope="col">Project</th><th scope="col">Typical range</th></tr></thead><tbody>${s.priceRanges.map((r) => `<tr><td>${esc(r.label)}</td><td>${esc(r.range)}</td></tr>`).join('')}</tbody></table>
-    <p class="note" style="margin:14px 0 6px"><strong>What affects the price</strong></p>${checks(s.costFactors.slice(0, 4))}</div>`;
-  const body = `
-${pageHero({ crumbsList: bc, eyebrow: B.eyebrow, h1: esc(B.h1), lead: esc(B.heroSub), bulletsList: ['Free in-home inspection and written quote', 'Written, transferable waterproofing warranty', 'Design + build by one team'], location: 'basements', formTitle: 'Get a free basement estimate', media: heroPhoto(pic('p11-after'), projAlt(proj('p11'))) })}
-${problemTiles(['wet-basement', 'foundation-crack', 'sump-pump', 'unused-basement', 'need-space', 'guest-suite'], { title: 'What’s going on with your basement?', stone: true })}
-
-<section class="section"><div class="wrap split">
-  <div><span class="eyebrow">Basements</span><h2>Find the cause. Fix it for good. Then make it living space.</h2>${B.intro.map((p) => `<p>${esc(p)}</p>`).join('')}
-    <ul class="toc" aria-label="On this page"><li><a href="#waterproofing">Waterproofing</a></li><li><a href="#finishing">Basement finishing</a></li><li><a href="#cost">Cost</a></li><li><a href="#faq">FAQ</a></li></ul></div>
-  <div class="rounded">${img(pic('basement-waterproofing-hero'), 'Waterproofed basement with sump system by Moda Building in Oakland County, MI', { sizes: '(min-width: 960px) 50vw, 100vw' })}</div>
-</div></section>
-
-<section class="section section--ink"><div class="wrap">
-  <div class="section-head section-head--center"><span class="eyebrow">Dry it, then finish it</span><h2>One team for the whole basement</h2><p class="lead" style="color:#c9d1d9">Water follows a path — roof, gutters, grading, foundation. We stop it, then turn the dry space into living space.</p></div>
-  <div class="grid grid--2 steps2">
-    <div class="step2"><span class="step2__n">1</span><h3>Dry it</h3><p>We find where water gets in — cracks, failed drain tile, the wall–floor joint, gutters or grading — and fix the cause with a written, transferable warranty.</p><a class="btn btn--ghost" href="#waterproofing">Waterproofing services</a></div>
-    <div class="step2"><span class="step2__n">2</span><h3>Finish it</h3><p>With the water handled, your basement becomes the most affordable square footage you can add: a family room, bar, theater, gym or guest suite.</p><a class="btn btn--ghost" href="#finishing">Finishing services</a></div>
-  </div>
-</div></section>
-
-<section class="section section--stone" id="waterproofing"><div class="wrap">
-  <div class="section-head"><span class="eyebrow">Step 1 · Dry it</span><h2>Basement waterproofing</h2></div>
-  ${subs(wp)}
-</div></section>
-
-<section class="section" id="finishing"><div class="wrap">
-  <div class="section-head"><span class="eyebrow">Step 2 · Finish it</span><h2>Finished basements</h2></div>
-  ${subs(fb)}
-</div></section>
-
-<section class="section section--stone"><div class="wrap">
-  <div class="section-head"><span class="eyebrow">Solutions &amp; materials</span><h2>The right fix, then the right finishes</h2></div>
-  <div class="grid grid--2 cols-top">${mats(wp, 'Which waterproofing fix fits your home?')}${mats(fb, 'Built for below grade')}</div>
-</div></section>
-
-<section class="section" id="cost"><div class="wrap">
-  <div class="section-head"><span class="eyebrow">Cost</span><h2>What does a basement cost?</h2><p class="lead">Ballpark ranges for planning only. Your written quote is based on an on-site inspection.</p></div>
-  <div class="grid grid--2 cols-top">${cost(wp, 'Waterproofing')}${cost(fb, 'Finishing')}</div>
-</div></section>
-
-<section class="section section--stone"><div class="wrap">
-  <div class="section-head section-head--center"><span class="eyebrow">Project gallery</span><h2>Wet to dry. Unfinished to finished.</h2></div>
-  <div class="grid grid--3">${projs.map((p) => projectCard(p)).join('')}</div>
-  ${sectionCta(ghostBtn('/gallery/', 'See all projects'))}
-</div></section>
-
-${reviewsBlock(revs, { title: 'Basement reviews' })}
-
-<section class="section"><div class="wrap"><div class="cross"><span class="eyebrow">Roof + basement</span><h3>Need a roof, too?</h3><p>Water problems often start at the roof line. Overflowing gutters and roof leaks are a common source of basement water — we can inspect both in one visit.</p><a class="link-arrow" href="/roofing/">Roofing services</a></div></div></section>
-
-${faqSection(faqs, { title: 'Basement FAQ', stone: true })}
-${ctaBand({ title: 'Get a free basement estimate' })}`;
-  layout({ url, title: B.title, description: B.description, body, current: 'basements', ogImage: picUrl('finished-basements-hero'), priority: '0.9',
-    schema: [serviceSchema(wp, wp.cityKeys.map(cityBy)), serviceSchema(fb, fb.cityKeys.map(cityBy)), faqSchema(faqs), crumbSchema(bc)] });
-
-  // Old URLs → /basements/ (static redirect pages; Netlify also gets real 301s via _redirects)
-  for (const [old, anchor] of [['basement-waterproofing', 'waterproofing'], ['finished-basements', 'finishing']]) {
-    const to = `${BASE}${url}#${anchor}`;
-    write(`${old}/index.html`, `<!doctype html><html lang="en-US"><head><meta charset="utf-8"><title>Moved to Basements | Moda Building</title><meta name="robots" content="noindex, follow"><link rel="canonical" href="${SITE_URL}${url}"><meta http-equiv="refresh" content="0; url=${to}"><script>location.replace(${JSON.stringify(to)})</script></head><body><p>This page has moved: <a href="${to}">Basement waterproofing &amp; finishing</a>.</p></body></html>`);
-  }
-  write('_redirects', `/basement-waterproofing/*  /basements/  301\n/finished-basements/*  /basements/  301\n`);
-})();
 
 /* ================= LOCATION PAGES — roofing only (other services held back until real local projects exist) ================= */
 const cityTitles = {
@@ -355,7 +294,7 @@ for (const s of services.filter(livePageFor)) {
     const others = projects.filter((p) => p.service === s.key && !localProjs.includes(p) && !nearbyProjs.includes(p));
     const projs = triple([...localProjs, ...nearbyProjs, ...others], c.isRegion ? 6 : 3);
     const revs = liveReviews().filter((r) => r.service === s.key && (c.isRegion || r.city === c.key));
-    const otherSvcs = servicePages().filter((o) => o.key !== s.key);
+    const otherSvcs = services.filter((o) => o.key !== s.key);
     const nearbyLinks = c.isRegion ? [] : c.nearby.filter((k) => s.cityKeys.includes(k)).map(cityBy);
     const faqs = [local.faq, ...s.faqs.slice(0, 3)];
     const bc = [['Home', '/'], [s.name, svcUrl(s)], [c.isRegion ? 'Metro Detroit' : c.name, url]];
@@ -383,7 +322,7 @@ ${reviewsBlock(revs, { title: c.isRegion ? 'Reviews from Metro Detroit homeowner
 
 <section class="section"><div class="wrap grid grid--2">
   <div class="cross"><h3>${esc(s.name)} services</h3><p>Replacement, repair, storm damage and insurance claims, shingle options, gutters and free inspections — plus typical costs.</p><a class="link-arrow" href="${svcUrl(s)}">See all ${esc(s.short.toLowerCase())} services</a>${nearbyLinks.length ? `<h3 style="margin-top:20px">Nearby cities</h3><ul class="chips" style="margin-top:10px">${nearbyLinks.map((n) => `<li><a href="${cityUrl(s, n)}">${esc(n.name)}</a></li>`).join('')}</ul>` : ''}</div>
-  <div class="cross"><h3>More from Moda Building</h3><p>The same team also handles what’s below the roof line.</p><ul class="chips" style="margin-top:10px">${otherSvcs.map((o) => `<li><a href="${o.url}">${esc(o.name)}</a></li>`).join('')}</ul></div>
+  <div class="cross"><h3>More from Moda Building</h3><p>The same team also handles what’s below the roof line.</p><ul class="chips" style="margin-top:10px">${otherSvcs.map((o) => `<li><a href="${svcUrl(o)}">${esc(o.name)}</a></li>`).join('')}</ul></div>
 </div></section>
 
 ${faqSection(faqs, { title: `${s.short} in ${c.isRegion ? 'Metro Detroit' : c.name}: FAQ`, stone: true })}
@@ -695,7 +634,7 @@ layout({ url: '/brand/', title: 'Brand Options | Moda Building', description: 'L
 /* ================= 404 ================= */
 layout({ url: '/404.html', title: 'Page Not Found | Moda Building', description: 'The page you are looking for could not be found.', noindex: true, sitemap: false, body: `
 <section class="section"><div class="wrap ty"><h1>Page not found</h1><p class="lead" style="margin:0 auto 24px">That page may have moved. Try one of these:</p>
-<ul class="chips" style="justify-content:center">${servicePages().map((p) => `<li><a href="${p.url}">${esc(p.name)}</a></li>`).join('')}<li><a href="/contact/">Free estimate</a></li></ul></div></section>` });
+<ul class="chips" style="justify-content:center">${services.map((s) => `<li><a href="${svcUrl(s)}">${esc(s.name)}</a></li>`).join('')}<li><a href="/contact/">Free estimate</a></li></ul></div></section>` });
 
 /* ---------- Static assets ---------- */
 fs.copyFileSync(path.join(OUT, 'assets/favicon.ico'), path.join(OUT, 'favicon.ico')); // root fallback for crawlers/browsers
