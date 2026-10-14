@@ -81,7 +81,7 @@ const crumbSchema = (list) => ({ '@type': 'BreadcrumbList', itemListElement: lis
 const serviceSchema = (s, areas, name) => ({ '@type': 'Service', name: name || s.name, serviceType: s.name, provider: { '@id': BIZ_ID }, areaServed: areas.map((c) => (c.isRegion ? { '@type': 'AdministrativeArea', name: 'Metro Detroit, MI' } : { '@type': 'City', name: `${c.name}, MI` })) });
 
 /* ---------- Layout ---------- */
-function layout({ url, title, description, body, schema = [], noindex = false, minimal = false, lp = null, current = '', bodyAttr = '', ogImage = picUrl('home-hero'), sitemap = true, priority = '0.6' }) {
+function layout({ url, title, description, body, schema = [], noindex = false, minimal = false, lp = null, quoteBar = true, current = '', bodyAttr = '', ogImage = picUrl('home-hero'), sitemap = true, priority = '0.6' }) {
   if (title.length > 70) console.warn(`! Title > 70 chars (${title.length}): ${url}`);
   if (!noindex && sitemap) pages.push({ url, priority });
   const graph = [businessSchema(), { '@type': 'WebPage', '@id': SITE_URL + url, url: SITE_URL + url, name: title, description, isPartOf: { '@type': 'WebSite', '@id': SITE_URL + '/#website', name: site.name, url: SITE_URL + '/' } }, ...schema];
@@ -130,7 +130,7 @@ ${header({ minimal, current, lp })}
 ${body}
 </main>
 ${footer({ minimal, lp })}
-${lp ? mobileBar({ label: lp.cta, phone: lp.phone }) : mobileBar()}
+${lp ? mobileBar({ label: lp.cta, phone: lp.phone, quote: quoteBar && !!lp.cta }) : mobileBar({ quote: quoteBar })}
 <script src="/assets/js/main.js?v=${JS_V}" defer></script>
 </body>
 </html>
@@ -465,7 +465,7 @@ function lpTrust(extra) {
 }
 function landingPage(cfg) {
   const url = `/lp/${cfg.slug}/`, ty = `${url}thank-you/`;
-  const lp = { phone: lpPhone(), cta: cfg.cta };
+  const lp = { phone: lpPhone(), cta: cfg.cta, logoHome: !!cfg.logoHome }; // logoHome: logo links to the main website
   const formHtml = quoteForm({ location: `lp-${cfg.slug}`, title: cfg.formTitle, sub: cfg.formSub, action: ty, options: cfg.options, variant: 'lp', photo: cfg.photo, address: false, submitLabel: cfg.submitLabel, serviceLabel: cfg.serviceLabel });
   const body = `
 <section class="hero hero--photo"><div class="hero__bg">${img(pic(cfg.heroImg), cfg.heroAlt, { eager: true, sizes: '100vw' })}</div>
@@ -485,7 +485,7 @@ ${processSection({ dark: true, intro: 'Three simple steps.', steps: cfg.steps })
 ${faqSection(cfg.faqs, { phone: lp.phone, intro: 'The questions we hear most.' })}
 ${ctaBand({ title: esc(cfg.h1), text: cfg.sub, points: cfg.bullets, buttonLabel: cfg.submitLabel, phone: lp.phone })}`;
   layout({ url, title: `${cfg.tabTitle || cfg.h1} | Moda Building`, description: cfg.sub, noindex: true, minimal: true, lp, sitemap: false, ogImage: picUrl(cfg.heroImg), body });
-  layout({ url: ty, title: 'Thank You | Moda Building', description: 'Thank you — we received your request.', noindex: true, minimal: true, lp: { ...lp, cta: cfg.cta }, sitemap: false, bodyAttr: ` data-thankyou data-lp="${cfg.slug}"`, body: `
+  layout({ url: ty, title: 'Thank You | Moda Building', description: 'Thank you — we received your request.', noindex: true, minimal: true, lp: { ...lp, cta: null }, quoteBar: false, sitemap: false, bodyAttr: ` data-thankyou data-lp="${cfg.slug}"`, body: `
 <section class="section"><div class="wrap ty">
   <div class="ty__check">${ICON.check}</div>
   <h1>Thank you — we’ve got your request</h1>
@@ -526,7 +526,7 @@ landingPage({
 });
 
 landingPage({
-  slug: 'basements', cta: 'Free Consultation', h1: 'Dry, Finished Basements in Oakland County', sub: 'Waterproofing and basement finishing by one team — free in-home consultation.',
+  slug: 'basements', logoHome: true, cta: 'Free Consultation', h1: 'Dry, Finished Basements in Oakland County', sub: 'Waterproofing and basement finishing by one team — free in-home consultation.',
   eyebrow: 'Basement waterproofing &amp; finishing',
   bullets: ['Free in-home consultation', 'Waterproofing first, then finishing — one team', 'Written, transferable waterproofing warranty'],
   heroImg: 'finished-basements-hero', heroAlt: 'Finished basement living space in Oakland County by Moda Building',
@@ -582,7 +582,7 @@ landingPage({
 });
 
 /* ================= THANK YOU (main site) ================= */
-layout({ url: '/thank-you/', title: 'Thank You — We Received Your Request | Moda Building', description: 'Thank you for contacting Moda Building. We will be in touch shortly to schedule your free estimate.', noindex: true, sitemap: false, bodyAttr: ' data-thankyou', body: `
+layout({ url: '/thank-you/', title: 'Thank You — We Received Your Request | Moda Building', description: 'Thank you for contacting Moda Building. We will be in touch shortly to schedule your free estimate.', noindex: true, sitemap: false, quoteBar: false, bodyAttr: ' data-thankyou', body: `
 <section class="section"><div class="wrap ty">
   <div class="ty__check">${ICON.check}</div>
   <h1>Thank you — we’ve got your request</h1>

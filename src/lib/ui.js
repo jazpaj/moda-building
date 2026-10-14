@@ -205,11 +205,11 @@ function header({ minimal = false, current = '', lp = null } = {}) {
   if (minimal) {
     const phone = lp ? lp.phone : site.phone;
     return `<header class="header lp-header"><div class="wrap header__in">
-  <span class="logo">${logoImg({ alt: 'Moda Building' })}</span>
+  ${lp && lp.logoHome ? `<a class="logo" href="/" aria-label="Moda Building home" data-cta="lp-logo-home">${logoImg()}</a>` : `<span class="logo">${logoImg({ alt: 'Moda Building' })}</span>`}
   <div class="header__actions">
     <a class="header__phone" href="${telHref(phone)}" data-loc="header">${esc(phone)}</a>
     <a class="icon-btn call-icon" href="${telHref(phone)}" data-loc="header-icon" aria-label="Call ${esc(phone)}">${ICON.phone}</a>
-    ${lp ? `<a class="btn btn--cta lp-cta" href="#quote" data-cta="header">${esc(lp.cta)}</a>` : ''}
+    ${lp && lp.cta ? `<a class="btn btn--cta lp-cta" href="#quote" data-cta="header">${esc(lp.cta)}</a>` : ''}
   </div>
 </div></header>`;
   }
@@ -235,8 +235,9 @@ function header({ minimal = false, current = '', lp = null } = {}) {
 </header>`;
 }
 
-function mobileBar({ label = 'Get Quote', phone = site.phone } = {}) {
-  return `<div class="mbar" role="region" aria-label="Quick contact">${callBtn('sticky-bar', 'btn btn--ghost', 'Call', phone)}<a class="btn btn--cta" href="#quote" data-cta="sticky-bar">${esc(label)}</a></div>`;
+// quote: false → Call only (thank-you pages: the visitor has already sent the form)
+function mobileBar({ label = 'Get Quote', phone = site.phone, quote = true } = {}) {
+  return `<div class="mbar${quote ? '' : ' mbar--call'}" role="region" aria-label="Quick contact">${callBtn('sticky-bar', quote ? 'btn btn--ghost' : 'btn btn--cta', quote ? 'Call' : 'Call ' + phone, phone)}${quote ? `<a class="btn btn--cta" href="#quote" data-cta="sticky-bar">${esc(label)}</a>` : ''}</div>`;
 }
 
 // Trust strip (homepage only). Shows only verified facts; unverified stats are never shown.
