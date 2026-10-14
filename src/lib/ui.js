@@ -193,7 +193,7 @@ function problemTiles(ids, { title = 'What’s going on at your home?', intro = 
 /* ---------- Header / footer ---------- */
 // Main menu: 5 items only (Roofing · Basements · Renovations · Our Work · About). Cities live in the footer.
 const NAV = [
-  { key: 'roofing', label: 'Roofing', children: [['All roofing services', '/roofing/'], ['Roof Replacement', '/roofing/#roof-replacement'], ['Roof Repair', '/roofing/#roof-repair'], ['Storm &amp; Hail Damage', '/roofing/#storm-damage'], ['Gutters', '/roofing/#gutters'], ['Instant Price Estimate', '/roofing/#instant-estimate']] },
+  { key: 'roofing', label: 'Roofing', children: [['All roofing services', '/roofing/'], ['Instant Price Estimate', '/roofing/#instant-estimate']] },
   { key: 'basements', label: 'Basements', children: [['Basement Waterproofing', '/basement-waterproofing/'], ['Finished Basements', '/finished-basements/']] },
   { key: 'renovations', label: 'Renovations', href: '/renovations/' },
   { key: 'work', label: 'Our Work', href: '/gallery/' },
