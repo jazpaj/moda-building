@@ -195,8 +195,8 @@ function problemTiles(ids, { title = 'What’s going on at your home?', intro = 
 const NAV = [
   { key: 'roofing', label: 'Roofing', children: [['All roofing services', '/roofing/'], ['Roof Replacement', '/roofing/#roof-replacement'], ['Roof Repair', '/roofing/#roof-repair'], ['Storm &amp; Hail Damage', '/roofing/#storm-damage'], ['Gutters', '/roofing/#gutters'], ['Instant Price Estimate', '/roofing/#instant-estimate']] },
   { key: 'basements', label: 'Basements', children: [['Basement Waterproofing', '/basement-waterproofing/'], ['Finished Basements', '/finished-basements/']] },
-  { key: 'renovations', label: 'Renovations', children: [['All renovation services', '/renovations/'], ['Kitchens', '/renovations/#kitchens'], ['Bathrooms', '/renovations/#bathrooms'], ['Additions', '/renovations/#additions'], ['Whole-Home Remodels', '/renovations/#whole-home']] },
-  { key: 'work', label: 'Our Work', children: [['All projects', '/gallery/'], ['Roofing projects', '/gallery/?service=roofing'], ['Waterproofing projects', '/gallery/?service=basement-waterproofing'], ['Finished basement projects', '/gallery/?service=finished-basements'], ['Renovation projects', '/gallery/?service=renovations']] },
+  { key: 'renovations', label: 'Renovations', href: '/renovations/' },
+  { key: 'work', label: 'Our Work', href: '/gallery/' },
   { key: 'about', label: 'About', children: () => [['About us', '/about/'], reviewsPageLive() ? ['Reviews', '/reviews/'] : null, financingPageLive() ? ['Financing', '/financing/'] : null, ['Contact / Free estimate', '/contact/']].filter(Boolean) }
 ];
 // Submenus stay short (2–6 links); cities live in the footer, not the menu.
