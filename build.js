@@ -465,7 +465,7 @@ function lpTrust(extra) {
 }
 function landingPage(cfg) {
   const url = `/lp/${cfg.slug}/`, ty = `${url}thank-you/`;
-  const lp = { phone: lpPhone(), cta: cfg.cta, logoHome: !!cfg.logoHome }; // logoHome: logo links to the main website
+  const lp = { phone: lpPhone(), cta: cfg.cta, logoHome: true }; // every landing page logo links to the main website
   const formHtml = quoteForm({ location: `lp-${cfg.slug}`, title: cfg.formTitle, sub: cfg.formSub, action: ty, options: cfg.options, variant: 'lp', photo: cfg.photo, address: false, submitLabel: cfg.submitLabel, serviceLabel: cfg.serviceLabel });
   const body = `
 <section class="hero hero--photo"><div class="hero__bg">${img(pic(cfg.heroImg), cfg.heroAlt, { eager: true, sizes: '100vw' })}</div>
@@ -526,7 +526,7 @@ landingPage({
 });
 
 landingPage({
-  slug: 'basements', logoHome: true, cta: 'Free Consultation', h1: 'Dry, Finished Basements in Metro Detroit', sub: 'Waterproofing and basement finishing by one team — free in-home consultation.',
+  slug: 'basements', cta: 'Free Consultation', h1: 'Dry, Finished Basements in Metro Detroit', sub: 'Waterproofing and basement finishing by one team — free in-home consultation.',
   eyebrow: 'Basement waterproofing &amp; finishing',
   bullets: ['Free in-home consultation', 'Waterproofing first, then finishing — one team', 'Written, transferable waterproofing warranty'],
   heroImg: 'finished-basements-hero', heroAlt: 'Finished basement living space in Metro Detroit by Moda Building',
