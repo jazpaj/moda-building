@@ -166,7 +166,7 @@ function pageHero({ crumbsList, eyebrow, h1, lead, bulletsList = [], service = '
 (function home() {
   const featured = ['p1', 'p7', 'p15'].map(proj); // roofing first; one per main service
   const homeFaq = [
-    { q: 'What areas do you serve?', a: 'Roofing and basement waterproofing across Oakland County and all of Metro Detroit. Finished basements and full renovations focus on Birmingham, Royal Oak, Bloomfield Hills, Rochester Hills, West Bloomfield and Beverly Hills.' },
+    { q: 'What areas do you serve?', a: 'Roofing and basement waterproofing across all of Metro Detroit. Finished basements and full renovations focus on Birmingham, Royal Oak, Bloomfield Hills, Rochester Hills, West Bloomfield and Beverly Hills.' },
     { q: 'Are estimates really free?', a: 'Yes. Inspections and written estimates are free and come with no obligation.' },
     { q: 'Are you licensed and insured?', a: `Yes. Moda Building is a licensed Michigan residential builder${has(site.license) ? ` (license ${site.license})` : ''} and carries liability and workers’ compensation insurance. Certificates are available on request.` },
     { q: 'Do you help with insurance claims?', a: 'For storm and hail damage, we document the damage with dated photos and meet your adjuster on-site so your claim reflects what is actually on your roof.' }
@@ -226,7 +226,7 @@ ${problemTiles(PROBLEMS.filter((p) => p.service === s.key).slice(0, 3).map((p) =
 <section class="section"><div class="wrap split">
   <div><span class="eyebrow">${esc(s.name)}</span><h2>${s.key === 'roofing' ? 'Built for Michigan weather' : isWp ? 'Find the cause. Fix it for good.' : s.key === 'finished-basements' ? 'Space that feels like the main floor' : 'Modern design, respectful of your home'}</h2>${s.intro.map((p) => `<p>${esc(p)}</p>`).join('')}
     <ul class="toc" aria-label="On this page">${s.subservices.map((x) => `<li><a href="#${x.id}">${esc(x.title)}</a></li>`).join('')}</ul></div>
-  <div class="rounded">${img(pic(`${s.key}-hero`), `${s.name} by Moda Building in Oakland County, MI`, { sizes: '(min-width: 960px) 50vw, 100vw' })}</div>
+  <div class="rounded">${img(pic(`${s.key}-hero`), `${s.name} by Moda Building in Metro Detroit, MI`, { sizes: '(min-width: 960px) 50vw, 100vw' })}</div>
 </div></section>
 ${dryThenFinish}
 <section class="section section--stone"><div class="wrap">
@@ -265,7 +265,7 @@ ${ctaBand({ title: `Get a free ${esc(s.short.toLowerCase())} estimate` })}`;
 
 /* ================= LOCATION PAGES — roofing only (other services held back until real local projects exist) ================= */
 const cityTitles = {
-  roofing: (c) => c.isRegion ? 'Roofing Across Oakland County & Metro Detroit | Moda Building' : `Roofing Contractor ${c.name}, MI | Moda Building`,
+  roofing: (c) => c.isRegion ? 'Roofing Across All of Metro Detroit | Moda Building' : `Roofing Contractor ${c.name}, MI | Moda Building`,
   'basement-waterproofing': (c) => c.isRegion ? 'Basement Waterproofing Across Metro Detroit | Moda Building' : `Basement Waterproofing ${c.name}, MI | Moda Building`,
   'finished-basements': (c) => `Finished Basements ${c.name}, MI | Moda Building`,
   renovations: (c) => `Home Renovation ${c.name}, MI | Moda Building`
@@ -277,7 +277,7 @@ const cityH1 = {
   renovations: (c) => `Home renovations in ${c.name}, MI`
 };
 const cityDesc = {
-  roofing: (c) => c.isRegion ? 'Roof replacement, repair and storm damage across Oakland County and all of Metro Detroit. Free roof inspections and written quotes from Moda Building.' : `Roof replacement and repair in ${c.name}, MI. Storm and hail damage, insurance claims, gutters and free roof inspections from Moda Building.`,
+  roofing: (c) => c.isRegion ? 'Roof replacement, repair and storm damage across all of Metro Detroit. Free roof inspections and written quotes from Moda Building.' : `Roof replacement and repair in ${c.name}, MI. Storm and hail damage, insurance claims, gutters and free roof inspections from Moda Building.`,
   'basement-waterproofing': (c) => c.isRegion ? 'Basement waterproofing across Metro Detroit: crack repair, interior drain tile, sump pumps and foundation repair with a written warranty.' : `Basement waterproofing in ${c.name}, MI: leak and crack repair, interior drain tile, sump pumps and foundation repair, with a written warranty.`,
   'finished-basements': (c) => `Design-build finished basements in ${c.name}, MI: family rooms, bars, theaters, guest suites, egress windows and bathrooms. Free consultation.`,
   renovations: (c) => `Whole-home remodels, kitchens, bathrooms and additions in ${c.name}, MI. Modern design-build renovations by Moda Building. Free consultation.`
@@ -303,13 +303,13 @@ for (const s of services.filter(livePageFor)) {
 ${pageHero({ crumbsList: bc, eyebrow: `${s.name} · ${c.county}`, h1: cityH1[s.key](c), lead: esc(local.intro[0]), bulletsList: [`Free roof inspection in ${c.isRegion ? 'your city' : esc(c.name)}`, 'Licensed, insured &amp; warrantied', 'Clear written quote — no pressure'], service: s.formValue, city: c.isRegion ? '' : c.name, location: `${s.key}-${c.key}`, media: heroPhoto(pic(`${heroProj.id}-after`), projAlt(heroProj)), formTitle: `Free estimate in ${c.isRegion ? 'Metro Detroit' : c.name}` })}
 
 <section class="section"><div class="wrap split" style="align-items:start">
-  <div><span class="eyebrow">${esc(s.short)} in ${esc(c.name)}</span><h2>${c.isRegion ? 'Serving homeowners across Oakland County and all of Metro Detroit' : `Local ${esc(s.short.toLowerCase())} for ${esc(c.name)} homes`}</h2>
+  <div><span class="eyebrow">${esc(s.short)} in ${esc(c.name)}</span><h2>${c.isRegion ? 'Serving homeowners across all of Metro Detroit' : `Local ${esc(s.short.toLowerCase())} for ${esc(c.name)} homes`}</h2>
     ${local.intro.slice(1).map((p) => `<p>${esc(p)}</p>`).join('')}
     <h3 style="margin-top:24px">${c.isRegion ? 'What every Metro Detroit homeowner gets' : `What we see in ${esc(c.name)}`}</h3>${checks(local.local)}</div>
   <div><div class="material"><h3>${c.isRegion ? 'Cities we serve' : 'Neighborhoods we serve'}</h3><p style="margin-bottom:12px">${c.isRegion ? 'Including, but not limited to:' : `${esc(c.name)} is mostly ${esc(c.housing)}. We work throughout:`}</p>
     <ul class="chips">${c.neighborhoods.map((n) => `<li>${esc(n)}</li>`).join('')}</ul>
     ${!c.isRegion && c.nearbyOther.length ? `<p style="margin:14px 0 0" class="note">Also nearby: ${c.nearbyOther.map(esc).join(', ')}.</p>` : ''}
-    ${c.isRegion ? `<p style="margin:14px 0 0">Core Oakland County cities: ${coreCities.map((x) => `<a href="${cityUrl(s, x)}">${esc(x.name)}</a>`).join(', ')}.</p>` : ''}</div></div>
+    ${c.isRegion ? `<p style="margin:14px 0 0">Core cities: ${coreCities.map((x) => `<a href="${cityUrl(s, x)}">${esc(x.name)}</a>`).join(', ')}.</p>` : ''}</div></div>
 </div></section>
 
 ${projs.length ? `<section class="section section--stone"><div class="wrap">
@@ -334,13 +334,13 @@ ${ctaBand({ title: `Free ${esc(s.short.toLowerCase())} estimate in ${c.isRegion 
 
 /* ================= ABOUT ================= */
 const owner = site.owner || {};
-layout({ url: '/about/', title: 'About Moda Building | Oakland County Contractor', description: 'Meet Moda Building: a licensed and insured Metro Detroit contractor for roofing, basement waterproofing, finished basements and renovations.', priority: '0.6', current: 'about',
+layout({ url: '/about/', title: 'About Moda Building | Metro Detroit Contractor', description: 'Meet Moda Building: a licensed and insured Metro Detroit contractor for roofing, basement waterproofing, finished basements and renovations.', priority: '0.6', current: 'about',
   schema: [crumbSchema([['Home', '/'], ['About', '/about/']])], body: `
 ${pageHero({ crumbsList: [['Home', '/'], ['About', '/about/']], eyebrow: 'About us', h1: 'Modern building, old-fashioned accountability', lead: 'Moda Building is a residential contractor serving Metro Detroit. We lead with roofing and bring the same standards to basements and renovations: honest inspections, clear quotes and work we are proud to put our name on.', location: 'about', formTitle: 'Get a free estimate', media: has(owner.photo) ? heroPhoto(owner.photo, `${owner.name || 'Owner'}, ${owner.title || 'Owner'} of Moda Building`) : heroPhoto(pic('team'), 'Moda Building team at a residential jobsite in Metro Detroit') })}
 <section class="section"><div class="wrap split">
   <div><span class="eyebrow">Our story</span><h2>Why we started Moda Building</h2>
     <p>Moda Building started with a simple frustration: too many homeowners in Metro Detroit were getting vague quotes, missed start dates and crews that left a mess behind. We set out to build the kind of contractor we would want working on our own homes — one that shows up when promised, explains every option in plain language and treats each house like it belongs to family.</p>
-    <p>Roofing became our core because a sound roof protects everything beneath it. From there, homeowners kept asking us to help with what came next: wet basements, unfinished lower levels and the renovations that make an older Oakland County home fit modern life.</p>
+    <p>Roofing became our core because a sound roof protects everything beneath it. From there, homeowners kept asking us to help with what came next: wet basements, unfinished lower levels and the renovations that make an older Metro Detroit home fit modern life.</p>
     <p>“Moda” points to modern design, and that is how we approach every project — clean details, durable materials and a process that respects your time and your home. Whether it is a new roof in Royal Oak or a lower-level theater in Bloomfield Hills, the standard does not change.</p></div>
   <div class="rounded">${img(pic('p2-after'), projAlt(proj('p2')), { sizes: '(min-width: 960px) 50vw, 100vw' })}</div>
 </div></section>
@@ -361,7 +361,7 @@ ${has(owner.name) ? `<section class="section section--stone"><div class="wrap sp
 ${ctaBand()}` });
 
 /* ================= GALLERY ================= */
-layout({ url: '/gallery/', title: 'Project Gallery: Roofing, Basements & Renovations | Moda Building', description: 'Before-and-after photos of Moda Building roofing, basement waterproofing, finished basement and renovation projects across Oakland County and Metro Detroit.', priority: '0.7', current: 'gallery',
+layout({ url: '/gallery/', title: 'Project Gallery: Roofing, Basements & Renovations | Moda Building', description: 'Before-and-after photos of Moda Building roofing, basement waterproofing, finished basement and renovation projects across Metro Detroit.', priority: '0.7', current: 'gallery',
   schema: [crumbSchema([['Home', '/'], ['Our Work', '/gallery/']])], body: `
 ${pageHero({ crumbsList: [['Home', '/'], ['Our Work', '/gallery/']], eyebrow: 'Our work', h1: 'Project gallery', lead: 'Projects labeled by service and city. Drag the sliders to compare before and after, or filter by the work you are planning.', location: 'gallery', formTitle: 'Get a free estimate', media: projectCard(proj('p15')) })}
 <section class="section"><div class="wrap">
@@ -382,7 +382,7 @@ if (reviewsPageLive()) {
   const verified = liveReviews();
   layout({ url: '/reviews/', title: 'Customer Reviews | Moda Building Metro Detroit', description: 'Read Google reviews from Moda Building customers in Birmingham, Royal Oak, Bloomfield Hills, Rochester Hills, West Bloomfield and Beverly Hills.', priority: '0.6',
     schema: [crumbSchema([['Home', '/'], ['Reviews', '/reviews/']])], body: `
-${pageHero({ crumbsList: [['Home', '/'], ['Reviews', '/reviews/']], eyebrow: 'Reviews', h1: 'What our customers say', lead: `${hasRating() ? `Rated ${esc(site.googleRating)} stars across ${esc(site.googleReviewCount)} Google reviews. ` : ''}Reviews from homeowners across Oakland County, straight from our Google Business Profile.`, location: 'reviews', formTitle: 'Get a free estimate', bulletsList: ['Verified Google reviews', 'Homeowners across Oakland County', 'Free, no-pressure estimates'], media: has(site.googleReviewUrl) ? `<p><a class="btn btn--cta" href="${esc(site.googleReviewUrl)}" rel="noopener" data-cta="leave-review">Leave us a review on Google</a></p>` : '' })}
+${pageHero({ crumbsList: [['Home', '/'], ['Reviews', '/reviews/']], eyebrow: 'Reviews', h1: 'What our customers say', lead: `${hasRating() ? `Rated ${esc(site.googleRating)} stars across ${esc(site.googleReviewCount)} Google reviews. ` : ''}Reviews from homeowners across Metro Detroit, straight from our Google Business Profile.`, location: 'reviews', formTitle: 'Get a free estimate', bulletsList: ['Verified Google reviews', 'Homeowners across Metro Detroit', 'Free, no-pressure estimates'], media: has(site.googleReviewUrl) ? `<p><a class="btn btn--cta" href="${esc(site.googleReviewUrl)}" rel="noopener" data-cta="leave-review">Leave us a review on Google</a></p>` : '' })}
 ${has(site.googleReviewsEmbed) ? `<section class="section"><div class="wrap"><div class="section-head section-head--center"><span class="eyebrow">Google reviews</span><h2>Live from Google</h2></div>${site.googleReviewsEmbed}</div></section>` : ''}
 ${verified.length >= 3 ? `<section class="section section--stone"><div class="wrap"><div class="section-head section-head--center"><span class="eyebrow">Reviews</span><h2>Recent reviews</h2></div><div class="reviews-grid">${triple(verified, 9).map(reviewCard).join('')}</div>${has(site.googleReviewUrl) ? sectionCta(`<a class="btn btn--ghost" href="${esc(site.googleReviewUrl)}" rel="noopener">Leave a review on Google</a>`) : ''}</div></section>` : ''}
 ${ctaBand()}` });
@@ -502,7 +502,7 @@ const offerCards = (title, cards) => `<section class="section"><div class="wrap"
 
 landingPage({
   slug: 'roofing', cta: 'Free Estimate', h1: 'Metro Detroit Roof Replacement & Repair', sub: 'Free inspection and written estimate. Licensed & insured.',
-  eyebrow: 'Roofing · Oakland County &amp; all of Metro Detroit',
+  eyebrow: 'Roofing · All of Metro Detroit',
   bullets: ['Free roof inspection', 'Storm &amp; insurance claim help — we meet your adjuster', `Workmanship + manufacturer warranty`],
   heroImg: 'roofing-hero', heroAlt: 'Completed roof replacement on a Metro Detroit home by Moda Building',
   formTitle: 'Get your free roof estimate', formSub: 'Takes about 60 seconds. We reply within one business day.', submitLabel: 'Get My Free Roof Estimate',
@@ -526,10 +526,10 @@ landingPage({
 });
 
 landingPage({
-  slug: 'basements', logoHome: true, cta: 'Free Consultation', h1: 'Dry, Finished Basements in Oakland County', sub: 'Waterproofing and basement finishing by one team — free in-home consultation.',
+  slug: 'basements', logoHome: true, cta: 'Free Consultation', h1: 'Dry, Finished Basements in Metro Detroit', sub: 'Waterproofing and basement finishing by one team — free in-home consultation.',
   eyebrow: 'Basement waterproofing &amp; finishing',
   bullets: ['Free in-home consultation', 'Waterproofing first, then finishing — one team', 'Written, transferable waterproofing warranty'],
-  heroImg: 'finished-basements-hero', heroAlt: 'Finished basement living space in Oakland County by Moda Building',
+  heroImg: 'finished-basements-hero', heroAlt: 'Finished basement living space in Metro Detroit by Moda Building',
   formTitle: 'Book your free consultation', formSub: 'Takes about 60 seconds. We reply within one business day.', submitLabel: 'Get My Free Consultation',
   serviceLabel: 'What do you need?', options: ['Waterproofing', 'Basement finishing', 'Both', 'Not sure'], photo: true,
   trustExtra: [ICON.award, 'Waterproofing warranty', 'Written &amp; transferable'],
@@ -557,10 +557,10 @@ landingPage({
 });
 
 landingPage({
-  slug: 'renovations', cta: 'Free Consultation', tabTitle: 'Kitchen, Bath & Whole-Home Renovations', h1: 'Kitchen, Bath & Whole-Home Renovations in Oakland County', sub: 'Modern design-build renovations by one team — free in-home consultation.',
-  eyebrow: 'Renovations · Oakland County',
+  slug: 'renovations', cta: 'Free Consultation', tabTitle: 'Kitchen, Bath & Whole-Home Renovations', h1: 'Kitchen, Bath & Whole-Home Renovations in Metro Detroit', sub: 'Modern design-build renovations by one team — free in-home consultation.',
+  eyebrow: 'Renovations · Metro Detroit',
   bullets: ['Free design consultation', 'Fixed-scope written proposal', 'One team from design to final walkthrough'],
-  heroImg: 'renovations-hero', heroAlt: 'Modern kitchen renovation in Oakland County by Moda Building',
+  heroImg: 'renovations-hero', heroAlt: 'Modern kitchen renovation in Metro Detroit by Moda Building',
   formTitle: 'Book your free consultation', formSub: 'Takes about 60 seconds. We reply within one business day.', submitLabel: 'Get My Free Consultation',
   serviceLabel: 'What are you planning?', options: ['Kitchen', 'Bathroom', 'Whole-home remodel', 'Addition', 'Not sure'], photo: true,
   trustExtra: [ICON.award, 'Warranties', 'Workmanship + manufacturer'],
@@ -569,7 +569,7 @@ landingPage({
     ['Bathrooms', 'Primary suites with curbless showers, double vanities and heated floors.', 'p20-after'],
     ['Whole-home &amp; additions', 'Open floor plans, structural changes and additions that look original to the house.', 'p16-after']
   ]),
-  baTitle: 'Recent renovations in Oakland County',
+  baTitle: 'Recent renovations in Metro Detroit',
   projects: [['p15', 'Bloomfield Hills — open kitchen and great room'], ['p18', 'Beverly Hills — ranch whole-home refresh'], ['p19', 'Royal Oak — bungalow kitchen opening']],
   reviewFilter: (r) => r.service === 'renovations', reviewsTitle: 'What homeowners say about their renovation',
   steps: [['Free design consultation', 'We visit, measure and talk through how you want to live in the space.'], ['Fixed-scope proposal', 'Drawings, selections and one clear written price before work begins.'], ['Build', 'One team, one schedule and one point of contact to the final walkthrough.']],

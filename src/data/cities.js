@@ -6,7 +6,7 @@ module.exports = [
     key: 'birmingham',
     name: 'Birmingham',
     slug: 'birmingham-mi',
-    county: 'Oakland County',
+    county: 'Metro Detroit',
     neighborhoods: ['Quarton Lake Estates', 'Poppleton Park', 'Holy Name', 'Pembroke Park', 'the Rail District', 'Downtown Birmingham'],
     nearby: ['bloomfield-hills', 'beverly-hills', 'royal-oak'],
     nearbyOther: ['Troy', 'Bloomfield Township'],
@@ -50,7 +50,7 @@ module.exports = [
     key: 'royal-oak',
     name: 'Royal Oak',
     slug: 'royal-oak-mi',
-    county: 'Oakland County',
+    county: 'Metro Detroit',
     neighborhoods: ['Vinsetta Park', 'Northwood', 'Normandy Oaks', 'Downtown Royal Oak', 'Woodward Corridor', 'Starr Jaycee Park'],
     nearby: ['birmingham', 'beverly-hills', 'bloomfield-hills'],
     nearbyOther: ['Ferndale', 'Berkley', 'Clawson', 'Huntington Woods'],
@@ -94,7 +94,7 @@ module.exports = [
     key: 'bloomfield-hills',
     name: 'Bloomfield Hills',
     slug: 'bloomfield-hills-mi',
-    county: 'Oakland County',
+    county: 'Metro Detroit',
     neighborhoods: ['the Cranbrook area', 'Lone Pine Road corridor', 'Long Lake Road area', 'Bloomfield Village', 'Bloomfield Township', 'Wing Lake area'],
     nearby: ['birmingham', 'beverly-hills', 'west-bloomfield'],
     nearbyOther: ['Bloomfield Township', 'Troy', 'Auburn Hills'],
@@ -138,7 +138,7 @@ module.exports = [
     key: 'rochester-hills',
     name: 'Rochester Hills',
     slug: 'rochester-hills-mi',
-    county: 'Oakland County',
+    county: 'Metro Detroit',
     neighborhoods: ['Brooklands', 'Christian Hills', 'Hampton area', 'Stoney Creek area', 'the Bloomer Park area', 'the Oakland University area'],
     nearby: ['bloomfield-hills', 'west-bloomfield', 'birmingham'],
     nearbyOther: ['Rochester', 'Auburn Hills', 'Troy', 'Shelby Township'],
@@ -182,7 +182,7 @@ module.exports = [
     key: 'west-bloomfield',
     name: 'West Bloomfield',
     slug: 'west-bloomfield-mi',
-    county: 'Oakland County',
+    county: 'Metro Detroit',
     neighborhoods: ['Pine Lake', 'Cass Lake area', 'Upper Straits Lake', 'Green Lake', 'Walnut Lake', 'Orchard Lake area'],
     nearby: ['bloomfield-hills', 'birmingham', 'rochester-hills'],
     nearbyOther: ['Orchard Lake Village', 'Keego Harbor', 'Farmington Hills', 'Commerce Township'],
@@ -226,7 +226,7 @@ module.exports = [
     key: 'beverly-hills',
     name: 'Beverly Hills',
     slug: 'beverly-hills-mi',
-    county: 'Oakland County',
+    county: 'Metro Detroit',
     neighborhoods: ['Beverly Park area', 'the Southfield Road corridor', 'the 13 Mile Road area', 'the 14 Mile Road area', 'the Groves High School area', 'Rouge River area'],
     nearby: ['birmingham', 'bloomfield-hills', 'royal-oak'],
     nearbyOther: ['Bingham Farms', 'Southfield', 'Franklin', 'Bloomfield Township'],
@@ -270,7 +270,7 @@ module.exports = [
     key: 'metro-detroit',
     name: 'Metro Detroit',
     slug: 'metro-detroit',
-    county: 'Oakland County & all of Metro Detroit',
+    county: 'All of Metro Detroit',
     isRegion: true,
     neighborhoods: ['Troy', 'Southfield', 'Ferndale', 'Novi', 'Farmington Hills', 'Sterling Heights', 'Grosse Pointe', 'Livonia', 'Dearborn', 'Clawson', 'Berkley', 'Auburn Hills'],
     nearby: ['birmingham', 'royal-oak', 'bloomfield-hills', 'rochester-hills', 'west-bloomfield', 'beverly-hills'],
@@ -279,19 +279,19 @@ module.exports = [
     pages: {
       roofing: {
         intro: [
-          'Moda Building serves homeowners across Oakland County and all of Metro Detroit for roof replacement, roof repair, storm damage and gutters. From pre-war brick homes in Ferndale and Grosse Pointe to newer subdivisions in Novi and Sterling Heights, every roof gets the same inspection, the same written quote and the same cleanup standard.',
+          'Moda Building serves homeowners across all of Metro Detroit for roof replacement, roof repair, storm damage and gutters. From pre-war brick homes in Ferndale and Grosse Pointe to newer subdivisions in Novi and Sterling Heights, every roof gets the same inspection, the same written quote and the same cleanup standard.',
           'Southeast Michigan weather is the common thread: freeze–thaw cycles, ice dams and fast-moving summer storms with hail and wind. We build roofs to handle all of it.'
         ],
-        local: ['Free inspections throughout Oakland County and all of Metro Detroit', 'Storm damage documentation and adjuster meetings region-wide', 'Emergency tarping after wind and hail events'],
-        faq: { q: 'Do you charge more to travel outside Oakland County?', a: 'No. Roof inspections and estimates are free throughout Metro Detroit.' }
+        local: ['Free inspections throughout all of Metro Detroit', 'Storm damage documentation and adjuster meetings region-wide', 'Emergency tarping after wind and hail events'],
+        faq: { q: 'Do you charge more to travel anywhere in Metro Detroit?', a: 'No. Roof inspections and estimates are free throughout Metro Detroit.' }
       },
       'basement-waterproofing': {
         intro: [
-          'From Livonia to St. Clair Shores, Metro Detroit basements share the same adversary: heavy clay soil that holds water against foundations, and spring thaws that push it through every crack. Moda Building waterproofs basements throughout Oakland County and all of Metro Detroit.',
+          'From Livonia to St. Clair Shores, Metro Detroit basements share the same adversary: heavy clay soil that holds water against foundations, and spring thaws that push it through every crack. Moda Building waterproofs basements throughout all of Metro Detroit.',
           'Whether you have a block foundation in an older inner-ring suburb or poured walls in a newer subdivision, we diagnose the cause and recommend the fix that will last.'
         ],
         local: ['Crack repair, drain tile and sump systems region-wide', 'Free basement inspections throughout Metro Detroit', 'Written, transferable warranty on waterproofing systems'],
-        faq: { q: 'Which areas do you cover for waterproofing?', a: 'Oakland County and all of Metro Detroit. If you are unsure whether we serve your city, call us or submit the form and we will confirm.' }
+        faq: { q: 'Which areas do you cover for waterproofing?', a: 'all of Metro Detroit. If you are unsure whether we serve your city, call us or submit the form and we will confirm.' }
       }
     }
   }

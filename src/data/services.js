@@ -129,7 +129,7 @@ module.exports = [
     heroSub: 'We find where the water is getting in, fix the cause, and back it with a written warranty — so your basement is ready to use, store or finish.',
     cardText: 'Leak and crack repair, interior drain tile, sump pumps, exterior waterproofing and foundation repair.',
     intro: [
-      'Oakland County sits on dense clay soil that holds water against foundation walls. Add spring thaw, heavy rain and aging drain tile, and even well-built homes end up with damp walls, efflorescence or water on the floor.',
+      'Much of Metro Detroit sits on dense clay soil that holds water against foundation walls. Add spring thaw, heavy rain and aging drain tile, and even well-built homes end up with damp walls, efflorescence or water on the floor.',
       'Moda Building diagnoses the source first — cracks, failed tile, hydrostatic pressure, grading or gutters — and recommends the least invasive fix that will actually last. And when your basement is dry, we can finish it.'
     ],
     subservices: [
@@ -180,7 +180,7 @@ module.exports = [
     navLabel: 'Finished Basements',
     coverage: 'Metro Detroit, focus on 4 target cities',
     cityKeys: ['birmingham', 'royal-oak', 'bloomfield-hills', 'rochester-hills'],
-    title: 'Finished Basements Birmingham MI & Oakland County | Moda Building',
+    title: 'Finished Basements Birmingham MI & Metro Detroit | Moda Building',
     description: 'Design-build basement finishing in Birmingham, Royal Oak, Bloomfield Hills and Rochester Hills: rec rooms, bars, theaters, guest suites, gyms, egress windows and bathrooms.',
     keyword: 'finished basements Birmingham MI',
     h1: 'Finished basements, designed and built as one project',
@@ -236,14 +236,14 @@ module.exports = [
     navLabel: 'Renovations',
     coverage: '6 target cities',
     cityKeys: ['birmingham', 'royal-oak', 'bloomfield-hills', 'rochester-hills', 'west-bloomfield', 'beverly-hills'],
-    title: 'Home Renovation Bloomfield Hills & Oakland County | Moda Building',
+    title: 'Home Renovation Bloomfield Hills & Metro Detroit | Moda Building',
     description: 'Whole-home remodels, kitchens, bathrooms and additions in Bloomfield Hills, Birmingham, Royal Oak, Rochester Hills, West Bloomfield and Beverly Hills. Design-build, one team.',
     keyword: 'home renovation Bloomfield Hills',
     h1: 'Full home renovations with modern design at the center',
-    heroSub: 'Whole-home remodels, kitchens, bathrooms and additions for Oakland County homes — one design-build team, one schedule, one point of contact.',
+    heroSub: 'Whole-home remodels, kitchens, bathrooms and additions for Metro Detroit homes — one design-build team, one schedule, one point of contact.',
     cardText: 'Whole-home remodels, kitchens, bathrooms and additions with a clear design process.',
     intro: [
-      'Much of Oakland County’s housing was built between the 1920s and 1990s: generous lots and good bones, often with closed-off kitchens, dated baths and floor plans that do not fit modern life.',
+      'Much of Metro Detroit’s housing was built between the 1920s and 1990s: generous lots and good bones, often with closed-off kitchens, dated baths and floor plans that do not fit modern life.',
       'Moda Building renovates with a modern eye — open, light-filled rooms, clean detailing and materials that last — while respecting the architecture of the home. Design and construction live under one roof, so the plan you approve is the plan we build.'
     ],
     subservices: [
@@ -277,7 +277,7 @@ module.exports = [
     faqs: [
       { q: 'Can we live at home during the renovation?', a: 'Often, yes. For kitchens we can set up a temporary kitchen; for whole-home work we phase the project and seal off work areas with dust protection. For larger projects we talk honestly about when a short move-out makes sense.' },
       { q: 'Do you provide design, or do I need an architect?', a: 'We are design-build: our team handles design, drawings and selections. For additions and major structural changes we coordinate engineered and architectural drawings as needed for permits.' },
-      { q: 'How do you handle surprises behind the walls?', a: 'Older Oakland County homes can hide outdated wiring or past repairs. We investigate during design where we can, include allowances in the proposal, and never proceed with a change without your written approval.' },
+      { q: 'How do you handle surprises behind the walls?', a: 'Older Metro Detroit homes can hide outdated wiring or past repairs. We investigate during design where we can, include allowances in the proposal, and never proceed with a change without your written approval.' },
       { q: 'Do you serve areas outside the six core cities?', a: 'Our renovation work focuses on Birmingham, Royal Oak, Bloomfield Hills, Rochester Hills, West Bloomfield and Beverly Hills. Elsewhere in Metro Detroit, renovations are available on request — just ask.' },
       { q: 'Is financing available?', a: 'Yes, financing options are available on qualifying projects. Ask about current options during your free consultation.' }
     ],

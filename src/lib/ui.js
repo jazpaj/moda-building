@@ -244,7 +244,7 @@ function mobileBar({ label = 'Get Quote', phone = site.phone, quote = true } = {
 function trustStrip() {
   const items = [
     [ICON.shield, 'Licensed &amp; insured', has(site.license) ? `MI Lic. ${esc(site.license)}` : 'Michigan residential builder'],
-    has(site.yearsInBusiness) ? [ICON.calendar, `${esc(site.yearsInBusiness)} years in business`, 'Locally owned'] : [ICON.calendar, 'Locally owned &amp; operated', esc(site.serviceArea)],
+    has(site.yearsInBusiness) ? [ICON.calendar, `${esc(site.yearsInBusiness)} years in business`, 'Locally owned'] : [ICON.calendar, 'Locally owned &amp; operated', `Serving ${esc(site.serviceArea)}`],
     hasRating() ? [ICON.star, `${esc(site.googleRating)}★ Google rating`, `${esc(site.googleReviewCount)} reviews`] : [ICON.clipboard, 'Free written estimates', 'No pressure, no surprises'],
     [ICON.award, 'Warranties', esc(site.warranty)],
     [ICON.dollar, 'Financing available', 'On qualifying projects']

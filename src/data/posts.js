@@ -10,7 +10,7 @@ module.exports = [
     body: `
 <p>Ask five roofers what a new roof costs and you may hear five different numbers. That is not always a sign someone is overcharging — roofs genuinely vary. Here is what moves the price for a typical Metro Detroit home, and how to compare quotes fairly.</p>
 <h2>Ballpark ranges</h2>
-<p>For a typical single-family home in Oakland County, an architectural asphalt shingle replacement commonly falls between about $12,000 and $30,000. Designer shingles, synthetic slate and metal sit higher. These are planning numbers only — your quote depends on an inspection.</p>
+<p>For a typical single-family home in Metro Detroit, an architectural asphalt shingle replacement commonly falls between about $12,000 and $30,000. Designer shingles, synthetic slate and metal sit higher. These are planning numbers only — your quote depends on an inspection.</p>
 <h2>What drives the cost</h2>
 <h3>1. Size and pitch</h3>
 <p>Roofs are priced by the “square” (100 square feet). A steep 1920s Tudor in Birmingham takes more labor, safety equipment and time per square than a low-slope ranch in Beverly Hills.</p>
