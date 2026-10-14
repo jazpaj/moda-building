@@ -616,3 +616,18 @@ ul { padding-left: 1.2em; }
 .link-btn { font: inherit; background: none; border: 0; padding: 4px 0; color: var(--ink); font-weight: 700; cursor: pointer; }
 .link-btn:hover { text-decoration: underline; }
 .est-link { margin: 14px 0 0; }
+
+/* Photo heroes (homepage + landing pages): balance the headline against the taller form */
+@media (min-width: 960px) {
+  .hero--photo .hero__grid { align-items: center; padding-top: 48px; padding-bottom: 48px; }
+  /* Tighter form rhythm on desktop — same fields, less height */
+  .qf-card { padding: 24px 26px; }
+  .qf-card .qf-sub { margin-bottom: 12px; }
+  .qf .field { margin-bottom: 10px; }
+  .qf label { margin-bottom: 4px; }
+  .qf input, .qf select { min-height: 44px; padding-top: 9px; padding-bottom: 9px; }
+  .qf .qf-check small { font-size: .72rem; }
+  .qf-more { margin: 0 0 10px; }
+  .qf .consent { margin-top: 10px; }
+  .qf-trust { margin-top: 10px; }
+}
