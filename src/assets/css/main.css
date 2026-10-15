@@ -587,12 +587,14 @@ ul { padding-left: 1.2em; }
 /* Landing-page mini footer: stacked on phones, one line with separators on wider screens.
    (body already reserves room for the sticky bar, so no extra bottom padding here) */
 .footer--mini { padding: 24px 0; text-align: center; font-size: .9rem; }
-.mini-foot { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.footer .mini-foot { list-style: none; margin: 0; padding: 0; display: flex; gap: 0; flex-wrap: nowrap; justify-content: center; align-items: center; white-space: nowrap; font-size: .85rem; }
 .mini-foot a { color: #e6ebef; }
-@media (min-width: 640px) {
-  .mini-foot { flex-direction: row; flex-wrap: wrap; justify-content: center; gap: 4px 0; }
-  .mini-foot li + li::before { content: '·'; margin: 0 10px; color: #6b7785; }
-}
+.mini-foot li + li::before { content: '·'; margin: 0 8px; color: #6b7785; }
+.mf-short { display: none; }
+/* Phones: one line — license/insured line drops (it's in the trust bar above); tiny phones shorten "Privacy policy" */
+@media (max-width: 639px) { .mini-foot .mf-license { display: none; } }
+@media (max-width: 360px) { .mf-long { display: none; } .mf-short { display: inline; } .footer .mini-foot { font-size: .8rem; } .mini-foot li + li::before { margin: 0 6px; } }
+@media (min-width: 640px) { .mini-foot { font-size: .9rem; } .mini-foot li + li::before { margin: 0 10px; } }
 
 /* Instant price range (roofing page) */
 .est { max-width: 880px; margin: 0 auto; background: #fff; border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow); padding: 24px 20px; }
@@ -641,3 +643,5 @@ ul { padding-left: 1.2em; }
 /* Right-hand dropdowns (Our Work, About) open leftwards so they stay on screen */
 @media (min-width: 1080px) { .nav > ul > li:nth-last-child(-n+2) > .dd { left: auto; right: 0; } .nav .dd { min-width: 240px; } }
 @media (min-width: 1080px) { .mnav, .mnav.is-open { display: none !important; } }
+/* Smallest phones (≤360px): logo + call + menu buttons must fit in one header row */
+@media (max-width: 360px) { .header .logo__img { height: 34px; } .header__in { gap: 10px; } .header__actions { gap: 8px; } }

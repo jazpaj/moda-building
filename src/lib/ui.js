@@ -272,8 +272,8 @@ function footer({ minimal = false, lp = null } = {}) {
     return `<footer class="footer footer--mini"><div class="wrap"><ul class="mini-foot">
       <li><strong>${esc(site.name)}</strong></li>
       <li><a href="${telHref(phone)}" data-loc="footer">${esc(phone)}</a></li>
-      <li>${has(site.license) ? `MI License ${esc(site.license)}` : 'Licensed &amp; insured in Michigan'}</li>
-      <li><a href="/privacy-policy/">Privacy policy</a></li>
+      <li class="mf-license">${has(site.license) ? `MI License ${esc(site.license)}` : 'Licensed &amp; insured in Michigan'}</li>
+      <li><a href="/privacy-policy/"><span class="mf-long">Privacy policy</span><span class="mf-short">Privacy</span></a></li>
     </ul></div></footer>${cookieUi}`;
   }
   const hours = site.hours.map((h) => `<li>${esc(h.days)}: ${esc(h.open)}${h.close ? '–' + esc(h.close) : ''}</li>`).join('');
