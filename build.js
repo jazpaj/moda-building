@@ -465,7 +465,7 @@ function lpTrust(extra) {
 }
 function landingPage(cfg) {
   const url = `/lp/${cfg.slug}/`, ty = `${url}thank-you/`;
-  const lp = { phone: lpPhone(), cta: cfg.cta, logoHome: true }; // every landing page logo links to the main website
+  const lp = { phone: lpPhone(), cta: cfg.cta, logoHome: true, nav: true }; // logo → main website; main nav shown on landing pages
   const formHtml = quoteForm({ location: `lp-${cfg.slug}`, title: cfg.formTitle, sub: cfg.formSub, action: ty, options: cfg.options, variant: 'lp', photo: cfg.photo, address: false, submitLabel: cfg.submitLabel, serviceLabel: cfg.serviceLabel });
   const body = `
 <section class="hero hero--photo"><div class="hero__bg">${img(pic(cfg.heroImg), cfg.heroAlt, { eager: true, sizes: '100vw' })}</div>

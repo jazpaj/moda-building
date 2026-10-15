@@ -204,6 +204,8 @@ const navChildren = (n) => (typeof n.children === 'function' ? n.children() : n.
 const navKeyFor = (current) => ({ 'basement-waterproofing': 'basements', 'finished-basements': 'basements', gallery: 'work', contact: 'about', reviews: 'about', financing: 'about' }[current] || current);
 
 function header({ minimal = false, current = '', lp = null } = {}) {
+  // Landing pages with nav: the main menu, but with the landing page's phone (call-tracking slot) and button.
+  if (minimal && lp && lp.nav) return fullHeader({ current, phone: lp.phone, ctaLabel: lp.cta, mobileCta: lp.cta ? ['#quote', lp.cta] : ['/contact/', 'Get a Free Estimate'], lpClass: true });
   if (minimal) {
     const phone = lp ? lp.phone : site.phone;
     return `<header class="header lp-header"><div class="wrap header__in">
@@ -215,6 +217,10 @@ function header({ minimal = false, current = '', lp = null } = {}) {
   </div>
 </div></header>`;
   }
+  return fullHeader({ current });
+}
+
+function fullHeader({ current = '', phone = site.phone, ctaLabel = 'Get a Free Estimate', mobileCta = ['/contact/', 'Get a Free Estimate'], lpClass = false } = {}) {
   const cur = navKeyFor(current);
   const desktop = NAV.map((n) => n.children
     ? `<li><button type="button" aria-expanded="false"${cur === n.key ? ' aria-current="true"' : ''}>${n.label}</button><div class="dd">${navChildren(n).map(([l, h]) => `<a href="${h}">${l}</a>`).join('')}</div></li>`
@@ -222,18 +228,18 @@ function header({ minimal = false, current = '', lp = null } = {}) {
   const mobile = NAV.map((n) => n.children
     ? `<li><details><summary>${n.label}</summary><ul>${navChildren(n).map(([l, h]) => `<li><a href="${h}">${l}</a></li>`).join('')}</ul></details></li>`
     : `<li><a href="${n.href}">${n.label}</a></li>`).join('');
-  return `<header class="header"><div class="wrap header__in">
+  return `<header class="header${lpClass ? ' header--lp' : ''}"><div class="wrap header__in">
   <a class="logo" href="/" aria-label="Moda Building home">${LOGO}</a>
   <nav class="nav" aria-label="Main"><ul>${desktop}</ul></nav>
   <div class="header__actions">
-    <a class="header__phone" href="${telHref(site.phone)}" data-loc="header"><small>Call for a free estimate</small>${esc(site.phone)}</a>
-    <a class="icon-btn call-icon" href="${telHref(site.phone)}" data-loc="header-icon" aria-label="Call ${esc(site.phone)}">${ICON.phone}</a>
-    <a class="btn btn--cta" href="#quote" data-cta="header">Get a Free Estimate</a>
+    <a class="header__phone" href="${telHref(phone)}" data-loc="header"><small>Call for a free estimate</small>${esc(phone)}</a>
+    <a class="icon-btn call-icon" href="${telHref(phone)}" data-loc="header-icon" aria-label="Call ${esc(phone)}">${ICON.phone}</a>
+    ${ctaLabel ? `<a class="btn btn--cta" href="#quote" data-cta="header">${esc(ctaLabel)}</a>` : ''}
     <button class="icon-btn menu-toggle" type="button" aria-expanded="false" aria-controls="mnav" aria-label="Menu">${ICON.menu}</button>
   </div>
 </div>
 <nav class="mnav" id="mnav" aria-label="Mobile"><ul>${mobile}</ul>
-<a class="btn btn--cta btn--block" href="/contact/" data-cta="mobile-menu">Get a Free Estimate</a></nav>
+<a class="btn btn--cta btn--block" href="${mobileCta[0]}" data-cta="mobile-menu">${esc(mobileCta[1])}</a></nav>
 </header>`;
 }
 
