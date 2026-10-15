@@ -269,7 +269,12 @@ function footer({ minimal = false, lp = null } = {}) {
   if (minimal) {
     // Landing-page mini footer: business name, phone, license #, privacy policy. Nothing else.
     const phone = lp ? lp.phone : site.phone;
-    return `<footer class="footer footer--mini"><div class="wrap"><p><strong>${esc(site.name)}</strong> · <a href="${telHref(phone)}" data-loc="footer">${esc(phone)}</a> · ${has(site.license) ? `MI License ${esc(site.license)}` : 'Licensed &amp; insured in Michigan'} · <a href="/privacy-policy/">Privacy policy</a></p></div></footer>${cookieUi}`;
+    return `<footer class="footer footer--mini"><div class="wrap"><ul class="mini-foot">
+      <li><strong>${esc(site.name)}</strong></li>
+      <li><a href="${telHref(phone)}" data-loc="footer">${esc(phone)}</a></li>
+      <li>${has(site.license) ? `MI License ${esc(site.license)}` : 'Licensed &amp; insured in Michigan'}</li>
+      <li><a href="/privacy-policy/">Privacy policy</a></li>
+    </ul></div></footer>${cookieUi}`;
   }
   const hours = site.hours.map((h) => `<li>${esc(h.days)}: ${esc(h.open)}${h.close ? '–' + esc(h.close) : ''}</li>`).join('');
   const social = Object.entries(site.social).map(([k, u]) => (u ? `<a href="${esc(u)}" rel="noopener" aria-label="${k}">${ICON[k]}</a>` : '')).join('');
